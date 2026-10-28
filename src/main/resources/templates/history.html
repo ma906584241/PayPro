@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>捐赠记录 - PayPro</title>
+    <title th:text="'捐赠记录 - ' + ${indexTitle}">捐赠记录 - AI智为工坊</title>
     <!-- 引入Vue 3 -->
     <script src="https://cdn.bootcdn.net/ajax/libs/vue/3.3.4/vue.global.min.js" defer></script>
     <!-- 引入图标库 (使用国内CDN) -->
@@ -204,7 +204,7 @@
         </div>
 
         <div class="footer">
-            <p>&copy; 2026 PayPro 捐赠中心. 安全可靠的支付服务</p>
+            <p>&copy; 2026 <span th:text="${indexTitle}">AI智为工坊</span> · <a class="support-email" href="mailto:contact@aioperis.com" th:href="'mailto:' + ${supportMail}" th:text="${supportMail}">contact@aioperis.com</a></p>
         </div>
     </div>
 </div>

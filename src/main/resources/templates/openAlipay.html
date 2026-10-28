@@ -1,10 +1,10 @@
 <!doctype html>
 <!doctype html>
-<html lang="zh-CN">
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <title>个人支付系统 - 无需签约，全自动收款</title>
+    <title th:text="'支付宝收款 - ' + ${indexTitle}">支付宝收款 - AI智为工坊</title>
 
     <!-- 支付宝JS API -->
     <script src="https://gw.alipayobjects.com/as/g/h5-lib/alipayjsapi/3.1.1/alipayjsapi.min.js"></script>
@@ -223,16 +223,17 @@
             methods: {
                 // 初始化应用
                 initApp() {
-                    console.log('初始化支付宝收银台...');
-
-                    // 检查是否在支付宝环境中
-                    this.checkAlipayEnvironment();
-
-                    // 获取URL参数
+                    // 旧免备注入口统一转到新收款码页面，保留订单信息。
                     this.getUrlParams();
-
-                    // 初始化支付宝JSBridge
-                    this.initAlipayJSBridge();
+                    const params = new URLSearchParams({
+                        orderId: this.paymentData.orderId,
+                        money: this.paymentData.money,
+                        payNum: this.paymentData.orderNum || '',
+                        payType: 'alipay',
+                        useLocalQrCode: 'true',
+                        matchMode: 'REMARK'
+                    });
+                    window.location.replace('/payment.html?' + params.toString());
                 },
 
                 // 检查支付宝环境

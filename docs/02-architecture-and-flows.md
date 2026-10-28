@@ -6,7 +6,7 @@
 
 `PayProConfig` 绑定 `paypro` 前缀，既保存商品、支付方式和业务配置，也将 `/assets/qr/**` 映射到外置目录及 classpath 回退目录。`Config` 配置 CORS、MyBatis-Plus MySQL 分页、Snowflake Bean 和模板全局变量。Snowflake 已注入订单服务，但当前订单号不使用它。
 
-模板全局变量为 `title / indexTitle / site / alipayUserId / alipayCustomQrUrl / mobile`。`name` 未加入，而 `openAlipay.html` 读取 `${name}`，存在变量缺失。
+模板全局变量为 `title / indexTitle / name / supportMail / site / alipayUserId / alipayCustomQrUrl / mobile`。当前页面显示网站品牌、收款人和客服邮箱；EmailUtils 也将品牌、收款人与客服邮箱加入邮件上下文，见 [网站与邮件配置](13-site-and-mail-configuration.md)。
 
 ```mermaid
 flowchart LR
@@ -63,7 +63,7 @@ sequenceDiagram
 
 ## 减额匹配
 
-启用条件：`decrement.enabled=true`、非自定义金额、支付方式配置 `use-local-qr-code=true`，且支付方式不是 `wechat_zs`。
+启用条件：`decrement.enabled=true`、非自定义金额、支付方式配置 `use-local-qr-code=true`，且支付方式不是 `alipay`、`wechat` 或 `wechat_zs`。当前两份配置关闭减额，支付宝、微信均使用用户提供的通用码，按原始订单金额付款并填写标识，详见 [支付宝收款码更新](11-alipay-qr-update.md) 和 [微信收款码更新](12-wechat-qr-update.md)。以下为保留的减额算法说明，当前两种支付方式不调用它。
 
 对基准价 `B`，步长 `s`，`maxCount=N`，候选实际金额为 `B - i × s`，`i=0..N`。因此 `maxCount=2` 实际有三个候选，不是两个。非正数或找不到任意编号二维码的候选被跳过。
 

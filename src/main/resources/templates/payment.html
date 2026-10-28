@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>支付中心 - PayPro</title>
+    <title th:text="'支付中心 - ' + ${indexTitle}">支付中心 - AI智为工坊</title>
     <script src="https://cdn.bootcdn.net/ajax/libs/vue/3.3.4/vue.global.min.js"></script>
     <link href="https://cdn.bootcdn.net/ajax/libs/remixicon/3.5.0/remixicon.css" rel="stylesheet">
     <link rel="stylesheet" href="/css/common.css">
@@ -18,11 +18,14 @@
         .content.single { grid-template-columns: 1fr; }
         .card { padding: 24px; }
         .summary { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-        .summary-item { padding: 16px; border-radius: 12px; background: rgba(255,255,255,0.03); }
+        .summary-item { min-width: 0; padding: 16px; border-radius: 12px; background: rgba(255,255,255,0.03); }
+        .summary-order { grid-column: 1 / -1; }
         .summary-item .label { color: var(--text-muted); font-size: 0.9rem; }
-        .summary-item .value { font-size: 1.25rem; font-weight: 700; }
+        .summary-item .value { font-size: 1.25rem; font-weight: 700; overflow-wrap: anywhere; }
         .qr-wrap { display: flex; align-items: center; justify-content: center; height: 260px; }
         .qr-image { max-width: 220px; width: 220px; height: 220px; object-fit: contain; border-radius: 10px; border: 1px solid rgba(255,255,255,0.08); }
+        .qr-wrap.wechat-qr { height: auto; min-height: 260px; padding: 16px 0; }
+        .wechat-qr .qr-image { width: 320px; max-width: 100%; height: auto; }
         .countdown { text-align: center; color: #F59E0B; font-weight: 700; margin-top: 16px; }
         .actions { display: flex; gap: 12px; justify-content: center; margin-top: 16px; }
         .tips { color: var(--text-muted); font-size: 0.95rem; margin-top: 16px; text-align: center; }
@@ -53,13 +56,17 @@
         <div class="content" :class="{ single: !showInfoPanel }">
             <div class="glass card">
                 <div class="summary">
-                    <div class="summary-item">
+                    <div class="summary-item summary-order">
                         <div class="label">订单号</div>
                         <div class="value">{{ orderInfo.orderId }}</div>
                     </div>
                     <div class="summary-item">
                         <div class="label">支付方式</div>
                         <div class="value">{{ payTypeName }}</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="label">收款人</div>
+                        <div class="value" th:text="${name}">马宵冉</div>
                     </div>
                     <div class="summary-item">
                         <div class="label">标识号</div>
@@ -71,7 +78,7 @@
                         <div class="value">￥{{ orderInfo.actualAmount || orderInfo.money }}</div>
                     </div>
                 </div>
-                <div class="qr-wrap">
+                <div class="qr-wrap" :class="{'wechat-qr': orderInfo.payType === 'wechat'}">
                     <img v-if="orderInfo.useLocalQrCode === 'true' && qrImageUrl" :src="qrImageUrl" class="qr-image" alt="二维码" @error="handleImageError" @load="handleImageLoad">
                     <canvas v-else id="qrcode-canvas" width="220" height="220" style="border-radius:12px"></canvas>
                 </div>
@@ -93,7 +100,7 @@
             </div>
         </div>
 
-        <div class="footer"><p>&copy; 2026 PayPro System. Designed for Creators.</p></div>
+        <div class="footer"><p>&copy; 2026 <span th:text="${indexTitle}">AI智为工坊</span> · <a class="support-email" href="mailto:contact@aioperis.com" th:href="'mailto:' + ${supportMail}" th:text="${supportMail}">contact@aioperis.com</a></p></div>
     </div>
 
     <!-- 微信支付提示框（移动到#app作用域内） -->
@@ -208,11 +215,27 @@ createApp({
         },
         async createPaymentOrder(){
             try{
+                // 支付宝统一显示上传的通用收款码，也兼容旧支付链接。
+                if(this.orderInfo.payType === 'alipay'){
+                    this.orderInfo.useLocalQrCode = 'true';
+                    this.qrImageUrl = '/assets/qr/alipay/custom.png?v=3332c58e4053';
+                    this.qrCodeUrl = "[[${alipayCustomQrUrl}]]";
+                    return;
+                }
+                // 微信使用上传的通用码，旧减额订单保留付款金额并改为人工备注核对。
+                if(this.orderInfo.payType === 'wechat'){
+                    this.orderInfo.useLocalQrCode = 'true';
+                    this.orderInfo.matchMode = 'REMARK';
+                    this.orderInfo.fallbackToRemark = false;
+                    this.orderInfo.payNum = this.orderInfo.payNum || this.orderInfo.orderId || '';
+                    this.qrImageUrl = '/assets/qr/wechat/custom.png?v=a3feb84e0c7d';
+                    return;
+                }
                 /** 如果是使用本地二维码 */
                 if(this.orderInfo.useLocalQrCode === 'true'){
                     if(this.orderInfo.customerQr === 'true'){
                         // 自定义金额：使用custom.png
-                        this.qrImageUrl = 'assets/qr/${this.orderInfo.payType}/custom.png';
+                        this.qrImageUrl = `assets/qr/${this.orderInfo.payType}/custom.png`;
                         return
                     }else if(this.orderInfo.fallbackToRemark){
                         // 槽位已满回退：金额+0.01区分，如5.01放在5.00目录下
@@ -230,12 +253,6 @@ createApp({
                         this.qrImageUrl = `assets/qr/${this.orderInfo.payType}/${this.orderInfo.picName}/${this.orderInfo.payQrNum}.png`;
                         return
                     }
-                }
-
-                /** 特殊的支付方式，支付宝使用api唤起支付。 */
-                if(this.orderInfo.payType==='alipay'){
-                    var site = "[[${site}]]" + "/";
-                    this.qrCodeUrl = "alipays://platformapi/startapp?appId=20000067&url=" + encodeURIComponent(site + "openAlipay?money="+this.orderInfo.money+"&payNum="+this.orderInfo.payNum+"&id="+this.orderInfo.orderId);
                 }
 
             }catch(e){

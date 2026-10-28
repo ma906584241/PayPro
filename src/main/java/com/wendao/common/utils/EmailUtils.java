@@ -1,5 +1,6 @@
 package com.wendao.common.utils;
 
+import com.wendao.config.PayProConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,9 @@ public class EmailUtils {
     @Autowired
     private TemplateEngine templateEngine;
 
+    @Autowired
+    private PayProConfig payProConfig;
+
     /**
      * 发送模版邮件
      * @param sender
@@ -49,6 +53,9 @@ public class EmailUtils {
             Context context = new Context();
             context.setVariable("title",title);
             context.setVariables(StringUtils.beanToMap(o));
+            context.setVariable("indexTitle", payProConfig.getIndexTitle());
+            context.setVariable("name", payProConfig.getName());
+            context.setVariable("supportMail", payProConfig.getSupportMail());
             //获取模板html代码
             String content = templateEngine.process(templateName, context);
 

@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PayPro - 个人支付系统</title>
+    <title th:text="${indexTitle}">AI智为工坊</title>
     <!-- 引入Vue 3 -->
     <script src="https://cdn.bootcdn.net/ajax/libs/vue/3.3.4/vue.global.min.js"></script>
     <!-- 引入 Remix Icons -->
@@ -13,8 +13,18 @@
         /* Header & Nav */
         .top-nav {
             display: flex;
-            justify-content: flex-end;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
             padding: 24px 0;
+        }
+
+        .site-brand {
+            color: var(--text-color);
+            font-size: 1.125rem;
+            font-weight: 700;
+            text-decoration: none;
         }
 
         .btn-ghost {
@@ -214,6 +224,7 @@
     <div class="container">
         <!-- Nav -->
         <div class="top-nav">
+            <a href="home.html" class="site-brand" th:text="${indexTitle}">AI智为工坊</a>
             <a href="recharge.html" class="btn-ghost">
                 <i class="ri-wallet-3-line"></i>
                 体验支付
@@ -338,7 +349,7 @@
         </div>
 
         <div class="footer">
-            <p>&copy; 2026 PayPro System. Designed for Creators.</p>
+            <p>&copy; 2026 <span th:text="${indexTitle}">AI智为工坊</span> · <a class="support-email" href="mailto:contact@aioperis.com" th:href="'mailto:' + ${supportMail}" th:text="${supportMail}">contact@aioperis.com</a></p>
         </div>
     </div>
 </div>

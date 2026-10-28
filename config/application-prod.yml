@@ -6,49 +6,54 @@
 # ---- Spring Mail 邮件发送配置（必改） ----
 spring:
   mail:
-    host: smtp.163.com                       # SMTP 服务器地址
-    port: 25                                  # SMTP 端口（25/465/587）
-    username: xxxxx@163.com              # 发件邮箱账号
-    password: ${MAIL_PASSWORD:xxxxxx}   # 邮箱授权码（非登录密码）
+    host: smtp.qq.com
+    port: 465
+    username: 906584241@qq.com
+    password: ${MAIL_PASSWORD:}   # 授权码由 .env / 环境变量提供
     properties:
       mail:
         smtp:
           auth: true
           starttls:
-            enable: true
-            required: true
+            enable: false
+            required: false
           ssl:
-            trust: "smtp.163.com"
+            enable: true
+            checkserveridentity: true
+            trust: "smtp.qq.com"
+          connectiontimeout: 10000
+          timeout: 10000
+          writetimeout: 10000
 
 paypro:
   # ---- 必改项 ----
   # 站点访问地址（改为你的域名或服务器IP）
-  site: http://1.14.150.235:8889
+  site: ${SITE_URL:https://pay.aioperis.com}
 
   # ---- 支付宝配置 ----
   # 支付宝用户ID（用于收款）改成你自己的
   alipayUserId: xxxx
   # 支付宝自定义收款码链接 改成你自己的
-  alipayCustomQrUrl: https://qr.alipay.com/fkx17492eze99maemka1u81
+  alipayCustomQrUrl: https://qr.alipay.com/tsx11203acndtehgcl85q60
 
   # ---- 站点信息 ----
   # 网站标题（浏览器标签栏） 可改可不改
-  title: PayPro个人收款系统
+  title: AI智为工坊
   # 首页标题 可改可不改
-  indexTitle: PayPro个人收款系统
+  indexTitle: AI智为工坊
   # 收款人姓名 改成你自己的
-  name: codewendao
+  name: 马宵冉
   # 联系电话 可改可不改
   mobile: 'xxxxxx'
 
   # ---- 邮箱配置 ----
   email:
     # 接收通知的邮箱 改成你自己的
-    receiver: frfr46467979@qq.com
+    receiver: 906584241@qq.com
     # 发件邮箱 改成你自己的
-    sender: frfr46467978@qq.com
+    sender: 906584241@qq.com
   # 支持邮箱（页面展示） 改成你自己的
-  supportMail: frfr46467978@163.com
+  supportMail: contact@aioperis.com
 
   # ---- 限流配置 ----
   rateLimit:
@@ -74,7 +79,7 @@ paypro:
   # ---- 减额匹配配置 ----
   decrement:
     # 是否启用减额匹配模式
-    enabled: true
+    enabled: false
     # 最大减额槽位数 可改可不改
     maxCount: 2
     # 减额步长（元）可改可不改,改了要对应二维码金额
@@ -103,14 +108,14 @@ paypro:
   payMethods:
     - id: 'alipay'
       name: '支付宝支付'
-      description: '免输备注，手动收款'
+      description: '扫码付款，需填写订单标识'
       icon: '🔵'
       status: true
       allow-night: false
-      use-local-qr-code: false
+      use-local-qr-code: true
     - id: 'wechat'
       name: '微信支付'
-      description: '需备注，自动确认收款'
+      description: '扫码付款，需填写订单标识'
       icon: '🟢'
       status: true
       allow-night: true

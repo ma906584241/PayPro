@@ -70,6 +70,8 @@ TOP_PURPOSES = {
     "docker-compose": "Linux x86-64 ELF Compose 可执行文件（非文本）",
     "install.sh": "Linux 一键部署与 Compose 安装",
     ".gitignore": "IDE、构建产物和本地配置排除规则",
+    ".dockerignore": "排除私密环境、Git、图谱、文档与本地构建产物的 Docker 上下文规则",
+    ".env.example": "QQ SMTP 授权码环境变量示例，不含真实凭据",
     ".gitattributes": "文本 LF 规则和 Compose 二进制标记",
     "获取支付宝userId.jpg": "支付宝收款用户 ID 配置辅助图片",
     "config/application-prod.yml": "外置生产配置，含部署账号与业务参数",
@@ -129,7 +131,7 @@ def file_records(paths):
     records = []
     for p in paths:
         data = p.read_bytes()
-        is_text = p.suffix in TEXT_SUFFIXES or p.name in {"Dockerfile", ".gitignore", ".gitattributes"}
+        is_text = p.suffix in TEXT_SUFFIXES or p.name in {"Dockerfile", ".gitignore", ".gitattributes", ".dockerignore", ".env.example"}
         extra = ""
         if data.startswith(b"\x89PNG\r\n\x1a\n") and len(data) >= 24:
             w, h = struct.unpack(">II", data[16:24])

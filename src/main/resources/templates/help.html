@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>帮助中心 - PayPro</title>
+    <title th:text="'帮助中心 - ' + ${indexTitle}">帮助中心 - AI智为工坊</title>
     <script src="https://cdn.bootcdn.net/ajax/libs/vue/3.3.4/vue.global.min.js" defer></script>
     <link href="https://cdn.bootcdn.net/ajax/libs/remixicon/3.5.0/remixicon.css" rel="stylesheet">
     <link rel="stylesheet" href="/css/common.css">
@@ -137,14 +137,14 @@
                         <i class="ri-headset-line"></i> 联系客服
                     </h3>
                     <div class="contact-info">
-                        <strong>邮箱支持：</strong>[[${supportMail}]]
+                        <strong>邮箱支持：</strong><a class="support-email" href="mailto:contact@aioperis.com" th:href="'mailto:' + ${supportMail}" th:text="${supportMail}">contact@aioperis.com</a>
                     </div>
                 </div>
             </div>
         </div>
 
         <div class="footer">
-            <p>&copy; 2026 PayPro 捐赠中心. 安全可靠的支付服务</p>
+            <p>&copy; 2026 <span th:text="${indexTitle}">AI智为工坊</span> · <a class="support-email" href="mailto:contact@aioperis.com" th:href="'mailto:' + ${supportMail}" th:text="${supportMail}">contact@aioperis.com</a></p>
         </div>
     </div>
 </div>
