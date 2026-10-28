@@ -1,0 +1,95 @@
+flowchart LR
+    %% Static imports only; not runtime calls.
+    J0["PayApplication"]
+    J1["DateUtils"]
+    J2["EmailUtils"]
+    J3["IpInfoUtils"]
+    J4["StringUtils"]
+    J5["Config"]
+    J6["PayProConfig"]
+    J7["RedisConfig"]
+    J8["OrderController"]
+    J9["PageController"]
+    J10["ProductController"]
+    J11["MsgContentsDTO"]
+    J12["WeChatMsgDTO"]
+    J13["Order"]
+    J14["Product"]
+    J15["OrderStatesEnum"]
+    J16["ApiException"]
+    J17["GlobalExceptionHandler"]
+    J18["OrderMapper"]
+    J19["ResponseVO"]
+    J20["GetOrderListReq"]
+    J21["GetProductListReq"]
+    J22["OpenApiOrderReq"]
+    J23["OrderReq"]
+    J24["AddOrderResp"]
+    J25["CountResp"]
+    J26["OpenApiOrderResp"]
+    J27["OrderService"]
+    J28["ProductService"]
+    J29["OrderServiceImpl"]
+    J30["ProductServiceImpl"]
+    J31["OpenApiSignUtil"]
+    J8 --> J1
+    J8 --> J2
+    J8 --> J3
+    J8 --> J4
+    J8 --> J6
+    J8 --> J13
+    J8 --> J15
+    J8 --> J16
+    J8 --> J19
+    J8 --> J20
+    J8 --> J22
+    J8 --> J23
+    J8 --> J24
+    J8 --> J26
+    J8 --> J27
+    J9 --> J4
+    J9 --> J15
+    J9 --> J27
+    J10 --> J14
+    J10 --> J19
+    J10 --> J21
+    J10 --> J28
+    J17 --> J19
+    J18 --> J13
+    J27 --> J13
+    J27 --> J19
+    J27 --> J20
+    J27 --> J22
+    J27 --> J23
+    J27 --> J24
+    J27 --> J25
+    J27 --> J26
+    J28 --> J14
+    J28 --> J19
+    J28 --> J21
+    J29 --> J1
+    J29 --> J2
+    J29 --> J3
+    J29 --> J4
+    J29 --> J6
+    J29 --> J13
+    J29 --> J14
+    J29 --> J15
+    J29 --> J16
+    J29 --> J18
+    J29 --> J19
+    J29 --> J20
+    J29 --> J22
+    J29 --> J23
+    J29 --> J24
+    J29 --> J25
+    J29 --> J26
+    J29 --> J27
+    J29 --> J28
+    J29 --> J31
+    J30 --> J6
+    J30 --> J14
+    J30 --> J19
+    J30 --> J21
+    J30 --> J28
+    J31 --> J22

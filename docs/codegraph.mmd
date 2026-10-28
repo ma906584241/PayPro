@@ -1,0 +1,24 @@
+flowchart TB
+    App[PayApplication] --> MVC[Spring MVC / Thymeleaf]
+    App --> Config[PayProConfig]
+    Front[HTML / Vue / jQuery] --> Page[PageController]
+    Front --> OC[OrderController]
+    Front --> PC[ProductController]
+    Page --> OS[OrderServiceImpl]
+    OC --> OS
+    PC --> PS[ProductServiceImpl]
+    PS --> Config
+    OS --> Config
+    OS --> OM[OrderMapper]
+    OM --> DB[(MySQL t_order)]
+    OS --> Redis[(StringRedisTemplate)]
+    OC --> Redis
+    Page --> Redis
+    OS --> Sign[OpenApiSignUtil]
+    OS --> Mail[EmailUtils]
+    OC --> Mail
+    Mail --> Template[Thymeleaf TemplateEngine]
+    Mail --> SMTP[JavaMailSender / SMTP]
+    OS --> Callback[HTTP notifyUrl]
+    Config --> QR[外置 qr-dir / classpath 二维码]
+    Front --> QR

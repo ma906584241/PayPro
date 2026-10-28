@@ -42,12 +42,13 @@
 
         .content {
             display: grid;
-            grid-template-columns: 1.2fr 1fr;
+            grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
             gap: 32px;
             margin-bottom: 40px;
         }
 
         .card {
+            min-width: 0;
             padding: 32px;
         }
 
@@ -108,6 +109,7 @@
 
         .custom input {
             flex: 1;
+            min-width: 0;
             padding: 14px 16px;
             border-radius: 12px;
             border: 1px solid rgba(255,255,255,0.08);
@@ -123,6 +125,11 @@
             box-shadow: 0 0 0 3px rgba(99,102,241,0.1);
         }
 
+        .custom .btn {
+            flex-shrink: 0;
+            white-space: nowrap;
+        }
+
         .methods {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -132,6 +139,9 @@
         }
 
         .method {
+            font: inherit;
+            color: var(--text-color);
+            text-align: left;
             padding: 24px;
             border: 1px solid rgba(255,255,255,0.08);
             border-radius: 16px;
@@ -155,6 +165,11 @@
             border-color: var(--primary-color);
             background: rgba(99,102,241,.15);
             box-shadow: 0 4px 12px rgba(99,102,241,0.2);
+        }
+
+        .method:focus-visible {
+            outline: 2px solid var(--accent-color);
+            outline-offset: 4px;
         }
 
         .method.disabled {
@@ -185,10 +200,12 @@
         }
 
         .method-info {
+            display: block;
             flex: 1;
         }
 
         .method-name {
+            display: block;
             font-weight: 600;
             color: var(--text-color);
             font-size: 1rem;
@@ -196,10 +213,14 @@
         }
 
         .method-description {
+            display: block;
             font-size: 0.875rem;
             color: var(--text-muted);
             line-height: 1.4;
         }
+
+        .method-icon.alipay { color: var(--accent-color); }
+        .method-icon.wechat { color: #4ade80; }
 
         .method-status {
             font-size: 0.75rem;
@@ -229,6 +250,8 @@
         }
 
         .field input {
+            min-width: 0;
+            width: 100%;
             padding: 16px 20px;
             border-radius: 12px;
             border: 1px solid rgba(255,255,255,0.08);
@@ -320,7 +343,7 @@
 
         @media (max-width: 900px) {
             .content {
-                grid-template-columns: 1fr;
+                grid-template-columns: minmax(0, 1fr);
                 gap: 24px;
             }
 
@@ -407,22 +430,22 @@
                     <i class="ri-credit-card-line"></i> 支付方式
                 </div>
                 <div class="methods">
-                    <div v-for="method in paymentMethods"
+                    <button v-for="method in paymentMethods"
                          :key="method.id"
+                         type="button"
                          class="method"
                          :class="{active: selectedPayment===method.id, disabled: !method.status}"
-                         @click="method.status ? selectPayment(method.id, method.useLocalQrCode) : null">
-                        <div class="method-header">
-                            <div class="method-icon">{{ method.icon }}</div>
-                            <div class="method-info">
-                                <div class="method-name">{{ method.name }}</div>
-                                <div class="method-description">{{ method.description }}</div>
-                            </div>
-                        </div>
-                        <!--                        <div class="method-status" :class="method.status ? 'available' : 'unavailable'">-->
-                        <!--                            {{ method.status ? '可用' : '不可用' }}-->
-                        <!--                        </div>-->
-                    </div>
+                         :aria-pressed="selectedPayment===method.id"
+                         :disabled="!method.status"
+                         @click="selectPayment(method.id, method.useLocalQrCode)">
+                        <span class="method-header">
+                            <i class="method-icon" :class="[method.icon, method.id]" aria-hidden="true"></i>
+                            <span class="method-info">
+                                <span class="method-name">{{ method.name }}</span>
+                                <span class="method-description">{{ method.description }}</span>
+                            </span>
+                        </span>
+                    </button>
                 </div>
 
                 <div class="field">
@@ -499,7 +522,7 @@ createApp({
                     id: 'alipay',
                     name: '支付宝转账',
                     description: '免备注',
-                    icon: '🔵',
+                    icon: 'ri-alipay-fill',
                     status: true,
                     useLocalQrCode: false
                 },
@@ -507,25 +530,9 @@ createApp({
                     id: 'wechat',
                     name: '微信支付',
                     description: '微信收款码',
-                    icon: '🟢',
+                    icon: 'ri-wechat-pay-fill',
                     status: true,
                     useLocalQrCode: true
-                },
-                {
-                    id: 'wechat_zs',
-                    name: '微信赞赏码支付',
-                    description: '赞赏码支付',
-                    icon: '🟢',
-                    status: true,
-                    useLocalQrCode: true
-                },
-                {
-                    id: 'alipay_dmf',
-                    name: '支付宝当面付',
-                    description: '官方产品，无需营业执照',
-                    icon: '🔵',
-                    status: false,
-                    useLocalQrCode: false
                 }
             ]
         }
