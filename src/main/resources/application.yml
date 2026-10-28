@@ -76,7 +76,7 @@ mybatis-plus:
       logic-not-delete-value: 0
 
 paypro:
-  alipayCustomQrUrl: 'https://qr.alipay.com/fkx13559b9fiqhqkfvecg93?0&T=58793-06-30 06:57:36'
+  alipayCustomQrUrl: 'https://qr.alipay.com/fkx17142vbhec1amt6dta4e?0&T=58793-08-04 21:08:51'
   alipayUserId: 2088122989840531
   indexTitle: AI智为工坊
   name: 马宵冉

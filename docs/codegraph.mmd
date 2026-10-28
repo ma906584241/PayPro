@@ -1,5 +1,10 @@
 flowchart TB
     App[PayApplication] --> MVC[Spring MVC / Thymeleaf]
+    Startup[start.sh] --> Prepare[prepare_payment_template.sh]
+    Prepare --> Upgrade[upgrade_payment_template.py]
+    Upgrade --> Overlay[外置 payment.html / 备份]
+    Upgrade --> Canonical[镜像内标准模板]
+    Startup -->|准备成功| App
     App --> Config[PayProConfig]
     Front[HTML / Vue / jQuery] --> Page[PageController]
     Front --> OC[OrderController]

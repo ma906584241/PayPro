@@ -4,9 +4,9 @@
 
 ## 原生索引结果
 
-- 已索引 **55 文件**，包含 **45 Java 文件**。
-- **1309 节点、2237 关系**；文件解析错误数 **0**。
-- 原始项目 **168 文件**；HTML、CSS、SQL、Shell、Markdown、图片和二进制未全部进入原生符号索引，见全量文件清单。
+- 已索引 **58 文件**，包含 **45 Java 文件**。
+- **1366 节点、2324 关系**；文件解析错误数 **0**。
+- 原始项目 **172 文件**；HTML、CSS、SQL、Shell、Markdown、图片和二进制未全部进入原生符号索引，见全量文件清单。
 - 本地 SQLite：`.codegraph/codegraph.db`；该目录内自带 .gitignore 排除数据库，应通过命令重新生成。
 - 保留关系 metadata 的 confidence / resolvedBy；静态解析中的同名、重载、fuzzy 匹配不能等同于运行时真实调用。
 - 原生 unresolved_refs 为 0；待解析引用或空表都不能证明第三方调用、框架注入和动态关系已完整解析。
@@ -17,6 +17,11 @@
 ```mermaid
 flowchart TB
     App[PayApplication] --> MVC[Spring MVC / Thymeleaf]
+    Startup[start.sh] --> Prepare[prepare_payment_template.sh]
+    Prepare --> Upgrade[upgrade_payment_template.py]
+    Upgrade --> Overlay[外置 payment.html / 备份]
+    Upgrade --> Canonical[镜像内标准模板]
+    Startup -->|准备成功| App
     App --> Config[PayProConfig]
     Front[HTML / Vue / jQuery] --> Page[PageController]
     Front --> OC[OrderController]
@@ -66,28 +71,28 @@ flowchart TB
 
 | kind | 数量 |
 | --- | ---: |
-| class | 53 |
+| class | 55 |
 | constant | 146 |
 | enum | 2 |
 | enum_member | 9 |
 | field | 261 |
-| file | 52 |
-| function | 40 |
-| import | 448 |
+| file | 55 |
+| function | 46 |
+| import | 470 |
 | interface | 3 |
-| method | 220 |
+| method | 232 |
 | namespace | 45 |
 | route | 18 |
-| variable | 12 |
+| variable | 24 |
 
 ## 关系类别
 
 | kind | 数量 |
 | --- | ---: |
-| calls | 451 |
-| contains | 1104 |
+| calls | 480 |
+| contains | 1158 |
 | implements | 2 |
-| imports | 440 |
+| imports | 444 |
 | instantiates | 60 |
 | references | 180 |
 
@@ -97,7 +102,7 @@ flowchart TB
 | --- | ---: |
 | java | 45 |
 | javascript | 4 |
-| python | 1 |
+| python | 4 |
 | xml | 2 |
 | yaml | 3 |
 

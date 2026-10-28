@@ -7,3 +7,5 @@
 /applogs/
 /dump/
 /docker-compose
+**/__pycache__/
+**/*.pyc

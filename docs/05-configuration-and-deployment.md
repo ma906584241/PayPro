@@ -105,7 +105,7 @@ MySQL 必须已创建库并按实际情况初始化表。`settings.xml` 把 cent
 
 ## Docker 部署
 
-根 Dockerfile 有两个阶段：先拷贝 pom/src 并运行 `mvn package -DskipTests -B -q`，再将 JAR 和 start.sh 放入 Java 8 镜像。资源目录下的另一份 Dockerfile 直接 `COPY *.jar`，需要预构建产物和不同的构建上下文，不是 Compose 的默认入口。
+根 Dockerfile 有两个阶段：先拷贝 pom/src 并运行 `mvn package -DskipTests -B -q`，再将 JAR、start.sh、模板升级工具及新版支付模板放入 Java 8 镜像，并安装Python3用于启动前处理覆盖层。资源目录下的另一份 Dockerfile 直接 `COPY *.jar`，需要预构建产物和不同的构建上下文，不是 Compose 的默认入口。
 
 | 服务 | 镜像 / 构建 | 发布端口 | 持久化 | 启动条件 |
 | --- | --- | --- | --- | --- |
@@ -116,6 +116,8 @@ MySQL 必须已创建库并按实际情况初始化表。`settings.xml` 把 cent
 网络为 `pay-network` bridge，所有容器 `restart: always`。pay 服务没有 healthcheck，所以不能要求三个服务都显示 healthy；应用就绪还需查看日志及 HTTP 响应。MySQL / Redis 密码出现在 Compose 环境、命令或健康检查中，更换时须同步修改所有引用。
 
 目录映射：`./config → /app/appsystems/config`；`./qr → /app/appsystems/qr`；`./applogs → /app/applogs`；`./dump → /app/applogs/dump`。Redis 只显式挂载数据目录，没有额外配置 AOF 或快照策略。
+
+线上额外使用 `config/templates/payment.html` 覆盖支付页。新版根镜像会在挂载完成、Java启动前自动备份并升级旧覆盖层，保留二维码代码；没有覆盖层时使用JAR模板，重复启动不重复备份。镜像内标准模板和工具放在 `/app/payment-template`，不会被config挂载遮挡。日常无需手动执行升级脚本；只需将恢复aside文件的步骤放在启动容器之前。异常结构或不可写覆盖层会停止启动并记录错误，原文件保留。详见[覆盖层修复记录](01-管理员邮件触发机制/线上支付页停留问题排查.md)。
 
 Linux 部署命令：
 

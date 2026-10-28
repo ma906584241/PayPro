@@ -5,8 +5,8 @@ const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
 
-const html = fs.readFileSync(path.resolve(__dirname, '../../main/resources/templates/payment.html'), 'utf8');
-const source = html.match(/<script th:inline="javascript">([\s\S]*?)<\/script>/)[1];
+const html = fs.readFileSync(process.env.PAYPRO_PAYMENT_TEMPLATE || path.resolve(__dirname, '../../main/resources/templates/payment.html'), 'utf8');
+const source = html.match(/<script[^>]*th:inline="javascript"[^>]*>([\s\S]*?)<\/script>/)[1];
 const pending = () => ({orderState:0, amount:9.90, payType:'alipay', payNum:'1234', expireTime:null,
     confirmedAt:null, noticeStatus:'NOT_REQUESTED', canConfirm:true, retryable:false});
 

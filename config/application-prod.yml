@@ -34,7 +34,7 @@ paypro:
   # 支付宝用户ID（用于收款）改成你自己的
   alipayUserId: xxxx
   # 支付宝自定义收款码链接 改成你自己的
-  alipayCustomQrUrl: 'https://qr.alipay.com/fkx13559b9fiqhqkfvecg93?0&T=58793-06-30 06:57:36'
+  alipayCustomQrUrl: 'https://qr.alipay.com/fkx17142vbhec1amt6dta4e?0&T=58793-08-04 21:08:51'
 
   # ---- 站点信息 ----
   # 网站标题（浏览器标签栏） 可改可不改
