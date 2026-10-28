@@ -12,6 +12,15 @@ hostname=${HOSTNAME}
 
 profiles=${SPRING_PROFILES}
 
+# A restored host overlay must be upgraded before Thymeleaf can load it.
+# The preparation tools and canonical template are immutable image files.
+if [ -e "$APP_DIR/config/templates/payment.html" ]; then
+    if ! /bin/sh /app/payment-template/prepare_payment_template.sh "$APP_DIR"; then
+        echo "Payment template preparation failed; application startup stopped. See the error above." >&2
+        exit 1
+    fi
+fi
+
 
 # define a dump_dir bind with start_date
 START_DATE=$(date +%Y%m%d-%H%M%S)

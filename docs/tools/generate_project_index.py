@@ -23,7 +23,7 @@ DOCS = ROOT / "docs"
 DB = ROOT / ".codegraph" / "codegraph.db"
 SNAPSHOT_DATE = "2026-10-28"
 EXCLUDED = {".git", ".codegraph", "docs", "target", "node_modules", ".idea", "applogs", "dump", "__pycache__"}
-TEXT_SUFFIXES = {".java", ".html", ".js", ".cjs", ".css", ".xml", ".yml", ".yaml", ".md", ".sh", ".sql"}
+TEXT_SUFFIXES = {".java", ".html", ".js", ".cjs", ".py", ".css", ".xml", ".yml", ".yaml", ".md", ".sh", ".sql"}
 
 PURPOSES = {
     "PayApplication.java": "Spring Boot 入口，开启缓存、异步、调度与 Mapper 扫描",
@@ -78,7 +78,7 @@ TOP_PURPOSES = {
     "一键启动说明.md": "原 Linux 部署与二维码使用说明",
     "pom.xml": "Maven 坐标、父 POM、依赖、编译与打包插件",
     "settings.xml": "Maven central 镜像配置",
-    "Dockerfile": "Maven 构建 + JDK8 运行的多阶段镜像",
+    "Dockerfile": "Maven构建、JDK8运行、Python3启动前覆盖模板自动升级的多阶段镜像",
     "docker-compose.yml": "MySQL / Redis / pay 三服务与卷、健康检查",
     "docker-compose": "Linux x86-64 ELF Compose 可执行文件（非文本）",
     "install.sh": "Linux 一键部署与 Compose 安装",
@@ -90,10 +90,14 @@ TOP_PURPOSES = {
     "config/application-prod.yml": "外置生产配置，含部署账号与业务参数",
     "src/main/resources/application.yml": "包内基础 Spring 与 paypro 配置",
     "src/main/resources/Dockerfile": "从预构建 JAR 构建运行镜像的旧入口",
-    "src/main/resources/start.sh": "容器 JVM、profile、日志与 JMX 启动参数",
+    "src/main/resources/start.sh": "先自动处理覆盖模板，再以JVM/profile/日志/JMX参数启动应用",
     "src/main/resources/sql/pay.sql": "订单表初始化、减额迁移和索引",
     "src/main/resources/sql/migrations/20261028_payment_confirmation.sql": "已有数据库增量升级，仅新增三个付款声明字段",
     "src/test/frontend/payment-confirmation.test.cjs": "Node原生测试运行真实支付页组件，Mock网络和计时器",
+    "scripts/upgrade_payment_template.py": "备份并升级挂载支付页确认流程，保留原二维码选择及生成代码",
+    "scripts/prepare_payment_template.sh": "容器启动前自动升级外置支付模板，异常时阻止Java启动",
+    "src/test/tools/test_upgrade_payment_template.py": "覆盖模板升级、二维码保留、重复执行、备份和只读检查回归测试",
+    "src/test/tools/test_payment_template_startup.py": "可选隔离Linux容器验证实际start.sh的自动升级、重启和异常处理",
     "src/main/resources/favicon.ico": "站点图标资源",
     "src/main/resources/static/css/common.css": "全站主题、布局、按钮与动画",
     "src/main/resources/static/assets/js/api-config.js": "API 基址、端点和超时配置",

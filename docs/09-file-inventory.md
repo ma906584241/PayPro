@@ -1,6 +1,6 @@
 # 全量文件清单
 
-项目原始文件共 **168** 个；不包含本轮 docs 与 .codegraph 产物。
+项目原始文件共 **172** 个；不包含本轮 docs 与 .codegraph 产物。
 
 从工作区实际内容计算 SHA-256。文本行数按 UTF-8 读取；图片 / 二进制不按文本计行。此清单不复制配置值或收款二维码内容。
 
@@ -18,7 +18,8 @@
 | .js | 3 |
 | .md | 3 |
 | .png | 81 |
-| .sh | 2 |
+| .py | 3 |
+| .sh | 3 |
 | .sql | 2 |
 | .xml | 2 |
 | .yml | 3 |
@@ -28,11 +29,11 @@
 
 | 文件 | 字节 | 行数 | 格式 / 用途 |
 | --- | ---: | ---: | --- |
-| [.dockerignore](../.dockerignore) | 158 | 9 |  排除私密环境、Git、图谱、文档与本地构建产物的 Docker 上下文规则 |
+| [.dockerignore](../.dockerignore) | 185 | 11 |  排除私密环境、Git、图谱、文档与本地构建产物的 Docker 上下文规则 |
 | [.env.example](../.env.example) | 162 | 3 |  QQ SMTP 授权码环境变量示例，不含真实凭据 |
 | [.gitattributes](../.gitattributes) | 154 | 7 |  文本 LF 规则和 Compose 二进制标记 |
-| [.gitignore](../.gitignore) | 66 | 4 |  IDE、构建产物和本地配置排除规则 |
-| [Dockerfile](../Dockerfile) | 695 | 28 |  Maven 构建 + JDK8 运行的多阶段镜像 |
+| [.gitignore](../.gitignore) | 87 | 6 |  IDE、构建产物和本地配置排除规则 |
+| [Dockerfile](../Dockerfile) | 1067 | 35 |  Maven构建、JDK8运行、Python3启动前覆盖模板自动升级的多阶段镜像 |
 | [OPEN_API.md](../OPEN_API.md) | 7181 | 226 |  原 OpenAPI 说明，与当前实现存在差异 |
 | [README.md](../README.md) | 11440 | 328 |  原项目介绍、开源 / 高级版说明和截图 |
 | [config/application-prod.yml](../config/application-prod.yml) | 3340 | 122 |  外置生产配置，含部署账号与业务参数 |
@@ -47,7 +48,7 @@
 | [images/wechat_confirm.png](../images/wechat_confirm.png) | 389500 | — | JPEG 原 README 功能截图 |
 | [install.sh](../install.sh) | 4247 | 128 |  Linux 一键部署与 Compose 安装 |
 | [pom.xml](../pom.xml) | 5647 | 159 |  Maven 坐标、父 POM、依赖、编译与打包插件 |
-| [qr/alipay/custom.png](../qr/alipay/custom.png) | 166855 | — | PNG 432×428 运行时外置支付二维码：alipay/custom.png |
+| [qr/alipay/custom.png](../qr/alipay/custom.png) | 162523 | — | PNG 411×410 运行时外置支付二维码：alipay/custom.png |
 | [qr/wechat/0.01/1.png](../qr/wechat/0.01/1.png) | 50953 | — | PNG 444×447 运行时外置支付二维码：wechat/0.01/1.png |
 | [qr/wechat/0.01/2.png](../qr/wechat/0.01/2.png) | 50953 | — | PNG 444×447 运行时外置支付二维码：wechat/0.01/2.png |
 | [qr/wechat/1.00/1.png](../qr/wechat/1.00/1.png) | 50953 | — | PNG 444×447 运行时外置支付二维码：wechat/1.00/1.png |
@@ -72,6 +73,8 @@
 | [qr/wechat/5.00/5.01/2.png](../qr/wechat/5.00/5.01/2.png) | 50953 | — | PNG 444×447 运行时外置支付二维码：wechat/5.00/5.01/2.png |
 | [qr/wechat/custom.png](../qr/wechat/custom.png) | 50953 | — | PNG 444×447 运行时外置支付二维码：wechat/custom.png |
 | [qr/wechat_zs/custom.png](../qr/wechat_zs/custom.png) | 63239 | — | JPEG 运行时外置支付二维码：wechat_zs/custom.png |
+| [scripts/prepare_payment_template.sh](../scripts/prepare_payment_template.sh) | 643 | 20 |  容器启动前自动升级外置支付模板，异常时阻止Java启动 |
+| [scripts/upgrade_payment_template.py](../scripts/upgrade_payment_template.py) | 8296 | 158 |  备份并升级挂载支付页确认流程，保留原二维码选择及生成代码 |
 | [settings.xml](../settings.xml) | 234 | 10 |  Maven central 镜像配置 |
 | [src/main/java/com/wendao/PayApplication.java](../src/main/java/com/wendao/PayApplication.java) | 719 | 25 |  Spring Boot 入口，开启缓存、异步、调度与 Mapper 扫描 |
 | [src/main/java/com/wendao/common/utils/DateUtils.java](../src/main/java/com/wendao/common/utils/DateUtils.java) | 11724 | 342 |  日期起止、统计窗口、日期差和日期集合工具 |
@@ -88,13 +91,13 @@
 | [src/main/java/com/wendao/dto/WeChatMsgDTO.java](../src/main/java/com/wendao/dto/WeChatMsgDTO.java) | 528 | 26 |  微信消息结构，当前未接入到账业务入口 |
 | [src/main/java/com/wendao/entity/Order.java](../src/main/java/com/wendao/entity/Order.java) | 3269 | 151 |  订单持久化实体及邮件管理 URL 临时属性 |
 | [src/main/java/com/wendao/entity/Product.java](../src/main/java/com/wendao/entity/Product.java) | 686 | 36 |  配置商品实体，非数据库表 |
-| [src/main/java/com/wendao/enums/AdminNoticeStatus.java](../src/main/java/com/wendao/enums/AdminNoticeStatus.java) | 179 | 6 |  管理员通知状态，与订单付款状态分离 |
+| [src/main/java/com/wendao/enums/AdminNoticeStatus.java](../src/main/java/com/wendao/enums/AdminNoticeStatus.java) | 185 | 6 |  管理员通知状态，与订单付款状态分离 |
 | [src/main/java/com/wendao/enums/OrderStatesEnum.java](../src/main/java/com/wendao/enums/OrderStatesEnum.java) | 570 | 38 |  订单状态 0 / 1 / 2 / 4 / 5 |
 | [src/main/java/com/wendao/exception/ApiException.java](../src/main/java/com/wendao/exception/ApiException.java) | 835 | 30 |  业务异常与错误码常量 |
 | [src/main/java/com/wendao/exception/GlobalExceptionHandler.java](../src/main/java/com/wendao/exception/GlobalExceptionHandler.java) | 2305 | 55 |  业务、参数与通用异常转换为 ResponseVO |
 | [src/main/java/com/wendao/mapper/OrderMapper.java](../src/main/java/com/wendao/mapper/OrderMapper.java) | 2814 | 59 |  订单 BaseMapper、聚合统计、过期与实际金额查询 |
 | [src/main/java/com/wendao/model/ResponseVO.java](../src/main/java/com/wendao/model/ResponseVO.java) | 1482 | 68 |  通用 code / msg / data 响应封装 |
-| [src/main/java/com/wendao/model/req/ConfirmPaidReq.java](../src/main/java/com/wendao/model/req/ConfirmPaidReq.java) | 309 | 13 |  客户主动声明付款请求，订单号和客户凭证非空 |
+| [src/main/java/com/wendao/model/req/ConfirmPaidReq.java](../src/main/java/com/wendao/model/req/ConfirmPaidReq.java) | 322 | 13 |  客户主动声明付款请求，订单号和客户凭证非空 |
 | [src/main/java/com/wendao/model/req/GetOrderListReq.java](../src/main/java/com/wendao/model/req/GetOrderListReq.java) | 533 | 35 |  订单分页、状态、关键词与排序请求 |
 | [src/main/java/com/wendao/model/req/GetProductListReq.java](../src/main/java/com/wendao/model/req/GetProductListReq.java) | 224 | 17 |  商品类型列表请求 |
 | [src/main/java/com/wendao/model/req/OpenApiOrderReq.java](../src/main/java/com/wendao/model/req/OpenApiOrderReq.java) | 960 | 45 |  外部下单与签名参数模型 |
@@ -102,22 +105,22 @@
 | [src/main/java/com/wendao/model/resp/AddOrderResp.java](../src/main/java/com/wendao/model/resp/AddOrderResp.java) | 1543 | 62 |  普通下单支付信息响应 |
 | [src/main/java/com/wendao/model/resp/CountResp.java](../src/main/java/com/wendao/model/resp/CountResp.java) | 306 | 17 |  成功订单原价统计响应 |
 | [src/main/java/com/wendao/model/resp/OpenApiOrderResp.java](../src/main/java/com/wendao/model/resp/OpenApiOrderResp.java) | 802 | 44 |  外部下单、二维码与支付页响应 |
-| [src/main/java/com/wendao/model/resp/PaymentConfirmationResp.java](../src/main/java/com/wendao/model/resp/PaymentConfirmationResp.java) | 425 | 18 |  鉴权付款声明查询响应、通知状态和重试资格 |
+| [src/main/java/com/wendao/model/resp/PaymentConfirmationResp.java](../src/main/java/com/wendao/model/resp/PaymentConfirmationResp.java) | 443 | 18 |  鉴权付款声明查询响应、通知状态和重试资格 |
 | [src/main/java/com/wendao/service/OrderService.java](../src/main/java/com/wendao/service/OrderService.java) | 1996 | 86 |  订单业务接口 |
-| [src/main/java/com/wendao/service/PaymentConfirmationService.java](../src/main/java/com/wendao/service/PaymentConfirmationService.java) | 6574 | 158 |  鉴权声明、发送锁、事务提交后调度及状态恢复 |
-| [src/main/java/com/wendao/service/PaymentNoticeLock.java](../src/main/java/com/wendao/service/PaymentNoticeLock.java) | 1441 | 40 |  Redis SET NX发送租约与Lua归属校验释放 |
-| [src/main/java/com/wendao/service/PaymentNoticeSender.java](../src/main/java/com/wendao/service/PaymentNoticeSender.java) | 4980 | 108 |  提交后异步邮件、独立审核链接、SMTP结果持久化 |
+| [src/main/java/com/wendao/service/PaymentConfirmationService.java](../src/main/java/com/wendao/service/PaymentConfirmationService.java) | 6732 | 158 |  鉴权声明、发送锁、事务提交后调度及状态恢复 |
+| [src/main/java/com/wendao/service/PaymentNoticeLock.java](../src/main/java/com/wendao/service/PaymentNoticeLock.java) | 1481 | 40 |  Redis SET NX发送租约与Lua归属校验释放 |
+| [src/main/java/com/wendao/service/PaymentNoticeSender.java](../src/main/java/com/wendao/service/PaymentNoticeSender.java) | 5088 | 108 |  提交后异步邮件、独立审核链接、SMTP结果持久化 |
 | [src/main/java/com/wendao/service/ProductService.java](../src/main/java/com/wendao/service/ProductService.java) | 629 | 24 |  商品业务接口 |
-| [src/main/java/com/wendao/service/impl/OrderServiceImpl.java](../src/main/java/com/wendao/service/impl/OrderServiceImpl.java) | 31070 | 747 |  普通 / 外部下单、减额、审核、分页、统计与回调 |
+| [src/main/java/com/wendao/service/impl/OrderServiceImpl.java](../src/main/java/com/wendao/service/impl/OrderServiceImpl.java) | 30323 | 747 |  普通 / 外部下单、减额、审核、分页、统计与回调 |
 | [src/main/java/com/wendao/service/impl/ProductServiceImpl.java](../src/main/java/com/wendao/service/impl/ProductServiceImpl.java) | 2350 | 65 |  YAML 商品转实体，公开接口清除下载链接 |
 | [src/main/java/com/wendao/utils/OpenApiSignUtil.java](../src/main/java/com/wendao/utils/OpenApiSignUtil.java) | 4767 | 113 |  OpenAPI MD5 签名、验签及五分钟时间戳验证 |
-| [src/main/java/com/wendao/utils/PaymentConfirmTokens.java](../src/main/java/com/wendao/utils/PaymentConfirmTokens.java) | 1701 | 47 |  生成客户随机凭证、保存哈希并恒定时间校验 |
+| [src/main/java/com/wendao/utils/PaymentConfirmTokens.java](../src/main/java/com/wendao/utils/PaymentConfirmTokens.java) | 1748 | 47 |  生成客户随机凭证、保存哈希并恒定时间校验 |
 | [src/main/resources/Dockerfile](../src/main/resources/Dockerfile) | 421 | 20 |  从预构建 JAR 构建运行镜像的旧入口 |
 | [src/main/resources/application.yml](../src/main/resources/application.yml) | 3173 | 127 |  包内基础 Spring 与 paypro 配置 |
 | [src/main/resources/favicon.ico](../src/main/resources/favicon.ico) | 12181 | — | PNG 256×256 站点图标资源 |
-| [src/main/resources/sql/migrations/20261028_payment_confirmation.sql](../src/main/resources/sql/migrations/20261028_payment_confirmation.sql) | 450 | 7 |  已有数据库增量升级，仅新增三个付款声明字段 |
+| [src/main/resources/sql/migrations/20261028_payment_confirmation.sql](../src/main/resources/sql/migrations/20261028_payment_confirmation.sql) | 457 | 7 |  已有数据库增量升级，仅新增三个付款声明字段 |
 | [src/main/resources/sql/pay.sql](../src/main/resources/sql/pay.sql) | 2860 | 60 |  订单表初始化、减额迁移和索引 |
-| [src/main/resources/start.sh](../src/main/resources/start.sh) | 2075 | 51 |  容器 JVM、profile、日志与 JMX 启动参数 |
+| [src/main/resources/start.sh](../src/main/resources/start.sh) | 2495 | 60 |  先自动处理覆盖模板，再以JVM/profile/日志/JMX参数启动应用 |
 | [src/main/resources/static/assets/images/500_icon.png](../src/main/resources/static/assets/images/500_icon.png) | 61612 | — | PNG 289×274 页面支付图标、备注说明或状态图片 |
 | [src/main/resources/static/assets/images/alipay.png](../src/main/resources/static/assets/images/alipay.png) | 11351 | — | PNG 288×68 页面支付图标、备注说明或状态图片 |
 | [src/main/resources/static/assets/images/alipay@2x.png](../src/main/resources/static/assets/images/alipay@2x.png) | 9646 | — | PNG 288×68 页面支付图标、备注说明或状态图片 |
@@ -144,9 +147,9 @@
 | [src/main/resources/static/assets/js/api-config.js](../src/main/resources/static/assets/js/api-config.js) | 1992 | 64 |  API 基址、端点和超时配置 |
 | [src/main/resources/static/assets/js/http-util.js](../src/main/resources/static/assets/js/http-util.js) | 5580 | 194 |  fetch 请求类和全局单例封装 |
 | [src/main/resources/static/assets/js/qcode.min.js](../src/main/resources/static/assets/js/qcode.min.js) | 23743 | 7 |  第三方 qrcode@1.5.1 浏览器二维码库 |
-| [src/main/resources/static/assets/qr/alipay/0.01/1.png](../src/main/resources/static/assets/qr/alipay/0.01/1.png) | 166855 | — | PNG 432×428 随 JAR 打包的支付二维码：alipay/0.01/1.png |
-| [src/main/resources/static/assets/qr/alipay/0.01/2.png](../src/main/resources/static/assets/qr/alipay/0.01/2.png) | 166855 | — | PNG 432×428 随 JAR 打包的支付二维码：alipay/0.01/2.png |
-| [src/main/resources/static/assets/qr/alipay/custom.png](../src/main/resources/static/assets/qr/alipay/custom.png) | 166855 | — | PNG 432×428 随 JAR 打包的支付二维码：alipay/custom.png |
+| [src/main/resources/static/assets/qr/alipay/0.01/1.png](../src/main/resources/static/assets/qr/alipay/0.01/1.png) | 162523 | — | PNG 411×410 随 JAR 打包的支付二维码：alipay/0.01/1.png |
+| [src/main/resources/static/assets/qr/alipay/0.01/2.png](../src/main/resources/static/assets/qr/alipay/0.01/2.png) | 162523 | — | PNG 411×410 随 JAR 打包的支付二维码：alipay/0.01/2.png |
+| [src/main/resources/static/assets/qr/alipay/custom.png](../src/main/resources/static/assets/qr/alipay/custom.png) | 162523 | — | PNG 411×410 随 JAR 打包的支付二维码：alipay/custom.png |
 | [src/main/resources/static/assets/qr/wechat/0.01/1.png](../src/main/resources/static/assets/qr/wechat/0.01/1.png) | 50953 | — | PNG 444×447 随 JAR 打包的支付二维码：wechat/0.01/1.png |
 | [src/main/resources/static/assets/qr/wechat/0.01/2.png](../src/main/resources/static/assets/qr/wechat/0.01/2.png) | 50953 | — | PNG 444×447 随 JAR 打包的支付二维码：wechat/0.01/2.png |
 | [src/main/resources/static/assets/qr/wechat/10.00/1.png](../src/main/resources/static/assets/qr/wechat/10.00/1.png) | 50953 | — | PNG 444×447 随 JAR 打包的支付二维码：wechat/10.00/1.png |
@@ -183,17 +186,19 @@
 | [src/main/resources/templates/order-fail.html](../src/main/resources/templates/order-fail.html) | 6570 | 215 |  HTML / Thymeleaf 页面或邮件模板，详见前端说明 |
 | [src/main/resources/templates/order-success.html](../src/main/resources/templates/order-success.html) | 2683 | 54 |  HTML / Thymeleaf 页面或邮件模板，详见前端说明 |
 | [src/main/resources/templates/payment-review.html](../src/main/resources/templates/payment-review.html) | 8019 | 212 |  HTML / Thymeleaf 页面或邮件模板，详见前端说明 |
-| [src/main/resources/templates/payment.html](../src/main/resources/templates/payment.html) | 25800 | 953 |  HTML / Thymeleaf 页面或邮件模板，详见前端说明 |
+| [src/main/resources/templates/payment.html](../src/main/resources/templates/payment.html) | 24847 | 953 |  HTML / Thymeleaf 页面或邮件模板，详见前端说明 |
 | [src/main/resources/templates/recharge.html](../src/main/resources/templates/recharge.html) | 21398 | 664 |  HTML / Thymeleaf 页面或邮件模板，详见前端说明 |
 | [src/main/resources/templates/statistic.html](../src/main/resources/templates/statistic.html) | 5382 | 156 |  HTML / Thymeleaf 页面或邮件模板，详见前端说明 |
 | [src/main/resources/templates/success.html](../src/main/resources/templates/success.html) | 669 | 24 |  HTML / Thymeleaf 页面或邮件模板，详见前端说明 |
-| [src/test/frontend/payment-confirmation.test.cjs](../src/test/frontend/payment-confirmation.test.cjs) | 6123 | 97 |  Node原生测试运行真实支付页组件，Mock网络和计时器 |
-| [src/test/java/com/wendao/service/EmailUtilsOutcomeTest.java](../src/test/java/com/wendao/service/EmailUtilsOutcomeTest.java) | 3531 | 77 |  真实Thymeleaf渲染和Mock JavaMailSender结果测试 |
-| [src/test/java/com/wendao/service/OrderCreationNotificationTest.java](../src/test/java/com/wendao/service/OrderCreationNotificationTest.java) | 6075 | 140 |  下单不发信、来源、自定义金额、编码链接和批准幂等测试 |
-| [src/test/java/com/wendao/service/PaymentConfirmationControllerTest.java](../src/test/java/com/wendao/service/PaymentConfirmationControllerTest.java) | 3364 | 72 |  MockMvc请求体、请求头和参数错误测试 |
-| [src/test/java/com/wendao/service/PaymentConfirmationDatabaseIT.java](../src/test/java/com/wendao/service/PaymentConfirmationDatabaseIT.java) | 8295 | 161 |  可选隔离MySQL/Redis增量迁移、12请求并发和元数据保护测试 |
-| [src/test/java/com/wendao/service/PaymentConfirmationServiceTest.java](../src/test/java/com/wendao/service/PaymentConfirmationServiceTest.java) | 8491 | 207 |  声明鉴权、事务回滚、去重、失败重试及JSON隐私测试 |
-| [src/test/java/com/wendao/service/PaymentNoticeSenderTest.java](../src/test/java/com/wendao/service/PaymentNoticeSenderTest.java) | 5095 | 123 |  SMTP结果、锁归属、旧任务和旧订单隔离测试 |
+| [src/test/frontend/payment-confirmation.test.cjs](../src/test/frontend/payment-confirmation.test.cjs) | 6268 | 97 |  Node原生测试运行真实支付页组件，Mock网络和计时器 |
+| [src/test/java/com/wendao/service/EmailUtilsOutcomeTest.java](../src/test/java/com/wendao/service/EmailUtilsOutcomeTest.java) | 3608 | 77 |  真实Thymeleaf渲染和Mock JavaMailSender结果测试 |
+| [src/test/java/com/wendao/service/OrderCreationNotificationTest.java](../src/test/java/com/wendao/service/OrderCreationNotificationTest.java) | 6215 | 140 |  下单不发信、来源、自定义金额、编码链接和批准幂等测试 |
+| [src/test/java/com/wendao/service/PaymentConfirmationControllerTest.java](../src/test/java/com/wendao/service/PaymentConfirmationControllerTest.java) | 3436 | 72 |  MockMvc请求体、请求头和参数错误测试 |
+| [src/test/java/com/wendao/service/PaymentConfirmationDatabaseIT.java](../src/test/java/com/wendao/service/PaymentConfirmationDatabaseIT.java) | 8456 | 161 |  可选隔离MySQL/Redis增量迁移、12请求并发和元数据保护测试 |
+| [src/test/java/com/wendao/service/PaymentConfirmationServiceTest.java](../src/test/java/com/wendao/service/PaymentConfirmationServiceTest.java) | 8698 | 207 |  声明鉴权、事务回滚、去重、失败重试及JSON隐私测试 |
+| [src/test/java/com/wendao/service/PaymentNoticeSenderTest.java](../src/test/java/com/wendao/service/PaymentNoticeSenderTest.java) | 5218 | 123 |  SMTP结果、锁归属、旧任务和旧订单隔离测试 |
+| [src/test/tools/test_payment_template_startup.py](../src/test/tools/test_payment_template_startup.py) | 5935 | 109 |  可选隔离Linux容器验证实际start.sh的自动升级、重启和异常处理 |
+| [src/test/tools/test_upgrade_payment_template.py](../src/test/tools/test_upgrade_payment_template.py) | 6065 | 120 |  覆盖模板升级、二维码保留、重复执行、备份和只读检查回归测试 |
 | [一键启动说明.md](../一键启动说明.md) | 4868 | 172 |  原 Linux 部署与二维码使用说明 |
 | [获取支付宝userId.jpg](../获取支付宝userId.jpg) | 25132 | — | JPEG 支付宝收款用户 ID 配置辅助图片 |
 
@@ -201,14 +206,14 @@
 
 | 文件 | SHA-256 |
 | --- | --- |
-| `.dockerignore` | `d03e99b7deb238e5ae585912060dd6cdc730f30dbbb228ebbfd7d931dab032b7` |
+| `.dockerignore` | `1e9ab48c9bdc605ad8d1274bb2c1600a8d751df0d6f5b7d54433228dc59a93f5` |
 | `.env.example` | `9c2a01f4e39b59e6221594c28b8bbe6139b6772dc63b94fb6004277e6f9614c0` |
 | `.gitattributes` | `70690cd5f403076a5a6a09b5172ed427841d80a4297df1ccdac6472b540abc3c` |
-| `.gitignore` | `b54697b7acd41356ffb7e6fefb20d4e99d19d3d50d6350e5d4d1472165b5ee38` |
-| `Dockerfile` | `40f927b0a3ca11e8534bb79d037f8647ce2628bc8f68fc428e60b5ac22f66516` |
+| `.gitignore` | `6a2deeeb9decaf657afc26bccb4309b73369cfc765399ade11de3bcd514db111` |
+| `Dockerfile` | `adf3a1dc4d22f4d789da63bf79e9f389582daeb267055b19da3500c034568ca1` |
 | `OPEN_API.md` | `2d301fd410f97417a2b8cc88f766268d8f3ac717db668382a7cf86f1dcc63a72` |
 | `README.md` | `18373a348ea36d81b8659bd16d6e3524ef92555b1956dadd822a14bb95c9cb61` |
-| `config/application-prod.yml` | `b23614e67efee97b8ce094714ba5c7a062da82a93cc741d1c339c8485d09108b` |
+| `config/application-prod.yml` | `59d1345763f0e9ca5a2f89b01510f79137018fdbf8f86844258365e7887eeaae` |
 | `docker-compose` | `f5f7d605fa17d35a29b217557db4cbe70c1824f3061c522d3cb712bf33db3a67` |
 | `docker-compose.yml` | `41edb3d8cdb9a1fd4d6838dd686e8fb674686c013db9202e3510e60c90ca5784` |
 | `images/alipay_confirm.png` | `2464a3782dd56fc2a193471fff102b604497c0c25c470a1c798be034e852c652` |
@@ -220,7 +225,7 @@
 | `images/wechat_confirm.png` | `3b31f62279db8ce4b4f3b484ede6fb944ef891d6ef3338c4cbfa6ddfd1958e0a` |
 | `install.sh` | `2af21f3b55b535bb4a9f9dc05438e29e5cc0d236833f10ac44db1b9494d70aa6` |
 | `pom.xml` | `3c44aeea6f5822d67c9d0af6103a752b597df662536288282338d6782fd13426` |
-| `qr/alipay/custom.png` | `cf4e53fa94d3ed1d810bcc377c0a8e03a578763f93014a6f6738ea35fd6c91bf` |
+| `qr/alipay/custom.png` | `c615c15040f3f6b0742635ae2bce49f4f9c09208a8721a00400e8350279b5672` |
 | `qr/wechat/0.01/1.png` | `ef5b69721ea9bbf8f2372dd6062f6f8c65bfa6023ebeb83ed7ecea6c03cf2d53` |
 | `qr/wechat/0.01/2.png` | `ef5b69721ea9bbf8f2372dd6062f6f8c65bfa6023ebeb83ed7ecea6c03cf2d53` |
 | `qr/wechat/1.00/1.png` | `ef5b69721ea9bbf8f2372dd6062f6f8c65bfa6023ebeb83ed7ecea6c03cf2d53` |
@@ -245,6 +250,8 @@
 | `qr/wechat/5.00/5.01/2.png` | `ef5b69721ea9bbf8f2372dd6062f6f8c65bfa6023ebeb83ed7ecea6c03cf2d53` |
 | `qr/wechat/custom.png` | `ef5b69721ea9bbf8f2372dd6062f6f8c65bfa6023ebeb83ed7ecea6c03cf2d53` |
 | `qr/wechat_zs/custom.png` | `5222b62afc32b5a70f89db3f8c48c84bb7a4df22bc539ad1fbf444d6cdd13334` |
+| `scripts/prepare_payment_template.sh` | `dc341f0aa5bd8e6b079e8759756d26b9878f2e4de92a8b6a34e1c44842dc3275` |
+| `scripts/upgrade_payment_template.py` | `362d40f30038544c819e139b409e4ded17be7a13bc5885c8db589c06b46f942a` |
 | `settings.xml` | `7609701f327048ca05325a0e23c659053255b8a92c6176983e2b12626385787a` |
 | `src/main/java/com/wendao/PayApplication.java` | `8c457e980e7ef305a3d90fd048f4d971e2ac4a66c2a24d777f2e7fb33bc43824` |
 | `src/main/java/com/wendao/common/utils/DateUtils.java` | `469849df931908ad032c90b572da61d35e6348150083804bdd5757bdc08b971d` |
@@ -261,13 +268,13 @@
 | `src/main/java/com/wendao/dto/WeChatMsgDTO.java` | `d0dcdbff296e3183e94213e247954b1fa588069797ddb3e4eb5eea396db6075a` |
 | `src/main/java/com/wendao/entity/Order.java` | `8516711ff652e5c77f55d8999b27628646efc66608691de451925dcdb5362dc8` |
 | `src/main/java/com/wendao/entity/Product.java` | `cf666dd581ac159cc767ca01b349250685c3a7adfdc279e98ac503c9ab912703` |
-| `src/main/java/com/wendao/enums/AdminNoticeStatus.java` | `823ef681f5cf457f0b63c9080c68755852b0b3d471633b8b9a7d53523f6574da` |
+| `src/main/java/com/wendao/enums/AdminNoticeStatus.java` | `8f33e85742ff011c302d48507ae8a876d301e440b97b0e5f553171e2471e6a63` |
 | `src/main/java/com/wendao/enums/OrderStatesEnum.java` | `478cef8269922429015d2d69a6018e0a70813caa34a4411090207c137d8f5c8d` |
 | `src/main/java/com/wendao/exception/ApiException.java` | `7e394aead2bda9f5895b53983bd723a1b40ee4f3efb160610db746eb82ba84dc` |
 | `src/main/java/com/wendao/exception/GlobalExceptionHandler.java` | `06a4ada7450b252cea6fa32330b8423cdca4c9cde1e8041cbb7008a2fda671af` |
 | `src/main/java/com/wendao/mapper/OrderMapper.java` | `79d815326b072701146a77530930048d897274e19ed9bf3e8c5fdb26987d020b` |
 | `src/main/java/com/wendao/model/ResponseVO.java` | `6ec52e7e7f190dcd68d01136a7fb075ff0089575dca55263e7b9fec24a75dbb8` |
-| `src/main/java/com/wendao/model/req/ConfirmPaidReq.java` | `b8a7a38737fe7b58bcbc942e317c102ee4c347e73600a90531949a35088c19f3` |
+| `src/main/java/com/wendao/model/req/ConfirmPaidReq.java` | `7c293cbbc61da9d22009a53bea4591867511a3519725fdb9b097c2fbfb3ddabf` |
 | `src/main/java/com/wendao/model/req/GetOrderListReq.java` | `28abcf694d8012b6422f9a69244c1a3c37ece87952a1f2bac593fe85191935f5` |
 | `src/main/java/com/wendao/model/req/GetProductListReq.java` | `44e058e5b62354c8654ff5dda7f309534d8c7a21481a9285070018f39abf1a03` |
 | `src/main/java/com/wendao/model/req/OpenApiOrderReq.java` | `8ba90f21b686661725542c8e738f4dda868668eaeb1b6c4a96491d7642fb7105` |
@@ -275,22 +282,22 @@
 | `src/main/java/com/wendao/model/resp/AddOrderResp.java` | `41f9212f6f7bbb2f5d5a1aade1d296993a83beed8eb2a1be6ede4fe28a8898b6` |
 | `src/main/java/com/wendao/model/resp/CountResp.java` | `d628a611529a7fd7256f0dc8b45e38156413151c84bdf0fe689f3481dadd1abb` |
 | `src/main/java/com/wendao/model/resp/OpenApiOrderResp.java` | `5e8717b31359b4c23f76a962a59ca8767241bc8f4ac34f99d40f691b320e73a6` |
-| `src/main/java/com/wendao/model/resp/PaymentConfirmationResp.java` | `d3ea48bcfb58a0fb149867cc3341835a940c70d10a056abf9980d6be90183072` |
+| `src/main/java/com/wendao/model/resp/PaymentConfirmationResp.java` | `b09dbb46edc6b12047883f5e9534602093f7207beb7d45e733aeed3befc1bde0` |
 | `src/main/java/com/wendao/service/OrderService.java` | `1c96edeed6edc10d4b3f737268c20831602c16df4720f5e8dd1d9c1b06fe1969` |
-| `src/main/java/com/wendao/service/PaymentConfirmationService.java` | `8b6d0a9cf633f0a0f90f74b2eeb6f1e44006a25e656da79faba5a1c87e5627cf` |
-| `src/main/java/com/wendao/service/PaymentNoticeLock.java` | `5592d9fbad9817780f2bfdc5b7e2d5e2d799798f1328e6ddbedd263b402d4ec5` |
-| `src/main/java/com/wendao/service/PaymentNoticeSender.java` | `74a80f0f4296f752355de3f174364488215fcb39d04846919a9377ed431ab482` |
+| `src/main/java/com/wendao/service/PaymentConfirmationService.java` | `df265059106fea78c222c4fa11e4317eaef92316a4fe32d9e18508ef3aaf777b` |
+| `src/main/java/com/wendao/service/PaymentNoticeLock.java` | `c2cda82442d24298ea5be727683c197bfba57f01c0c360cd9e0477cf48d446f4` |
+| `src/main/java/com/wendao/service/PaymentNoticeSender.java` | `4cd409da9cfa0b3f171b83d4e777345ce0d1e1dc85423768128a310df8255088` |
 | `src/main/java/com/wendao/service/ProductService.java` | `bda889122eb71304b3d0b70b2bbb25366cb372a3375946134d8956dd227a0282` |
-| `src/main/java/com/wendao/service/impl/OrderServiceImpl.java` | `85bd7856bc1e568e21ce6fdaa4feade0d51de348c3cd16003b78f1aedaf6de4b` |
+| `src/main/java/com/wendao/service/impl/OrderServiceImpl.java` | `d1aa13c234925a376a3e9d5414450f84e1ab7c451aea6fef030ed94afef91cd4` |
 | `src/main/java/com/wendao/service/impl/ProductServiceImpl.java` | `3227257a7d5eb3409f2dc6e76df31202d3ea92729861ce60ce9dc828ab8f07e3` |
 | `src/main/java/com/wendao/utils/OpenApiSignUtil.java` | `3c034f739dac48f08f2ffef7027c4fe011058242ca8ffb8dbe36df6d53d44867` |
-| `src/main/java/com/wendao/utils/PaymentConfirmTokens.java` | `c18be8813a0526c5335c30774322e558d7c2d1a48831aa2a5c63125bfbfe70a2` |
+| `src/main/java/com/wendao/utils/PaymentConfirmTokens.java` | `130d744644ae4cd9631f25ff0eb8fec5aeee97c8a478cdb0fa40b786be26b8d3` |
 | `src/main/resources/Dockerfile` | `be685213c61f9b1cb6923dbd7d4f31fd69568474af3acd116c623ee72f6c8e7f` |
-| `src/main/resources/application.yml` | `58d74eedc5e581f09ee2e0ecbb21e0f8aa75b8c821238c8072301577b2c6026f` |
+| `src/main/resources/application.yml` | `b560b65fa74d9121482b51385314cff5497099e1801bc556b3cc89a77d0c360e` |
 | `src/main/resources/favicon.ico` | `0af6688af0cdbb443f6607af6c5a8f23bc61ba34f1fbe0f3ff8553466823cf95` |
-| `src/main/resources/sql/migrations/20261028_payment_confirmation.sql` | `f349bba7e501b5be814d7e8a4ebd3fdfc10e611d5ef1646601f84986e0af5782` |
+| `src/main/resources/sql/migrations/20261028_payment_confirmation.sql` | `6f50584f152f2a542440d94e2dac78cfc6c41cb2f43d812a91a43a4536d61437` |
 | `src/main/resources/sql/pay.sql` | `4ff7ba6597cfd3e2606fd6e9dfef1833097df345eaacd6f8f80a8face676db8f` |
-| `src/main/resources/start.sh` | `a9e498c0e6b08cd4be7902bbac3bd714e12de0cdee800d58fdf7bf4b6b9734a5` |
+| `src/main/resources/start.sh` | `093f75cbf1dd4070f5f272ae71e0585c3edce87e3222236e52df5d621581f129` |
 | `src/main/resources/static/assets/images/500_icon.png` | `9eaa46406803eaf732486458667dd5009d07fbdf7febd9b2e7cac6dc434d3768` |
 | `src/main/resources/static/assets/images/alipay.png` | `369727eb6961772ecd9db1fe5505f9115002e301c2901c852fd99a6a5b5885d1` |
 | `src/main/resources/static/assets/images/alipay@2x.png` | `16881970f2c76ee3e7b31ea6b0286c1ee0bae397affa17266c6559e828e730bc` |
@@ -317,9 +324,9 @@
 | `src/main/resources/static/assets/js/api-config.js` | `a740e322302833ed60078a6cb0f303c041c4b06bbed258da7698b532c250cab3` |
 | `src/main/resources/static/assets/js/http-util.js` | `073311b2b9cd4b0ecada7e0c37d010cfc9d910bc1c82e9a8b2e05dd0cb715222` |
 | `src/main/resources/static/assets/js/qcode.min.js` | `083e3ea2f36e97de4ae8b2b8ac6da0298289bbd7bc111f54589d991c642baff2` |
-| `src/main/resources/static/assets/qr/alipay/0.01/1.png` | `cf4e53fa94d3ed1d810bcc377c0a8e03a578763f93014a6f6738ea35fd6c91bf` |
-| `src/main/resources/static/assets/qr/alipay/0.01/2.png` | `cf4e53fa94d3ed1d810bcc377c0a8e03a578763f93014a6f6738ea35fd6c91bf` |
-| `src/main/resources/static/assets/qr/alipay/custom.png` | `cf4e53fa94d3ed1d810bcc377c0a8e03a578763f93014a6f6738ea35fd6c91bf` |
+| `src/main/resources/static/assets/qr/alipay/0.01/1.png` | `c615c15040f3f6b0742635ae2bce49f4f9c09208a8721a00400e8350279b5672` |
+| `src/main/resources/static/assets/qr/alipay/0.01/2.png` | `c615c15040f3f6b0742635ae2bce49f4f9c09208a8721a00400e8350279b5672` |
+| `src/main/resources/static/assets/qr/alipay/custom.png` | `c615c15040f3f6b0742635ae2bce49f4f9c09208a8721a00400e8350279b5672` |
 | `src/main/resources/static/assets/qr/wechat/0.01/1.png` | `ef5b69721ea9bbf8f2372dd6062f6f8c65bfa6023ebeb83ed7ecea6c03cf2d53` |
 | `src/main/resources/static/assets/qr/wechat/0.01/2.png` | `ef5b69721ea9bbf8f2372dd6062f6f8c65bfa6023ebeb83ed7ecea6c03cf2d53` |
 | `src/main/resources/static/assets/qr/wechat/10.00/1.png` | `ef5b69721ea9bbf8f2372dd6062f6f8c65bfa6023ebeb83ed7ecea6c03cf2d53` |
@@ -356,16 +363,18 @@
 | `src/main/resources/templates/order-fail.html` | `307c348da85ea121445e7d845624ee2cb0ba845fb99ebec3b1e8180130baed87` |
 | `src/main/resources/templates/order-success.html` | `24f14ebaae7bfd4a53e2ee632d0bd5f1f0ac6b9429aa9efe1fce36584841996b` |
 | `src/main/resources/templates/payment-review.html` | `47666c750442838199b61cd1eab3f21c8f4f7b9981675616d266f57f98c955a0` |
-| `src/main/resources/templates/payment.html` | `0856bde841566189f2a25e2660235c65ec3d0888ae55b7d6516ddd36256bc248` |
+| `src/main/resources/templates/payment.html` | `af503996c705669d20240087fb7d2aa3b46e31bd2f9ccbfc8d8489a1b8397568` |
 | `src/main/resources/templates/recharge.html` | `e6a4da8461e64c45449be91e5063b95102c6f207b13c10a8373144d3aba9a9b2` |
 | `src/main/resources/templates/statistic.html` | `11790591acbc5a173ce7acb5e890d58691d72132a0413ccd8ff3e11b98362463` |
 | `src/main/resources/templates/success.html` | `4bc87da7d10fc38844d81cbe08d418d79efd864277a87f60c7f5b949c67165ab` |
-| `src/test/frontend/payment-confirmation.test.cjs` | `6bcf7088960393fc6ebcaa190151f30a1953d4ed1d75eda1fe52bb083a7038bd` |
-| `src/test/java/com/wendao/service/EmailUtilsOutcomeTest.java` | `e2252827e1f395b20554a4af0644812fcc73f612220db732f129ef8236e26c53` |
-| `src/test/java/com/wendao/service/OrderCreationNotificationTest.java` | `0084c4cd0830b33b774f790d67825236256d3a9ac453be588c1c7a7e3f664b8a` |
-| `src/test/java/com/wendao/service/PaymentConfirmationControllerTest.java` | `4bd315d73cd4d8ef49c01b87c1a3ef9403ee446e7a45d393781da2702dd9b3cf` |
-| `src/test/java/com/wendao/service/PaymentConfirmationDatabaseIT.java` | `021ff66b1ccd8fb94aac29f143529c3ebf58fc93d385e52f07bad4fb6d261193` |
-| `src/test/java/com/wendao/service/PaymentConfirmationServiceTest.java` | `4fbf3764a262ef01a1ffade1189c568d6e720fb374bf1a8e67cfeefb571d2eaf` |
-| `src/test/java/com/wendao/service/PaymentNoticeSenderTest.java` | `315eabc0f0d044ea980404a4c7e9fe2e6acc9ef13139f237db903a0596f846cb` |
+| `src/test/frontend/payment-confirmation.test.cjs` | `5c3ed09ae99955f9bbe4f1f975b877796ee48780de7ab84b05e5ecd06372a2ea` |
+| `src/test/java/com/wendao/service/EmailUtilsOutcomeTest.java` | `e803d7a49b9f0d04a4fe6aae59cf4f8d5a4405f1b9c4514a64df518b1e58b373` |
+| `src/test/java/com/wendao/service/OrderCreationNotificationTest.java` | `06735da59db1212141639556ce9575c5ca7384c9352656865e00eaf934489a14` |
+| `src/test/java/com/wendao/service/PaymentConfirmationControllerTest.java` | `57ca79c99dd1f6110928b9f8d381b94f86ae4e94525e0913786812b9c1b0550b` |
+| `src/test/java/com/wendao/service/PaymentConfirmationDatabaseIT.java` | `1dd47b7d693104c712c5fff88d2f7610f177e01fb95cc6b3718f094888240c69` |
+| `src/test/java/com/wendao/service/PaymentConfirmationServiceTest.java` | `9f4f9e34cd8dbdaf6586879f9f72ee862be19dfe324973562a6e4d524f66f419` |
+| `src/test/java/com/wendao/service/PaymentNoticeSenderTest.java` | `8fedff958d32cd9bec1353d44b1b3cf65590837d17e66614ab29757382b66378` |
+| `src/test/tools/test_payment_template_startup.py` | `13562519fe270415a42c43330eae6c368dcab53b265ae45217387cf6fe1e3377` |
+| `src/test/tools/test_upgrade_payment_template.py` | `6aaa0f5af2288c3311976a6cbbc270922ecb624768db5454f60672fc8b90a95c` |
 | `一键启动说明.md` | `984f3577f2d05f9002e487c6ca8f0a0478c7bc79a2ece12b212cf8b3b98130a5` |
 | `获取支付宝userId.jpg` | `ec12bd3bbf1bc7bd91e97e9846177dd1f6bc51e85444580a9fff6346fe3f25fd` |

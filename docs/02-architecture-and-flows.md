@@ -2,6 +2,8 @@
 
 ## 启动与基础设施
 
+根Docker镜像先由 `start.sh` 调用覆盖模板准备流程：对挂载的旧支付页按需备份、合入当前付款确认逻辑并保留二维码代码，成功后才启动Java；无覆盖层时直接使用JAR模板。标准模板及工具独立存放于镜像 `/app/payment-template`，不会被config挂载覆盖。详见[覆盖层自动升级](01-管理员邮件触发机制/线上支付页停留问题排查.md)。
+
 [PayApplication](../src/main/java/com/wendao/PayApplication.java) 开启 Spring Boot 自动配置、缓存、异步和调度支持，并扫描 `com.wendao.mapper`。开启调度只是启用框架，本仓库没有定时任务方法。
 
 `PayProConfig` 绑定 `paypro` 前缀，既保存商品、支付方式和业务配置，也将 `/assets/qr/**` 映射到外置目录及 classpath 回退目录。`Config` 配置 CORS、MyBatis-Plus MySQL 分页、Snowflake Bean 和模板全局变量。Snowflake 已注入订单服务，但当前订单号不使用它。
