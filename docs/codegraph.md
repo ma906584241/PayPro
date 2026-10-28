@@ -4,9 +4,9 @@
 
 ## 原生索引结果
 
-- 已索引 **41 文件**，包含 **32 Java 文件**。
-- **943 节点、1464 关系**；文件解析错误数 **0**。
-- 原始项目 **153 文件**；HTML、CSS、SQL、Shell、Markdown、图片和二进制未全部进入原生符号索引，见全量文件清单。
+- 已索引 **55 文件**，包含 **45 Java 文件**。
+- **1309 节点、2237 关系**；文件解析错误数 **0**。
+- 原始项目 **168 文件**；HTML、CSS、SQL、Shell、Markdown、图片和二进制未全部进入原生符号索引，见全量文件清单。
 - 本地 SQLite：`.codegraph/codegraph.db`；该目录内自带 .gitignore 排除数据库，应通过命令重新生成。
 - 保留关系 metadata 的 confidence / resolvedBy；静态解析中的同名、重载、fuzzy 匹配不能等同于运行时真实调用。
 - 原生 unresolved_refs 为 0；待解析引用或空表都不能证明第三方调用、框架注入和动态关系已完整解析。
@@ -23,6 +23,15 @@ flowchart TB
     Front --> PC[ProductController]
     Page --> OS[OrderServiceImpl]
     OC --> OS
+    OC --> Confirm[PaymentConfirmationService]
+    Confirm --> OM
+    Confirm --> Lock[PaymentNoticeLock]
+    Lock --> Redis
+    Confirm --> Sender[PaymentNoticeSender / afterCommit async]
+    Sender --> OM
+    Sender --> Lock
+    Sender --> Redis
+    Sender --> Mail
     PC --> PS[ProductServiceImpl]
     PS --> Config
     OS --> Config
@@ -57,58 +66,60 @@ flowchart TB
 
 | kind | 数量 |
 | --- | ---: |
-| class | 39 |
-| constant | 140 |
-| enum | 1 |
-| enum_member | 5 |
-| field | 207 |
-| file | 38 |
-| function | 38 |
-| import | 269 |
+| class | 53 |
+| constant | 146 |
+| enum | 2 |
+| enum_member | 9 |
+| field | 261 |
+| file | 52 |
+| function | 40 |
+| import | 448 |
 | interface | 3 |
-| method | 143 |
-| namespace | 32 |
-| route | 16 |
+| method | 220 |
+| namespace | 45 |
+| route | 18 |
 | variable | 12 |
 
 ## 关系类别
 
 | kind | 数量 |
 | --- | ---: |
-| calls | 291 |
-| contains | 754 |
+| calls | 451 |
+| contains | 1104 |
 | implements | 2 |
-| imports | 261 |
-| instantiates | 26 |
-| references | 130 |
+| imports | 440 |
+| instantiates | 60 |
+| references | 180 |
 
 ## 索引语言
 
 | 语言 | 文件数 |
 | --- | ---: |
-| java | 32 |
-| javascript | 3 |
+| java | 45 |
+| javascript | 4 |
 | python | 1 |
 | xml | 2 |
 | yaml | 3 |
 
 ## 路由节点
 
-原生索引的 16 个节点，favicon 的第二个 URL 别名需以接口文档为准。
+原生索引的 18 个节点，favicon 的第二个 URL 别名需以接口文档为准。
 
 | 路由 | 源码 | 行 |
 | --- | --- | ---: |
-| `ANY /order/list` | [OrderController.java](../src/main/java/com/wendao/controller/OrderController.java) | 56 |
-| `GET /order/state/{id}` | [OrderController.java](../src/main/java/com/wendao/controller/OrderController.java) | 64 |
-| `GET /order/{id}` | [OrderController.java](../src/main/java/com/wendao/controller/OrderController.java) | 88 |
-| `POST /order/add` | [OrderController.java](../src/main/java/com/wendao/controller/OrderController.java) | 109 |
-| `POST /order/edit` | [OrderController.java](../src/main/java/com/wendao/controller/OrderController.java) | 118 |
-| `GET /order/pass` | [OrderController.java](../src/main/java/com/wendao/controller/OrderController.java) | 148 |
-| `GET /order/back` | [OrderController.java](../src/main/java/com/wendao/controller/OrderController.java) | 176 |
-| `GET /order/del` | [OrderController.java](../src/main/java/com/wendao/controller/OrderController.java) | 207 |
-| `POST /order/statistic` | [OrderController.java](../src/main/java/com/wendao/controller/OrderController.java) | 236 |
-| `POST /api/openapi/add` | [OrderController.java](../src/main/java/com/wendao/controller/OrderController.java) | 253 |
-| `POST /getPayMethods` | [OrderController.java](../src/main/java/com/wendao/controller/OrderController.java) | 275 |
+| `POST /order/confirm-paid` | [OrderController.java](../src/main/java/com/wendao/controller/OrderController.java) | 53 |
+| `GET /order/payment-confirmation` | [OrderController.java](../src/main/java/com/wendao/controller/OrderController.java) | 59 |
+| `ANY /order/list` | [OrderController.java](../src/main/java/com/wendao/controller/OrderController.java) | 75 |
+| `GET /order/state/{id}` | [OrderController.java](../src/main/java/com/wendao/controller/OrderController.java) | 83 |
+| `GET /order/{id}` | [OrderController.java](../src/main/java/com/wendao/controller/OrderController.java) | 109 |
+| `POST /order/add` | [OrderController.java](../src/main/java/com/wendao/controller/OrderController.java) | 130 |
+| `POST /order/edit` | [OrderController.java](../src/main/java/com/wendao/controller/OrderController.java) | 139 |
+| `GET /order/pass` | [OrderController.java](../src/main/java/com/wendao/controller/OrderController.java) | 169 |
+| `GET /order/back` | [OrderController.java](../src/main/java/com/wendao/controller/OrderController.java) | 197 |
+| `GET /order/del` | [OrderController.java](../src/main/java/com/wendao/controller/OrderController.java) | 228 |
+| `POST /order/statistic` | [OrderController.java](../src/main/java/com/wendao/controller/OrderController.java) | 257 |
+| `POST /api/openapi/add` | [OrderController.java](../src/main/java/com/wendao/controller/OrderController.java) | 274 |
+| `POST /getPayMethods` | [OrderController.java](../src/main/java/com/wendao/controller/OrderController.java) | 296 |
 | `ANY /` | [PageController.java](../src/main/java/com/wendao/controller/PageController.java) | 34 |
 | `ANY /{page}` | [PageController.java](../src/main/java/com/wendao/controller/PageController.java) | 39 |
 | `GET /favicon.ico` | [PageController.java](../src/main/java/com/wendao/controller/PageController.java) | 63 |

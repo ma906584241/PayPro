@@ -12,6 +12,13 @@
 flowchart LR
     Browser[HTML 页面 / Vue / jQuery] --> Controller[Page / Order / Product Controller]
     Controller --> Orders[OrderServiceImpl]
+    Controller --> Confirm[PaymentConfirmationService]
+    Confirm --> Mapper
+    Confirm --> Lock[PaymentNoticeLock / Redis]
+    Confirm --> Sender[PaymentNoticeSender / 提交后异步]
+    Sender --> Mapper
+    Sender --> Lock
+    Sender --> Mail
     Controller --> Products[ProductServiceImpl]
     Products --> Config[PayProConfig / YAML]
     Orders --> Config
@@ -31,34 +38,31 @@ flowchart LR
 3. 控制器把 User-Agent 写入 `device`，服务复制请求属性，判定是否启用减额。
 4. 服务尝试分配实际金额，随机选择二维码编号；减额模式不生成备注，其他模式生成四位 `payNum`。
 5. `thisService.addOrder(Order)` 经 Spring 代理调用，生成 UUID、创建时间和状态 0，插入数据库。其默认匹配模式为 REMARK，默认实际金额为原始金额。
-6. Redis 写入 IP 记录和管理员 Token；服务拼接审核链接，异步发送 `payment-review` 邮件。
-7. 返回 `AddOrderResp`，页面构建 `payment.html?...` 地址。支付页显示二维码并每两秒请求 `/order/state/{id}`。
+6. 为新订单生成独立客户确认凭证，只落库 SHA-256 哈希；Redis 写 IP 记录，下单不创建管理员 Token、不发邮件。
+7. 返回含 `paymentConfirmToken` 的 `AddOrderResp`，页面构建完整支付链接。支付页用鉴权 GET 每两秒只读轮询，客户完成扫码付款并二次确认后才 POST 付款声明。事务提交后异步通知管理员。
 
-普通下单没有从商品配置重新计算价格，没有设置 `orderSource`、`expireTime`、`downloadUrl`。数据库给 `order_source` 配置了 PRODUCT 默认值，但插入对象仍可能是 null；实际入库是否采用数据库默认值取决于生成的 INSERT，需运行验证。
+普通下单明确设置 PRODUCT 或 OTHER 来源；自定义金额清除此前选中的商品 ID，并拒绝空值及非正金额。尚未从商品配置重新计算价格，也未设置 `expireTime`、`downloadUrl`。新流程详见 [管理员邮件触发机制：实施与上线说明](01-管理员邮件触发机制/实施与上线说明.md)。
 
 ```mermaid
 sequenceDiagram
-    participant U as recharge.html
-    participant C as OrderController
+    participant U as recharge / payment
     participant S as OrderServiceImpl
+    participant C as PaymentConfirmationService
     participant D as MySQL
-    participant R as Redis
-    participant M as EmailUtils
-    U->>C: POST /order/add
-    C->>S: addOrder(req, request)
-    S->>R: 尝试 SET NX 临时锁
-    S->>D: 查询活跃金额槽位
-    S->>R: 释放临时锁
-    S->>D: 插入状态 0 订单
-    S->>R: 保存 IP 和管理员 Token
-    S-->>M: 异步审核邮件
-    S-->>U: id / money / actualAmount / payNum
-    U->>U: 跳转 payment.html
-    loop 每两秒
-        U->>C: GET /order/state/{id}
-        C->>D: 查询状态及可能更新过期状态
-        C-->>U: 状态整数
+    participant W as PaymentNoticeSender
+    U->>S: POST /order/add
+    S->>D: 插入订单 / 客户凭证哈希
+    S-->>U: 支付信息 + paymentConfirmToken
+    loop 每两秒，只读
+        U->>C: GET /order/payment-confirmation
+        C->>D: 查询订单及通知状态
+        C-->>U: 金额、状态、是否可确认
     end
+    U->>C: 已付款按钮二次确认 / POST confirm-paid
+    C->>D: 锁保护下记录声明和SENDING
+    D-->>C: 提交事务
+    C-->>W: 异步发送管理员待核实邮件
+    W->>D: 保存SMTP结果SENT或FAILED
 ```
 
 ## 减额匹配
@@ -84,7 +88,7 @@ sequenceDiagram
 
 ## OpenAPI 下单
 
-入口依次校验时间戳、签名、金额范围与订单号重复。外部 `orderNo` 直接作为 `t_order.id`，设置来源 OPENAPI；减额路径与普通订单类似，然后生成二维码 URL、支付页 URL、插库、存 Token、发审核邮件并返回。
+入口依次校验时间戳、签名、金额范围与订单号重复。外部 `orderNo` 直接作为 `t_order.id`，设置来源 OPENAPI；减额路径与普通订单类似，然后生成客户确认凭证、编码后的支付页 URL 并插库返回；创建阶段不生成管理员 Token、不发邮件。
 
 `description` 参与验签但未写入订单；`expireSeconds` 参与验签但未转为 `expireTime`；`custom` 影响业务却没有参与签名，也未写入实体。普通备注分支对二维码存在判断使用了反向条件，详见问题清单。
 
@@ -92,11 +96,11 @@ sequenceDiagram
 
 `/order/pass` 要求 Redis 中订单 Token 匹配，同时 `myToken` 等于配置口令，再调用 `pass(id)`：
 
-- PRODUCT 且有商品 ID：读取配置商品，只有 CODE 类型进入发成功邮件和设置状态 1 的分支。服务没有把商品 `downloadUrl` 放入订单；邮件模板中的下载地址又被注释。
-- OPENAPI：`callbackFaka` 对 `orderNo / amount / payNum` 签名，HTTP POST 到 `notifyUrl`，之后设置状态 1。使用原始 `money` 而非 `actualAmount`，不包含支付类型、状态或时间戳；不检查对方响应正文，没有重试和回调状态记录。
-- 其他来源、PRODUCT 无商品、非 CODE 类型：方法仍返回 1，但没有将订单标为成功。来源为 null 时调用 `.equals(...)` 会抛异常。
+- 原子更新状态 0/4 → 1；重复批准已成功订单直接返回，避免重复发送业务回调。
+- OPENAPI：在数据库事务内调用现有 `callbackFaka`，成功提交后状态为 1。回调仍使用原始 `money`，没有接收方应答检查或自动重试。
+- 其他来源（包括无商品、自定义金额和旧数据空来源）：正常设置成功状态；邮箱有效时在事务提交后发成功通知。不扩展商品交付功能。
 
-`/order/back` 直接设状态 2，用户邮箱有效时发送失败邮件；`/order/del` 直接删除数据库记录。批准、驳回和删除均没有原状态条件约束。重复批准 OPENAPI 订单可能重复发送业务回调。
+`/order/back` 仍直接设状态 2 并可发失败通知；`/order/del` 仍直接删除。批准增加了状态约束，驳回、编辑及旧页面入口仍保留原有行为，其风险见问题清单。
 
 ## 订单状态
 
@@ -106,11 +110,11 @@ sequenceDiagram
 stateDiagram-v2
     [*] --> Waiting: 下单 / state 0
     Waiting --> Scanned: openAlipay?id=... / state 4
-    Waiting --> Success: 有效商品分支或 OPENAPI 审核 / state 1
+    Waiting --> Success: 管理员核实后审核 / state 1
     Scanned --> Success: 有效审核 / state 1
     Waiting --> Failed: 驳回 / state 2
     Scanned --> Failed: 驳回 / state 2
     Waiting --> Expired: 查询时发现 expireTime 已过 / state 5
 ```
 
-此图表示主要业务意图；当前实现约束更弱：`changeOrderState` 不校验原状态；打开 `openAlipay?id=...` 可覆盖终态为 4，并删除所有 `pay:*` 缓存；状态查询对任何已有过期时间的过期订单都返回 5，但只有原状态 0 会被写入 5。当前创建路径未设置过期时间，也没有周期清理任务。
+客户声明付款独立保存在确认字段，订单编号状态不增加成员；确认后仍为 0/4，直到管理员批准或驳回。状态查询仅将未声明、待处理且明确过期的订单判为 5，已成功或待审核记录不会因查询而超时。旧 `changeOrderState` 和 `openAlipay?id=...` 仍缺少状态约束，后者还会清理 `pay:*`；新通知锁使用独立前缀。当前创建路径未设置过期时间，也没有周期清理任务。

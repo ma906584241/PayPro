@@ -58,13 +58,14 @@
 
 | 类别 | 名称 | 签名 / 类型 | 行号 |
 | --- | --- | --- | --- |
-| class | `EmailUtils` | `com.wendao.common.utils::EmailUtils` | 20–88 |
+| class | `EmailUtils` | `com.wendao.common.utils::EmailUtils` | 20–92 |
 | field | `log` | `Logger log` | 23–23 |
 | field | `mailSender` | `JavaMailSender mailSender` | 26–26 |
 | field | `templateEngine` | `TemplateEngine templateEngine` | 29–29 |
 | field | `payProConfig` | `PayProConfig payProConfig` | 32–32 |
-| method | `sendTemplateMail` | `void (String sender, String sendto,String title, String templateName,Object o)` | 41–69 |
-| method | `checkEmail` | `boolean (String email)` | 76–87 |
+| method | `sendTemplateMail` | `void (String sender, String sendto,String title, String templateName,Object o)` | 41–48 |
+| method | `sendTemplateMailOrThrow` | `void (String sender, String sendto, String title,                                        String templateName, Object o)` | 51–73 |
+| method | `checkEmail` | `boolean (String email)` | 80–91 |
 
 ## IpInfoUtils.java
 
@@ -185,24 +186,27 @@
 
 | 类别 | 名称 | 签名 / 类型 | 行号 |
 | --- | --- | --- | --- |
-| class | `OrderController` | `com.wendao.controller::OrderController` | 37–281 |
-| field | `log` | `Logger log` | 42–42 |
-| field | `orderService` | `OrderService orderService` | 45–45 |
-| field | `redisTemplate` | `StringRedisTemplate redisTemplate` | 48–48 |
-| field | `emailUtils` | `EmailUtils emailUtils` | 51–51 |
-| field | `payProConfig` | `PayProConfig payProConfig` | 54–54 |
-| method | `getOrderList` | `ResponseVO<IPage<Order>> (@RequestBody GetOrderListReq req)` | 56–62 |
-| method | `getOrderState` | `ResponseVO (@PathVariable String id)` | 64–86 |
-| method | `getPayData` | `ResponseVO<Object> (@PathVariable String id,                                      @RequestParam String token)` | 88–107 |
-| method | `addOrder` | `ResponseVO<AddOrderResp> (@RequestBody @Validated OrderReq orderReq, HttpServletRequest request)` | 109–116 |
-| method | `editOrder` | `ResponseVO (@ModelAttribute Order order,                                   @RequestParam String id,                                   @RequestParam String token)` | 118–141 |
-| method | `pass` | `String (@RequestParam String id,                          @RequestParam String token,                          @RequestParam String myToken,                          Model model)` | 148–174 |
-| method | `backPay` | `String (@RequestParam String id,                           @RequestParam String token,                           @RequestParam String myToken,                           Model model)` | 176–205 |
-| method | `dePay` | `ResponseVO<Object> (@RequestParam String id,                                  @RequestParam String token)` | 207–230 |
-| method | `statistic` | `ResponseVO<Object> (@RequestParam Integer type,                                     @RequestParam(required = false) String start,                                     @RequestParam(required = false) String end,                                     @RequestParam String myToken)` | 236–247 |
-| method | `getOrderId` | `String (String id)` | 249–251 |
-| method | `createOpenApiOrder` | `ResponseVO<OpenApiOrderResp> (@RequestBody @Validated OpenApiOrderReq req)` | 253–273 |
-| method | `getPayMethods` | `ResponseVO<PayProConfig.PayMethod> ()` | 275–280 |
+| class | `OrderController` | `com.wendao.controller::OrderController` | 40–302 |
+| field | `log` | `Logger log` | 45–45 |
+| field | `orderService` | `OrderService orderService` | 48–48 |
+| field | `paymentConfirmationService` | `PaymentConfirmationService paymentConfirmationService` | 51–51 |
+| method | `confirmPaid` | `ResponseVO<PaymentConfirmationResp> (@RequestBody @Validated ConfirmPaidReq request)` | 53–57 |
+| method | `paymentConfirmation` | `ResponseVO<PaymentConfirmationResp> (@RequestParam String orderId,             @RequestHeader(value = "X-Payment-Confirm-Token", required = false) String token)` | 59–64 |
+| field | `redisTemplate` | `StringRedisTemplate redisTemplate` | 67–67 |
+| field | `emailUtils` | `EmailUtils emailUtils` | 70–70 |
+| field | `payProConfig` | `PayProConfig payProConfig` | 73–73 |
+| method | `getOrderList` | `ResponseVO<IPage<Order>> (@RequestBody GetOrderListReq req)` | 75–81 |
+| method | `getOrderState` | `ResponseVO (@PathVariable String id)` | 83–107 |
+| method | `getPayData` | `ResponseVO<Object> (@PathVariable String id,                                      @RequestParam String token)` | 109–128 |
+| method | `addOrder` | `ResponseVO<AddOrderResp> (@RequestBody @Validated OrderReq orderReq, HttpServletRequest request)` | 130–137 |
+| method | `editOrder` | `ResponseVO (@ModelAttribute Order order,                                   @RequestParam String id,                                   @RequestParam String token)` | 139–162 |
+| method | `pass` | `String (@RequestParam String id,                          @RequestParam String token,                          @RequestParam String myToken,                          Model model)` | 169–195 |
+| method | `backPay` | `String (@RequestParam String id,                           @RequestParam String token,                           @RequestParam String myToken,                           Model model)` | 197–226 |
+| method | `dePay` | `ResponseVO<Object> (@RequestParam String id,                                  @RequestParam String token)` | 228–251 |
+| method | `statistic` | `ResponseVO<Object> (@RequestParam Integer type,                                     @RequestParam(required = false) String start,                                     @RequestParam(required = false) String end,                                     @RequestParam String myToken)` | 257–268 |
+| method | `getOrderId` | `String (String id)` | 270–272 |
+| method | `createOpenApiOrder` | `ResponseVO<OpenApiOrderResp> (@RequestBody @Validated OpenApiOrderReq req)` | 274–294 |
+| method | `getPayMethods` | `ResponseVO<PayProConfig.PayMethod> ()` | 296–301 |
 
 ## PageController.java
 
@@ -268,37 +272,40 @@
 
 | 类别 | 名称 | 签名 / 类型 | 行号 |
 | --- | --- | --- | --- |
-| class | `Order` | `com.wendao.entity::Order` | 17–137 |
-| field | `id` | `String id` | 25–25 |
-| field | `nickName` | `String nickName` | 27–27 |
-| field | `money` | `BigDecimal money` | 29–29 |
-| field | `userId` | `String userId` | 31–31 |
-| field | `description` | `String description` | 36–36 |
-| field | `createTime` | `Date createTime` | 38–38 |
-| field | `updateTime` | `Date updateTime` | 40–40 |
-| field | `email` | `String email` | 45–45 |
-| field | `state` | `Integer state` | 50–50 |
-| field | `payType` | `String payType` | 52–52 |
-| field | `payNum` | `String payNum` | 57–57 |
-| field | `payQrNum` | `Integer payQrNum` | 62–62 |
-| field | `matchMode` | `String matchMode` | 67–67 |
-| field | `actualAmount` | `BigDecimal actualAmount` | 72–72 |
-| field | `decrementIndex` | `Integer decrementIndex` | 77–77 |
-| field | `custom` | `Boolean custom` | 82–82 |
-| field | `mobile` | `Boolean mobile` | 87–87 |
-| field | `device` | `String device` | 92–92 |
-| field | `productId` | `Long productId` | 97–97 |
-| field | `orderSource` | `String orderSource` | 100–100 |
-| field | `notifyUrl` | `String notifyUrl` | 103–103 |
-| field | `expireTime` | `Date expireTime` | 106–106 |
-| field | `time` | `String time` | 109–109 |
-| field | `passUrl` | `String passUrl` | 113–113 |
-| field | `backUrl` | `String backUrl` | 117–117 |
-| field | `editUrl` | `String editUrl` | 121–121 |
-| field | `delUrl` | `String delUrl` | 125–125 |
-| field | `closeUrl` | `String closeUrl` | 129–129 |
-| field | `statistic` | `String statistic` | 133–133 |
-| field | `downloadUrl` | `String downloadUrl` | 136–136 |
+| class | `Order` | `com.wendao.entity::Order` | 18–151 |
+| field | `id` | `String id` | 26–26 |
+| field | `nickName` | `String nickName` | 28–28 |
+| field | `money` | `BigDecimal money` | 30–30 |
+| field | `userId` | `String userId` | 32–32 |
+| field | `description` | `String description` | 37–37 |
+| field | `createTime` | `Date createTime` | 39–39 |
+| field | `updateTime` | `Date updateTime` | 41–41 |
+| field | `email` | `String email` | 46–46 |
+| field | `state` | `Integer state` | 51–51 |
+| field | `payType` | `String payType` | 53–53 |
+| field | `payNum` | `String payNum` | 58–58 |
+| field | `payQrNum` | `Integer payQrNum` | 63–63 |
+| field | `matchMode` | `String matchMode` | 68–68 |
+| field | `actualAmount` | `BigDecimal actualAmount` | 73–73 |
+| field | `decrementIndex` | `Integer decrementIndex` | 78–78 |
+| field | `custom` | `Boolean custom` | 83–83 |
+| field | `mobile` | `Boolean mobile` | 88–88 |
+| field | `device` | `String device` | 93–93 |
+| field | `productId` | `Long productId` | 98–98 |
+| field | `orderSource` | `String orderSource` | 101–101 |
+| field | `notifyUrl` | `String notifyUrl` | 104–104 |
+| field | `expireTime` | `Date expireTime` | 107–107 |
+| field | `paymentConfirmTokenHash` | `String paymentConfirmTokenHash` | 112–112 |
+| field | `paymentConfirmedAt` | `Date paymentConfirmedAt` | 116–116 |
+| field | `adminNoticeStatus` | `String adminNoticeStatus` | 120–120 |
+| field | `time` | `String time` | 123–123 |
+| field | `passUrl` | `String passUrl` | 127–127 |
+| field | `backUrl` | `String backUrl` | 131–131 |
+| field | `editUrl` | `String editUrl` | 135–135 |
+| field | `delUrl` | `String delUrl` | 139–139 |
+| field | `closeUrl` | `String closeUrl` | 143–143 |
+| field | `statistic` | `String statistic` | 147–147 |
+| field | `downloadUrl` | `String downloadUrl` | 150–150 |
 
 ## Product.java
 
@@ -314,6 +321,18 @@
 | field | `extend` | `String extend` | 28–28 |
 | field | `type` | `String type` | 31–31 |
 | field | `downloadUrl` | `String downloadUrl` | 34–34 |
+
+## AdminNoticeStatus.java
+
+[src/main/java/com/wendao/enums/AdminNoticeStatus.java](../src/main/java/com/wendao/enums/AdminNoticeStatus.java) — 管理员通知状态，与订单付款状态分离
+
+| 类别 | 名称 | 签名 / 类型 | 行号 |
+| --- | --- | --- | --- |
+| enum | `AdminNoticeStatus` | `com.wendao.enums::AdminNoticeStatus` | 4–6 |
+| enum_member | `FAILED` | `com.wendao.enums::AdminNoticeStatus::FAILED` | 5–5 |
+| enum_member | `NOT_REQUESTED` | `com.wendao.enums::AdminNoticeStatus::NOT_REQUESTED` | 5–5 |
+| enum_member | `SENDING` | `com.wendao.enums::AdminNoticeStatus::SENDING` | 5–5 |
+| enum_member | `SENT` | `com.wendao.enums::AdminNoticeStatus::SENT` | 5–5 |
 
 ## OrderStatesEnum.java
 
@@ -359,11 +378,13 @@
 
 | 类别 | 名称 | 签名 / 类型 | 行号 |
 | --- | --- | --- | --- |
-| class | `GlobalExceptionHandler` | `com.wendao.exception::GlobalExceptionHandler` | 9–40 |
-| field | `log` | `Logger log` | 12–12 |
-| method | `handleApiException` | `ResponseVO<?> (ApiException e)` | 14–21 |
-| method | `handleIllegalArgumentException` | `ResponseVO<?> (IllegalArgumentException e)` | 23–30 |
-| method | `handleException` | `ResponseVO<?> (Exception e)` | 32–39 |
+| class | `GlobalExceptionHandler` | `com.wendao.exception::GlobalExceptionHandler` | 12–55 |
+| field | `log` | `Logger log` | 15–15 |
+| method | `handleValidation` | `ResponseVO<?> (MethodArgumentNotValidException e)` | 17–22 |
+| method | `handleMissingInput` | `ResponseVO<?> (Exception e)` | 24–27 |
+| method | `handleApiException` | `ResponseVO<?> (ApiException e)` | 29–36 |
+| method | `handleIllegalArgumentException` | `ResponseVO<?> (IllegalArgumentException e)` | 38–45 |
+| method | `handleException` | `ResponseVO<?> (Exception e)` | 47–54 |
 
 ## OrderMapper.java
 
@@ -371,13 +392,16 @@
 
 | 类别 | 名称 | 签名 / 类型 | 行号 |
 | --- | --- | --- | --- |
-| interface | `OrderMapper` | `com.wendao.mapper::OrderMapper` | 14–42 |
-| method | `getExpiredOrders` | `List<Order> (Integer state, Date expireTime)` | 16–19 |
-| method | `countAllMoney` | `BigDecimal ()` | 21–22 |
-| method | `countAllMoneyByType` | `BigDecimal (String payType)` | 24–25 |
-| method | `countMoney` | `BigDecimal (Date date1, Date date2)` | 27–28 |
-| method | `countMoneyByType` | `BigDecimal (String payType, Date date1, Date date2)` | 30–31 |
-| method | `getDecrementOrderByAmount` | `Order (BigDecimal actualAmount, Date startTime, Date endTime)` | 36–41 |
+| interface | `OrderMapper` | `com.wendao.mapper::OrderMapper` | 16–59 |
+| method | `claimPaymentNotice` | `int (@Param("id") String id, @Param("hash") String hash, @Param("now") Date now)` | 18–24 |
+| method | `finishPaymentNotice` | `int (@Param("id") String id, @Param("status") String status)` | 26–28 |
+| method | `approveOrder` | `int (@Param("id") String id)` | 30–31 |
+| method | `getExpiredOrders` | `List<Order> (Integer state, Date expireTime)` | 33–36 |
+| method | `countAllMoney` | `BigDecimal ()` | 38–39 |
+| method | `countAllMoneyByType` | `BigDecimal (String payType)` | 41–42 |
+| method | `countMoney` | `BigDecimal (Date date1, Date date2)` | 44–45 |
+| method | `countMoneyByType` | `BigDecimal (String payType, Date date1, Date date2)` | 47–48 |
+| method | `getDecrementOrderByAmount` | `Order (BigDecimal actualAmount, Date startTime, Date endTime)` | 53–58 |
 
 ## ResponseVO.java
 
@@ -399,6 +423,16 @@
 | method | `ResponseVO` | `(int code, String msg)` | 49–53 |
 | method | `success` | `ResponseVO ()` | 55–59 |
 | method | `success` | `ResponseVO (T data)` | 61–66 |
+
+## ConfirmPaidReq.java
+
+[src/main/java/com/wendao/model/req/ConfirmPaidReq.java](../src/main/java/com/wendao/model/req/ConfirmPaidReq.java) — 客户主动声明付款请求，订单号和客户凭证非空
+
+| 类别 | 名称 | 签名 / 类型 | 行号 |
+| --- | --- | --- | --- |
+| class | `ConfirmPaidReq` | `com.wendao.model.req::ConfirmPaidReq` | 6–13 |
+| field | `orderId` | `String orderId` | 9–9 |
+| field | `paymentConfirmToken` | `String paymentConfirmToken` | 12–12 |
 
 ## GetOrderListReq.java
 
@@ -473,16 +507,17 @@
 
 | 类别 | 名称 | 签名 / 类型 | 行号 |
 | --- | --- | --- | --- |
-| class | `AddOrderResp` | `com.wendao.model.resp::AddOrderResp` | 13–59 |
-| field | `id` | `String id` | 20–20 |
-| field | `money` | `BigDecimal money` | 23–23 |
-| field | `payType` | `String payType` | 26–26 |
-| field | `payNum` | `String payNum` | 29–29 |
-| field | `custom` | `Boolean custom` | 35–35 |
-| field | `payQrNum` | `Integer payQrNum` | 40–40 |
-| field | `matchMode` | `String matchMode` | 46–46 |
-| field | `actualAmount` | `BigDecimal actualAmount` | 52–52 |
-| field | `fallbackToRemark` | `Boolean fallbackToRemark` | 58–58 |
+| class | `AddOrderResp` | `com.wendao.model.resp::AddOrderResp` | 13–62 |
+| field | `paymentConfirmToken` | `String paymentConfirmToken` | 17–17 |
+| field | `id` | `String id` | 23–23 |
+| field | `money` | `BigDecimal money` | 26–26 |
+| field | `payType` | `String payType` | 29–29 |
+| field | `payNum` | `String payNum` | 32–32 |
+| field | `custom` | `Boolean custom` | 38–38 |
+| field | `payQrNum` | `Integer payQrNum` | 43–43 |
+| field | `matchMode` | `String matchMode` | 49–49 |
+| field | `actualAmount` | `BigDecimal actualAmount` | 55–55 |
+| field | `fallbackToRemark` | `Boolean fallbackToRemark` | 61–61 |
 
 ## CountResp.java
 
@@ -501,20 +536,38 @@
 
 | 类别 | 名称 | 签名 / 类型 | 行号 |
 | --- | --- | --- | --- |
-| class | `OpenApiOrderResp` | `com.wendao.model.resp::OpenApiOrderResp` | 11–42 |
-| field | `orderId` | `String orderId` | 17–17 |
-| field | `orderNo` | `String orderNo` | 19–19 |
-| field | `amount` | `BigDecimal amount` | 21–21 |
-| field | `payType` | `String payType` | 23–23 |
-| field | `payNum` | `String payNum` | 25–25 |
-| field | `state` | `Integer state` | 27–27 |
-| field | `message` | `String message` | 29–29 |
-| field | `timestamp` | `Long timestamp` | 31–31 |
-| field | `qrCodeUrl` | `String qrCodeUrl` | 33–33 |
-| field | `returnUrl` | `String returnUrl` | 35–35 |
-| field | `matchMode` | `String matchMode` | 37–37 |
-| field | `actualAmount` | `BigDecimal actualAmount` | 39–39 |
-| field | `fallbackToRemark` | `Boolean fallbackToRemark` | 41–41 |
+| class | `OpenApiOrderResp` | `com.wendao.model.resp::OpenApiOrderResp` | 11–44 |
+| field | `paymentConfirmToken` | `String paymentConfirmToken` | 17–17 |
+| field | `orderId` | `String orderId` | 19–19 |
+| field | `orderNo` | `String orderNo` | 21–21 |
+| field | `amount` | `BigDecimal amount` | 23–23 |
+| field | `payType` | `String payType` | 25–25 |
+| field | `payNum` | `String payNum` | 27–27 |
+| field | `state` | `Integer state` | 29–29 |
+| field | `message` | `String message` | 31–31 |
+| field | `timestamp` | `Long timestamp` | 33–33 |
+| field | `qrCodeUrl` | `String qrCodeUrl` | 35–35 |
+| field | `returnUrl` | `String returnUrl` | 37–37 |
+| field | `matchMode` | `String matchMode` | 39–39 |
+| field | `actualAmount` | `BigDecimal actualAmount` | 41–41 |
+| field | `fallbackToRemark` | `Boolean fallbackToRemark` | 43–43 |
+
+## PaymentConfirmationResp.java
+
+[src/main/java/com/wendao/model/resp/PaymentConfirmationResp.java](../src/main/java/com/wendao/model/resp/PaymentConfirmationResp.java) — 鉴权付款声明查询响应、通知状态和重试资格
+
+| 类别 | 名称 | 签名 / 类型 | 行号 |
+| --- | --- | --- | --- |
+| class | `PaymentConfirmationResp` | `com.wendao.model.resp::PaymentConfirmationResp` | 7–18 |
+| field | `orderState` | `Integer orderState` | 9–9 |
+| field | `amount` | `BigDecimal amount` | 10–10 |
+| field | `payType` | `String payType` | 11–11 |
+| field | `payNum` | `String payNum` | 12–12 |
+| field | `expireTime` | `Date expireTime` | 13–13 |
+| field | `confirmedAt` | `Date confirmedAt` | 14–14 |
+| field | `noticeStatus` | `String noticeStatus` | 15–15 |
+| field | `canConfirm` | `boolean canConfirm` | 16–16 |
+| field | `retryable` | `boolean retryable` | 17–17 |
 
 ## OrderService.java
 
@@ -536,6 +589,64 @@
 | method | `getByActualAmount` | `Order (BigDecimal actualAmount, Date startTime, Date endTime)` | 79–79 |
 | method | `getOccupiedDecrementSlots` | `Set<Integer> (String payType, BigDecimal baseAmount)` | 84–84 |
 
+## PaymentConfirmationService.java
+
+[src/main/java/com/wendao/service/PaymentConfirmationService.java](../src/main/java/com/wendao/service/PaymentConfirmationService.java) — 鉴权声明、发送锁、事务提交后调度及状态恢复
+
+| 类别 | 名称 | 签名 / 类型 | 行号 |
+| --- | --- | --- | --- |
+| class | `PaymentConfirmationService` | `com.wendao.service::PaymentConfirmationService` | 20–158 |
+| field | `log` | `Logger log` | 22–22 |
+| field | `orders` | `OrderMapper orders` | 23–23 |
+| field | `locks` | `PaymentNoticeLock locks` | 24–24 |
+| field | `sender` | `PaymentNoticeSender sender` | 25–25 |
+| method | `PaymentConfirmationService` | `(OrderMapper orders, PaymentNoticeLock locks, PaymentNoticeSender sender)` | 27–31 |
+| method | `status` | `PaymentConfirmationResp (String id, String token)` | 33–35 |
+| method | `confirm` | `PaymentConfirmationResp (ConfirmPaidReq request)` | 37–84 |
+| class | `<TransactionSynchronizationAdapter$anon@61>` | `com.wendao.service::PaymentConfirmationService::confirm::<TransactionSynchronizationAdapter$anon@61>` | 61–73 |
+| method | `afterCommit` | `void ()` | 62–65 |
+| method | `afterCompletion` | `void (int completionStatus)` | 67–72 |
+| method | `authorize` | `Order (String id, String token)` | 86–101 |
+| method | `ensureConfirmable` | `void (Order order)` | 103–107 |
+| method | `pending` | `boolean (Order order)` | 109–111 |
+| method | `expiredBeforeConfirmation` | `boolean (Order order)` | 113–116 |
+| method | `response` | `PaymentConfirmationResp (Order order)` | 118–139 |
+| method | `dispatch` | `void (String id, String attempt)` | 141–149 |
+| method | `release` | `void (String id, String attempt)` | 151–157 |
+
+## PaymentNoticeLock.java
+
+[src/main/java/com/wendao/service/PaymentNoticeLock.java](../src/main/java/com/wendao/service/PaymentNoticeLock.java) — Redis SET NX发送租约与Lua归属校验释放
+
+| 类别 | 名称 | 签名 / 类型 | 行号 |
+| --- | --- | --- | --- |
+| class | `PaymentNoticeLock` | `com.wendao.service::PaymentNoticeLock` | 11–40 |
+| field | `PREFIX` | `String PREFIX` | 13–13 |
+| field | `RELEASE` | `DefaultRedisScript<Long> RELEASE` | 14–16 |
+| field | `redis` | `StringRedisTemplate redis` | 17–17 |
+| method | `PaymentNoticeLock` | `(StringRedisTemplate redis)` | 19–21 |
+| method | `acquire` | `String (String id)` | 23–27 |
+| method | `isOwned` | `boolean (String id, String attempt)` | 29–31 |
+| method | `isLocked` | `boolean (String id)` | 33–35 |
+| method | `release` | `void (String id, String attempt)` | 37–39 |
+
+## PaymentNoticeSender.java
+
+[src/main/java/com/wendao/service/PaymentNoticeSender.java](../src/main/java/com/wendao/service/PaymentNoticeSender.java) — 提交后异步邮件、独立审核链接、SMTP结果持久化
+
+| 类别 | 名称 | 签名 / 类型 | 行号 |
+| --- | --- | --- | --- |
+| class | `PaymentNoticeSender` | `com.wendao.service::PaymentNoticeSender` | 22–108 |
+| field | `log` | `Logger log` | 24–24 |
+| field | `orders` | `OrderMapper orders` | 25–25 |
+| field | `locks` | `PaymentNoticeLock locks` | 26–26 |
+| field | `redis` | `StringRedisTemplate redis` | 27–27 |
+| field | `mail` | `EmailUtils mail` | 28–28 |
+| field | `config` | `PayProConfig config` | 29–29 |
+| method | `PaymentNoticeSender` | `(OrderMapper orders, PaymentNoticeLock locks,                                StringRedisTemplate redis, EmailUtils mail, PayProConfig config)` | 31–38 |
+| method | `send` | `void (String id, String attempt)` | 40–94 |
+| method | `reviewUrl` | `String (String path, String id, String token, boolean secondFactor)` | 96–107 |
+
 ## ProductService.java
 
 [src/main/java/com/wendao/service/ProductService.java](../src/main/java/com/wendao/service/ProductService.java) — 商品业务接口
@@ -553,40 +664,40 @@
 
 | 类别 | 名称 | 签名 / 类型 | 行号 |
 | --- | --- | --- | --- |
-| class | `OrderServiceImpl` | `com.wendao.service.impl::OrderServiceImpl` | 45–755 |
-| field | `log` | `Logger log` | 48–48 |
-| field | `orderMapper` | `OrderMapper orderMapper` | 51–51 |
-| field | `redisTemplate` | `StringRedisTemplate redisTemplate` | 54–54 |
-| field | `thisService` | `OrderService thisService` | 57–57 |
-| field | `payProConfig` | `PayProConfig payProConfig` | 60–60 |
-| field | `emailUtils` | `EmailUtils emailUtils` | 63–63 |
-| field | `productService` | `ProductService productService` | 66–66 |
-| field | `snowflake` | `Snowflake snowflake` | 69–69 |
-| field | `openApiSignUtil` | `OpenApiSignUtil openApiSignUtil` | 72–72 |
-| field | `resourceLoader` | `ResourceLoader resourceLoader` | 75–75 |
-| method | `getOrderById` | `Order (String id)` | 77–82 |
-| method | `addOrder` | `int (Order pay)` | 84–98 |
-| method | `updateOrder` | `int (Order pay)` | 100–105 |
-| method | `changeOrderState` | `int (String id, Integer state)` | 107–115 |
-| method | `delOrder` | `int (String id)` | 117–121 |
-| method | `statistic` | `CountResp (Integer type, String start, String end)` | 123–173 |
-| method | `addOrder` | `ResponseVO<AddOrderResp> (OrderReq req, HttpServletRequest request)` | 175–283 |
-| method | `pass` | `int (String id)` | 288–307 |
-| method | `list` | `IPage<Order> (GetOrderListReq req)` | 309–351 |
-| method | `createOpenApiOrder` | `OpenApiOrderResp (OpenApiOrderReq req)` | 353–538 |
-| method | `checkQrFileExists` | `boolean (String payType, BigDecimal amount, int qrNum)` | 548–574 |
-| method | `getAdminUrl` | `Order (Order pay, String id, String token, String myToken)` | 580–600 |
-| method | `callbackFaka` | `void (String notifyUrl, String orderNo, BigDecimal amount, String payNum)` | 602–612 |
-| class | `DecrementSlotResult` | `com.wendao.service.impl::OrderServiceImpl::DecrementSlotResult` | 618–624 |
-| field | `success` | `boolean success` | 620–620 |
-| field | `fallbackToRemark` | `boolean fallbackToRemark` | 621–621 |
-| field | `slotIndex` | `int slotIndex` | 622–622 |
-| field | `actualAmount` | `BigDecimal actualAmount` | 623–623 |
-| method | `tryAllocateDecrementSlot` | `DecrementSlotResult (             String payType, BigDecimal baseAmount, PayProConfig.Decrement config)` | 636–688 |
-| method | `checkAnyQrFileExists` | `boolean (String payType, BigDecimal baseAmount, BigDecimal amount)` | 695–719 |
-| method | `getByActualAmount` | `Order (BigDecimal actualAmount, Date startTime, Date endTime)` | 721–724 |
-| method | `getOccupiedDecrementSlots` | `Set<Integer> (String payType, BigDecimal baseAmount)` | 726–749 |
-| method | `getDecrementLockKey` | `String (String payType, String baseAmount)` | 751–753 |
+| class | `OrderServiceImpl` | `com.wendao.service.impl::OrderServiceImpl` | 47–747 |
+| field | `log` | `Logger log` | 50–50 |
+| field | `orderMapper` | `OrderMapper orderMapper` | 53–53 |
+| field | `redisTemplate` | `StringRedisTemplate redisTemplate` | 56–56 |
+| field | `thisService` | `OrderService thisService` | 59–59 |
+| field | `payProConfig` | `PayProConfig payProConfig` | 62–62 |
+| field | `emailUtils` | `EmailUtils emailUtils` | 65–65 |
+| field | `snowflake` | `Snowflake snowflake` | 68–68 |
+| field | `openApiSignUtil` | `OpenApiSignUtil openApiSignUtil` | 71–71 |
+| field | `resourceLoader` | `ResourceLoader resourceLoader` | 74–74 |
+| method | `getOrderById` | `Order (String id)` | 76–81 |
+| method | `addOrder` | `int (Order pay)` | 83–97 |
+| method | `updateOrder` | `int (Order pay)` | 99–104 |
+| method | `changeOrderState` | `int (String id, Integer state)` | 106–114 |
+| method | `delOrder` | `int (String id)` | 116–120 |
+| method | `statistic` | `CountResp (Integer type, String start, String end)` | 122–172 |
+| method | `addOrder` | `ResponseVO<AddOrderResp> (OrderReq req, HttpServletRequest request)` | 174–282 |
+| method | `pass` | `int (String id)` | 287–323 |
+| class | `<TransactionSynchronizationAdapter$anon@312>` | `com.wendao.service.impl::OrderServiceImpl::pass::<TransactionSynchronizationAdapter$anon@312>` | 312–317 |
+| method | `afterCommit` | `void ()` | 313–316 |
+| method | `list` | `IPage<Order> (GetOrderListReq req)` | 325–367 |
+| method | `createOpenApiOrder` | `OpenApiOrderResp (OpenApiOrderReq req)` | 369–555 |
+| method | `checkQrFileExists` | `boolean (String payType, BigDecimal amount, int qrNum)` | 565–591 |
+| method | `callbackFaka` | `void (String notifyUrl, String orderNo, BigDecimal amount, String payNum)` | 594–604 |
+| class | `DecrementSlotResult` | `com.wendao.service.impl::OrderServiceImpl::DecrementSlotResult` | 610–616 |
+| field | `success` | `boolean success` | 612–612 |
+| field | `fallbackToRemark` | `boolean fallbackToRemark` | 613–613 |
+| field | `slotIndex` | `int slotIndex` | 614–614 |
+| field | `actualAmount` | `BigDecimal actualAmount` | 615–615 |
+| method | `tryAllocateDecrementSlot` | `DecrementSlotResult (             String payType, BigDecimal baseAmount, PayProConfig.Decrement config)` | 628–680 |
+| method | `checkAnyQrFileExists` | `boolean (String payType, BigDecimal baseAmount, BigDecimal amount)` | 687–711 |
+| method | `getByActualAmount` | `Order (BigDecimal actualAmount, Date startTime, Date endTime)` | 713–716 |
+| method | `getOccupiedDecrementSlots` | `Set<Integer> (String payType, BigDecimal baseAmount)` | 718–741 |
+| method | `getDecrementLockKey` | `String (String payType, String baseAmount)` | 743–745 |
 
 ## ProductServiceImpl.java
 
@@ -614,3 +725,133 @@
 | method | `verifySign` | `boolean (OpenApiOrderReq req)` | 56–92 |
 | method | `verifyTimestamp` | `boolean (Long timestamp)` | 94–107 |
 | method | `main` | `void (String[] args)` | 109–112 |
+
+## PaymentConfirmTokens.java
+
+[src/main/java/com/wendao/utils/PaymentConfirmTokens.java](../src/main/java/com/wendao/utils/PaymentConfirmTokens.java) — 生成客户随机凭证、保存哈希并恒定时间校验
+
+| 类别 | 名称 | 签名 / 类型 | 行号 |
+| --- | --- | --- | --- |
+| class | `PaymentConfirmTokens` | `com.wendao.utils::PaymentConfirmTokens` | 12–47 |
+| field | `RANDOM` | `SecureRandom RANDOM` | 13–13 |
+| method | `PaymentConfirmTokens` | `()` | 15–15 |
+| method | `initialize` | `String (Order order)` | 17–24 |
+| method | `matches` | `boolean (String token, String expectedHash)` | 26–32 |
+| method | `hash` | `String (String token)` | 34–46 |
+
+## EmailUtilsOutcomeTest.java
+
+[src/test/java/com/wendao/service/EmailUtilsOutcomeTest.java](../src/test/java/com/wendao/service/EmailUtilsOutcomeTest.java) — 真实Thymeleaf渲染和Mock JavaMailSender结果测试
+
+| 类别 | 名称 | 签名 / 类型 | 行号 |
+| --- | --- | --- | --- |
+| class | `EmailUtilsOutcomeTest` | `com.wendao.service::EmailUtilsOutcomeTest` | 27–77 |
+| method | `engine` | `SpringTemplateEngine ()` | 28–37 |
+| method | `reviewTemplateRendersAndSmtpErrorsReachNotificationWorker` | `void ()` | 39–61 |
+| method | `actualThymeleafJavaScriptInliningPreservesAlipayUrlParameters` | `void ()` | 63–76 |
+
+## OrderCreationNotificationTest.java
+
+[src/test/java/com/wendao/service/OrderCreationNotificationTest.java](../src/test/java/com/wendao/service/OrderCreationNotificationTest.java) — 下单不发信、来源、自定义金额、编码链接和批准幂等测试
+
+| 类别 | 名称 | 签名 / 类型 | 行号 |
+| --- | --- | --- | --- |
+| class | `OrderCreationNotificationTest` | `com.wendao.service::OrderCreationNotificationTest` | 30–140 |
+| field | `service` | `OrderServiceImpl service` | 31–31 |
+| field | `orders` | `OrderMapper orders` | 32–32 |
+| field | `mail` | `EmailUtils mail` | 33–33 |
+| field | `signs` | `OpenApiSignUtil signs` | 34–34 |
+| field | `inserted` | `AtomicReference<Order> inserted` | 35–35 |
+| method | `setup` | `void ()` | 37–60 |
+| method | `normalRequest` | `OrderReq ()` | 62–68 |
+| method | `browser` | `MockHttpServletRequest ()` | 70–74 |
+| method | `ordinaryOrderDoesNotSendMailAndOnlyStoresCredentialHash` | `void ()` | 76–85 |
+| method | `customAmountDoesNotAccidentallyKeepPreviouslySelectedProduct` | `void ()` | 87–96 |
+| method | `productOrderKeepsItsSourceWithoutSendingMail` | `void ()` | 98–105 |
+| method | `openApiReturnsCompleteConfirmationLinkWithoutNotifyingAdmin` | `void ()` | 107–123 |
+| method | `customAndNullSourceLegacyOrdersCanBeApprovedOnlyOnce` | `void ()` | 125–139 |
+
+## PaymentConfirmationControllerTest.java
+
+[src/test/java/com/wendao/service/PaymentConfirmationControllerTest.java](../src/test/java/com/wendao/service/PaymentConfirmationControllerTest.java) — MockMvc请求体、请求头和参数错误测试
+
+| 类别 | 名称 | 签名 / 类型 | 行号 |
+| --- | --- | --- | --- |
+| class | `PaymentConfirmationControllerTest` | `com.wendao.service::PaymentConfirmationControllerTest` | 19–72 |
+| field | `service` | `PaymentConfirmationService service` | 20–20 |
+| field | `mvc` | `MockMvc mvc` | 21–21 |
+| method | `setup` | `void ()` | 23–30 |
+| method | `confirmationUsesPostAndReturnsPendingPaymentState` | `void ()` | 32–43 |
+| method | `missingConfirmationCredentialIsAValidationError` | `void ()` | 45–51 |
+| method | `statusUsesScopedCredentialHeaderAndNeverConfirmsAnOrder` | `void ()` | 53–63 |
+| method | `invalidScopedTokenIsRejectedWithoutReturningAdminLinks` | `void ()` | 65–71 |
+
+## PaymentConfirmationDatabaseIT.java
+
+[src/test/java/com/wendao/service/PaymentConfirmationDatabaseIT.java](../src/test/java/com/wendao/service/PaymentConfirmationDatabaseIT.java) — 可选隔离MySQL/Redis增量迁移、12请求并发和元数据保护测试
+
+| 类别 | 名称 | 签名 / 类型 | 行号 |
+| --- | --- | --- | --- |
+| class | `PaymentConfirmationDatabaseIT` | `com.wendao.service::PaymentConfirmationDatabaseIT` | 34–161 |
+| field | `dataSource` | `DriverManagerDataSource dataSource` | 36–36 |
+| field | `sessions` | `SqlSessionFactory sessions` | 37–37 |
+| field | `redisFactory` | `JedisConnectionFactory redisFactory` | 38–38 |
+| field | `redis` | `StringRedisTemplate redis` | 39–39 |
+| method | `setup` | `void ()` | 41–62 |
+| method | `cleanup` | `void ()` | 64–67 |
+| method | `additiveMigrationPreservesLegacyRowsAndLeavesThemUnenrolled` | `void ()` | 69–84 |
+| method | `realRedisLockAndSqlClaimDeduplicateConcurrentRequestsAndPersistSent` | `void ()` | 86–137 |
+| method | `ordinaryEntityUpdatesCannotOverwritePrivateNotificationMetadata` | `void ()` | 139–160 |
+
+## PaymentConfirmationServiceTest.java
+
+[src/test/java/com/wendao/service/PaymentConfirmationServiceTest.java](../src/test/java/com/wendao/service/PaymentConfirmationServiceTest.java) — 声明鉴权、事务回滚、去重、失败重试及JSON隐私测试
+
+| 类别 | 名称 | 签名 / 类型 | 行号 |
+| --- | --- | --- | --- |
+| class | `PaymentConfirmationServiceTest` | `com.wendao.service::PaymentConfirmationServiceTest` | 24–207 |
+| field | `orders` | `OrderMapper orders` | 25–25 |
+| field | `locks` | `PaymentNoticeLock locks` | 26–26 |
+| field | `sender` | `PaymentNoticeSender sender` | 27–27 |
+| field | `service` | `PaymentConfirmationService service` | 28–28 |
+| field | `order` | `Order order` | 29–29 |
+| field | `token` | `String token` | 30–30 |
+| method | `setup` | `void ()` | 32–45 |
+| method | `cleanup` | `void ()` | 47–52 |
+| method | `request` | `ConfirmPaidReq ()` | 54–59 |
+| method | `allowClaim` | `void ()` | 61–74 |
+| method | `statusNeverClaimsOrSends` | `void ()` | 76–84 |
+| method | `confirmationRecordsDeclarationButNeverPaymentSuccess` | `void ()` | 86–96 |
+| method | `actualTransactionDefersMailUntilCommit` | `void ()` | 98–109 |
+| method | `rollbackNeverDispatchesAndReleasesLock` | `void ()` | 111–121 |
+| method | `previouslySentNoticeRemainsDeduplicatedEvenWithoutRedisLock` | `void ()` | 123–129 |
+| method | `concurrentRequestDoesNotStartAnotherMail` | `void ()` | 131–139 |
+| method | `staleSendingLeaseIsReadOnlyAndRetryable` | `void ()` | 141–149 |
+| method | `failedNoticeRetryPreservesOriginalDeclarationTime` | `void ()` | 151–160 |
+| method | `rejectedAsyncExecutionCanBeRetried` | `void ()` | 162–168 |
+| method | `legacyAndInvalidCredentialsNeverSendMail` | `void ()` | 170–176 |
+| method | `missingAndTerminalOrdersAreRejected` | `void ()` | 178–186 |
+| method | `expiredUnreportedOrderCannotNotify` | `void ()` | 188–194 |
+| method | `payerSecretsAndMetadataDoNotLeakThroughPublicOrderJson` | `void ()` | 196–206 |
+
+## PaymentNoticeSenderTest.java
+
+[src/test/java/com/wendao/service/PaymentNoticeSenderTest.java](../src/test/java/com/wendao/service/PaymentNoticeSenderTest.java) — SMTP结果、锁归属、旧任务和旧订单隔离测试
+
+| 类别 | 名称 | 签名 / 类型 | 行号 |
+| --- | --- | --- | --- |
+| class | `PaymentNoticeSenderTest` | `com.wendao.service::PaymentNoticeSenderTest` | 21–123 |
+| field | `orders` | `OrderMapper orders` | 22–22 |
+| field | `locks` | `PaymentNoticeLock locks` | 23–23 |
+| field | `mail` | `EmailUtils mail` | 24–24 |
+| field | `sender` | `PaymentNoticeSender sender` | 25–25 |
+| field | `order` | `Order order` | 26–26 |
+| field | `payerToken` | `String payerToken` | 27–27 |
+| field | `values` | `ValueOperations<String, String> values` | 28–28 |
+| method | `setup` | `void ()` | 30–58 |
+| method | `smtpAcceptancePersistsSentAndBuildsSeparateAdminLinks` | `void ()` | 60–70 |
+| method | `smtpFailureIsRecordedForRetry` | `void ()` | 72–80 |
+| method | `reviewLinksPreserveSpecialCharactersInExternalOrderNumbers` | `void ()` | 82–96 |
+| method | `lostOwnershipDoesNotDeliverOrOverwriteAnotherAttempt` | `void ()` | 98–104 |
+| method | `oldAttemptDoesNotSaveAnOutcomeAfterLosingItsLease` | `void ()` | 106–111 |
+| method | `legacyOrAlreadyReviewedOrdersAreNeverBackfilled` | `void ()` | 113–122 |

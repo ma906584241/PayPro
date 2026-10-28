@@ -13,6 +13,9 @@ import java.math.BigDecimal;
 @Data
 public class AddOrderResp {
 
+    /** Payer-only credential; unrelated to the administrator's review token. */
+    private String paymentConfirmToken;
+
     /**
      * 唯一标识
      */

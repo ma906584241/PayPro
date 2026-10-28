@@ -14,6 +14,8 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 public class OpenApiOrderResp implements Serializable {
 
+    private String paymentConfirmToken;
+
     private String orderId;
 
     private String orderNo;

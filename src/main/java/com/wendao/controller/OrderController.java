@@ -10,6 +10,9 @@ import com.wendao.enums.OrderStatesEnum;
 import com.wendao.model.req.GetOrderListReq;
 import com.wendao.model.req.OpenApiOrderReq;
 import com.wendao.model.req.OrderReq;
+import com.wendao.model.req.ConfirmPaidReq;
+import com.wendao.model.resp.PaymentConfirmationResp;
+import com.wendao.service.PaymentConfirmationService;
 import com.wendao.model.resp.AddOrderResp;
 import com.wendao.model.resp.OpenApiOrderResp;
 import com.wendao.service.OrderService;
@@ -45,6 +48,22 @@ public class OrderController {
     private OrderService orderService;
 
     @Autowired
+    private PaymentConfirmationService paymentConfirmationService;
+
+    @PostMapping("/order/confirm-paid")
+    @ResponseBody
+    public ResponseVO<PaymentConfirmationResp> confirmPaid(@RequestBody @Validated ConfirmPaidReq request) {
+        return ResponseVO.successResponse(paymentConfirmationService.confirm(request));
+    }
+
+    @GetMapping("/order/payment-confirmation")
+    @ResponseBody
+    public ResponseVO<PaymentConfirmationResp> paymentConfirmation(@RequestParam String orderId,
+            @RequestHeader(value = "X-Payment-Confirm-Token", required = false) String token) {
+        return ResponseVO.successResponse(paymentConfirmationService.status(orderId, token));
+    }
+
+    @Autowired
     private StringRedisTemplate redisTemplate;
 
     @Autowired
@@ -73,7 +92,9 @@ public class OrderController {
         }
 
         // 检查订单是否已过期
-        if (order.getExpireTime() != null && order.getExpireTime().before(new Date())) {
+        if (order.getPaymentConfirmedAt() == null && order.getExpireTime() != null
+                && order.getExpireTime().before(new Date())
+                && (Integer.valueOf(0).equals(order.getState()) || Integer.valueOf(4).equals(order.getState()))) {
             // 如果订单状态是待支付，则更新为已过期
             if (order.getState().equals(OrderStatesEnum.WAIT_PAY.getState())) {
                 order.setState(OrderStatesEnum.EXPIRED.getState());

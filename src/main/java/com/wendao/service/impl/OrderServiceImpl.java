@@ -5,7 +5,6 @@ import com.wendao.config.PayProConfig;
 import com.wendao.entity.Order;
 import com.wendao.exception.ApiException;
 import com.wendao.mapper.OrderMapper;
-import com.wendao.service.ProductService;
 import com.wendao.enums.OrderStatesEnum;
 import com.wendao.model.req.GetOrderListReq;
 import com.wendao.model.req.OpenApiOrderReq;
@@ -15,7 +14,6 @@ import com.wendao.model.resp.OpenApiOrderResp;
 import com.wendao.service.OrderService;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.lang.Snowflake;
-import com.wendao.entity.Product;
 import com.wendao.model.ResponseVO;
 import com.wendao.common.utils.*;
 import com.wendao.model.req.OrderReq;
@@ -25,6 +23,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.wendao.utils.OpenApiSignUtil;
+import com.wendao.utils.PaymentConfirmTokens;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -34,6 +33,9 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronizationAdapter;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
@@ -61,9 +63,6 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private EmailUtils emailUtils;
-
-    @Autowired
-    ProductService productService;
 
     @Autowired
     Snowflake snowflake;
@@ -176,7 +175,7 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public ResponseVO<AddOrderResp> addOrder(OrderReq req, HttpServletRequest request) {
 
-        if(StringUtils.isBlank(String.valueOf(req.getMoney()))){
+        if(req.getMoney() == null || req.getMoney().compareTo(BigDecimal.ZERO) <= 0){
             return ResponseVO.errorResponse("请填写完整信息和正确金额");
         }
 
@@ -184,6 +183,11 @@ public class OrderServiceImpl implements OrderService {
 
         Order entity = new Order();
         BeanUtils.copyProperties(req, entity);
+        if (Boolean.TRUE.equals(req.getCustom())) {
+            entity.setProductId(null);
+        }
+        entity.setOrderSource(entity.getProductId() == null ? "OTHER" : "PRODUCT");
+        String paymentConfirmToken = PaymentConfirmTokens.initialize(entity);
 
         // --- 减额匹配逻辑 ---
         PayProConfig.Decrement decrementConfig = payProConfig.getDecrement();
@@ -263,13 +267,8 @@ public class OrderServiceImpl implements OrderService {
         //记录缓存
         redisTemplate.opsForValue().set(ip, "added", payProConfig.getRateLimit().getIpExpire(), TimeUnit.MINUTES);
 
-        //给管理员发送审核邮件
-        String tokenAdmin = UUID.randomUUID().toString();
-        redisTemplate.opsForValue().set(entity.getId(), tokenAdmin, payProConfig.getToken().getExpire(), TimeUnit.DAYS);
-        entity = getAdminUrl(entity, entity.getId(), tokenAdmin, payProConfig.getToken().getValue());
-        emailUtils.sendTemplateMail(payProConfig.getEmail().getSender(), payProConfig.getEmail().getReceiver(), "【" + payProConfig.getTitle() + "】待审核处理", "payment-review", entity);
-
         AddOrderResp addPayResp = new AddOrderResp();
+        addPayResp.setPaymentConfirmToken(paymentConfirmToken);
         addPayResp.setId(entity.getId());
         addPayResp.setPayNum(entity.getPayNum());
         addPayResp.setPayType(entity.getPayType());
@@ -288,20 +287,37 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional
     public int pass(String id) {
-        //Pay pay = thisService.changePayState(id, 1);
         Order pay = orderMapper.selectById(id);
-        if (pay.getOrderSource().equals("PRODUCT") && pay.getProductId() != null) {
-            Product product = productService.getProductById(pay.getProductId() != null ? pay.getProductId().intValue() : null);
-            if (product != null && "CODE".equals(product.getType())) {
-                emailUtils.sendTemplateMail(payProConfig.getEmail().getSender(), pay.getEmail(), "【" + payProConfig.getTitle() + "】支付成功通知（附下载链接）",
-                        "order-success", pay);
-                pay.setState(OrderStatesEnum.SUCCESS_PAY.getState());
-                orderMapper.updateById(pay);
+        if (pay == null) {
+            throw new ApiException(404, "订单不存在");
+        }
+        if (Integer.valueOf(1).equals(pay.getState())) {
+            return 1;
+        }
+        if (orderMapper.approveOrder(id) == 0) {
+            Order current = orderMapper.selectById(id);
+            if (current != null && Integer.valueOf(1).equals(current.getState())) {
+                return 1;
             }
-        } else if (pay.getOrderSource().equals("OPENAPI")) {
+            throw new ApiException(409, "订单当前状态不可审核通过");
+        }
+        pay.setState(OrderStatesEnum.SUCCESS_PAY.getState());
+        if ("OPENAPI".equals(pay.getOrderSource())) {
             callbackFaka(pay.getNotifyUrl(),pay.getId(),pay.getMoney(),pay.getPayNum());
-            pay.setState(OrderStatesEnum.SUCCESS_PAY.getState());
-            orderMapper.updateById(pay);
+        } else if (StringUtils.isNotBlank(pay.getEmail()) && EmailUtils.checkEmail(pay.getEmail())) {
+            pay.setTime(DateUtil.formatDateTime(pay.getCreateTime()));
+            Runnable receipt = () -> emailUtils.sendTemplateMail(payProConfig.getEmail().getSender(),
+                    pay.getEmail(), "【" + payProConfig.getTitle() + "】支付成功通知", "order-success", pay);
+            if (TransactionSynchronizationManager.isSynchronizationActive()) {
+                TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+                    @Override
+                    public void afterCommit() {
+                        receipt.run();
+                    }
+                });
+            } else {
+                receipt.run();
+            }
         }
         return 1;
     }
@@ -386,6 +402,7 @@ public class OrderServiceImpl implements OrderService {
         order.setOrderSource("OPENAPI");
         order.setState(OrderStatesEnum.WAIT_PAY.getState());
         order.setCreateTime(new Date());
+        String paymentConfirmToken = PaymentConfirmTokens.initialize(order);
 
 
         // --- 减额匹配逻辑(OpenAPI) ---
@@ -495,19 +512,23 @@ public class OrderServiceImpl implements OrderService {
 
         // 获取支付类型配置
         Boolean useLocalQrCodeConfig = payProConfig.getUseLocalQrCode(req.getPayType());
-        String returnUrl = payProConfig.getSite() + "/payment.html?" +
-                "orderId=" + req.getOrderNo() +
-                "&money=" + req.getAmount() +
-                "&payType=" + req.getPayType() +
-                "&payNum=" + (order.getPayNum() != null ? order.getPayNum() : "") +
-                "&customerQr=" + (req.getCustom() || fallbackToRemark) +
-                "&picName=" + formattedAmount +
-                "&qrCode=" + "undefined" +
-                "&payQrNum=" + i +
-                "&useLocalQrCode=" + useLocalQrCodeConfig +
-                "&matchMode=" + matchMode +
-                "&actualAmount=" + actualFormattedAmount +
-                "&fallbackToRemark=" + fallbackToRemark;
+        Map<String, Object> paymentParams = new LinkedHashMap<>();
+        paymentParams.put("orderId", req.getOrderNo());
+        paymentParams.put("money", req.getAmount());
+        paymentParams.put("payType", req.getPayType());
+        paymentParams.put("payNum", order.getPayNum() != null ? order.getPayNum() : "");
+        paymentParams.put("customerQr", req.getCustom() || fallbackToRemark);
+        paymentParams.put("picName", formattedAmount);
+        paymentParams.put("qrCode", "undefined");
+        paymentParams.put("payQrNum", i);
+        paymentParams.put("useLocalQrCode", useLocalQrCodeConfig);
+        paymentParams.put("matchMode", matchMode);
+        paymentParams.put("actualAmount", actualFormattedAmount);
+        paymentParams.put("fallbackToRemark", fallbackToRemark);
+        paymentParams.put("paymentConfirmToken", paymentConfirmToken);
+        UriComponentsBuilder paymentUrl = UriComponentsBuilder.fromHttpUrl(payProConfig.getSite() + "/payment.html");
+        paymentParams.forEach((key, value) -> paymentUrl.queryParam(key, "{" + key + "}"));
+        String returnUrl = paymentUrl.encode().buildAndExpand(paymentParams).toUriString();
         try {
             orderMapper.insert(order);
         } catch (Exception e) {
@@ -515,12 +536,8 @@ public class OrderServiceImpl implements OrderService {
             throw new ApiException(ApiException.ErrorCode.SYSTEM_ERROR, "创建订单失败");
         }
 
-        String tokenAdmin = UUID.randomUUID().toString();
-        redisTemplate.opsForValue().set(order.getId(), tokenAdmin, payProConfig.getToken().getExpire(), TimeUnit.DAYS);
-        order = getAdminUrl(order, order.getId(), tokenAdmin, payProConfig.getToken().getValue());
-        emailUtils.sendTemplateMail(payProConfig.getEmail().getSender(), payProConfig.getEmail().getReceiver(), "【" + payProConfig.getTitle() + " · OPENAPI】待审核处理", "payment-review", order);
-
         return OpenApiOrderResp.builder()
+                .paymentConfirmToken(paymentConfirmToken)
                 .orderId(order.getId())
                 .orderNo(req.getOrderNo())
                 .amount(req.getAmount())
@@ -573,31 +590,6 @@ public class OrderServiceImpl implements OrderService {
         }
     }
 
-
-    /**
-     * 拼接管理员链接
-     */
-    public Order getAdminUrl(Order pay, String id, String token, String myToken) {
-
-        String pass = payProConfig.getSite() + "/order/pass?id=" + id + "&token=" + token + "&myToken=" + myToken;
-        pay.setPassUrl(pass);
-
-        String back = payProConfig.getSite() + "/order/back?id=" + id + "&token=" + token + "&myToken=" + myToken;
-        pay.setBackUrl(back);
-
-        String edit = payProConfig.getSite() + "/order-edit?id=" + id + "&token=" + token;
-        pay.setEditUrl(edit);
-
-        String del = payProConfig.getSite() + "/order-del?id=" + id + "&token=" + token;
-        pay.setDelUrl(del);
-
-        String close = payProConfig.getSite() + "/order-close?id=" + id + "&token=" + token;
-        pay.setCloseUrl(close);
-
-        String statistic = payProConfig.getSite() + "/statistic?myToken=" + myToken;
-        pay.setStatistic(statistic);
-        return pay;
-    }
 
     public void callbackFaka(String notifyUrl, String orderNo, BigDecimal amount, String payNum) {
         Map<String, Object> params = new TreeMap<>();

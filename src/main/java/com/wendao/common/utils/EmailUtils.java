@@ -40,32 +40,36 @@ public class EmailUtils {
      */
     @Async
     public void sendTemplateMail(String sender, String sendto,String title, String templateName,Object o) {
-
-        log.info("开始给"+sendto+"发送邮件");
-        MimeMessage message = mailSender.createMimeMessage();
         try {
-            //true表示需要创建一个multipart message html内容
-            MimeMessageHelper helper = new MimeMessageHelper(message, true);
-            helper.setFrom(sender);
-            helper.setTo(sendto);
-            helper.setSubject(title);
-
-            Context context = new Context();
-            context.setVariable("title",title);
-            context.setVariables(StringUtils.beanToMap(o));
-            context.setVariable("indexTitle", payProConfig.getIndexTitle());
-            context.setVariable("name", payProConfig.getName());
-            context.setVariable("supportMail", payProConfig.getSupportMail());
-            //获取模板html代码
-            String content = templateEngine.process(templateName, context);
-
-            helper.setText(content, true);
-
-            mailSender.send(message);
-            log.info("给"+sendto+"发送邮件成功");
-        }catch (Exception e){
-            e.printStackTrace();
+            sendTemplateMailOrThrow(sender, sendto, title, templateName, o);
+        } catch (Exception e) {
+            log.error("邮件发送失败，模板 {}", templateName, e);
         }
+    }
+
+    /** Synchronous delivery for callers that persist the actual SMTP outcome. */
+    public void sendTemplateMailOrThrow(String sender, String sendto, String title,
+                                       String templateName, Object o) throws Exception {
+        MimeMessage message = mailSender.createMimeMessage();
+        //true表示需要创建一个multipart message html内容
+        MimeMessageHelper helper = new MimeMessageHelper(message, true);
+        helper.setFrom(sender);
+        helper.setTo(sendto);
+        helper.setSubject(title);
+
+        Context context = new Context();
+        context.setVariable("title",title);
+        context.setVariables(StringUtils.beanToMap(o));
+        context.setVariable("indexTitle", payProConfig.getIndexTitle());
+        context.setVariable("name", payProConfig.getName());
+        context.setVariable("supportMail", payProConfig.getSupportMail());
+        //获取模板html代码
+        String content = templateEngine.process(templateName, context);
+
+        helper.setText(content, true);
+
+        mailSender.send(message);
+        log.info("邮件已交给 SMTP，模板 {}", templateName);
     }
 
     /**

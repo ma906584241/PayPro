@@ -573,13 +573,13 @@ createApp({
             if(!this.canSubmit){ this.showError('请选择金额和支付方式'); return; }
             this.loading = true; this.clearMessages();
             try{
-                const body = { money: this.finalAmount, productId: this.selectedProductId, payType: this.selectedPayment, description: this.description, nickName: '', custom: Boolean(this.customAmount), email: this.email };
+                const body = { money: this.finalAmount, productId: this.customAmount ? null : this.selectedProductId, payType: this.selectedPayment, description: this.description, nickName: '', custom: Boolean(this.customAmount), email: this.email };
                 let resp = await postRequest(API_CONFIG.ENDPOINTS.RECHARGE, body);
                 if(resp.code==200){
                     this.showSuccess('已提交，正在跳转');
                     const that = this;
                     setTimeout(()=>{
-                        const url = `payment.html?orderId=${resp.data.id}&money=${(resp.data.money||0).toFixed(2)}&payType=${resp.data.payType}&payNum=${resp.data.payNum||''}&customerQr=${resp.data.custom}&picName=${encodeURIComponent((resp.data.money||0).toFixed(2))}&qrCode=${resp.data.qrCode}&payQrNum=${resp.data.payQrNum}&useLocalQrCode=${that.useLocalQrCode}&matchMode=${encodeURIComponent(resp.data.matchMode||'REMARK')}&actualAmount=${(resp.data.actualAmount||resp.data.money||0).toFixed(2)}&fallbackToRemark=${resp.data.fallbackToRemark||false}`;
+                        const url = `payment.html?orderId=${resp.data.id}&money=${(resp.data.money||0).toFixed(2)}&payType=${resp.data.payType}&payNum=${resp.data.payNum||''}&customerQr=${resp.data.custom}&picName=${encodeURIComponent((resp.data.money||0).toFixed(2))}&qrCode=${resp.data.qrCode}&payQrNum=${resp.data.payQrNum}&useLocalQrCode=${that.useLocalQrCode}&matchMode=${encodeURIComponent(resp.data.matchMode||'REMARK')}&actualAmount=${(resp.data.actualAmount||resp.data.money||0).toFixed(2)}&fallbackToRemark=${resp.data.fallbackToRemark||false}&paymentConfirmToken=${encodeURIComponent(resp.data.paymentConfirmToken||'')}`;
                         window.location.href = url;
                     },800);
                 } else {

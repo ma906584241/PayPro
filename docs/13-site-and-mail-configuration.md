@@ -26,11 +26,11 @@ Compose 自动读取根目录 `.env`，将 MAIL_PASSWORD 传入 pay 容器。Jav
 - `docker compose config --quiet` 通过，两个 YAML 的发件人与 SMTP 用户名一致。
 - 已验证 15 个模板使用网站品牌，首页、帮助页和支付页的桌面 / 手机预览、收款人、客服 mailto 链接与布局。
 - 已确认实际授权码未出现在 Git 可追踪文件中。
-- 本机 Docker 构建在获取 Maven / OpenJDK 基础镜像时，被已配置镜像源的 EOF 连接错误阻断；没有完成 Java 构建，也未修改 Docker 镜像源设置。
+- 本机 Docker 构建在获取 Maven / OpenJDK 基础镜像时，被已配置镜像源的 EOF 连接错误阻断；当时没有完成 Java 构建，未修改 Docker 镜像源设置。随后在邮件机制改造中通过临时 JDK 8 / Maven 完成测试与可执行 JAR 打包；未声称 Docker 镜像构建通过。
 
 ## 上线
 
-将修改后的源码、外置 config / qr 目录以及本地 `.env` 单独同步到服务器，然后在项目目录执行：
+管理员邮件机制已改为客户主动确认后通知，详见 [管理员邮件触发机制：实施与上线说明](01-管理员邮件触发机制/实施与上线说明.md)。已有数据库必须先执行该文列出的增量迁移，再同步后端和模板。将源码、外置 config / qr 目录以及本地 `.env` 单独同步到服务器，然后在项目目录执行：
 
 ```bash
 docker compose up -d --build

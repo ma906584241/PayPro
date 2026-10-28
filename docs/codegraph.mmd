@@ -6,6 +6,15 @@ flowchart TB
     Front --> PC[ProductController]
     Page --> OS[OrderServiceImpl]
     OC --> OS
+    OC --> Confirm[PaymentConfirmationService]
+    Confirm --> OM
+    Confirm --> Lock[PaymentNoticeLock]
+    Lock --> Redis
+    Confirm --> Sender[PaymentNoticeSender / afterCommit async]
+    Sender --> OM
+    Sender --> Lock
+    Sender --> Redis
+    Sender --> Mail
     PC --> PS[ProductServiceImpl]
     PS --> Config
     OS --> Config

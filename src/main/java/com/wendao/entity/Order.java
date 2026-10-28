@@ -1,6 +1,7 @@
 package com.wendao.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.FieldStrategy;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -104,6 +105,19 @@ public class Order implements Serializable{
 
     /** 过期时间 */
     private Date expireTime;
+
+    /** Only new checkout links have a payer confirmation credential. Never expose it. */
+    @JsonIgnore
+    @TableField(updateStrategy = FieldStrategy.NEVER)
+    private String paymentConfirmTokenHash;
+
+    @JsonIgnore
+    @TableField(updateStrategy = FieldStrategy.NEVER)
+    private Date paymentConfirmedAt;
+
+    @JsonIgnore
+    @TableField(updateStrategy = FieldStrategy.NEVER)
+    private String adminNoticeStatus;
 
     @TableField(exist = false)
     private String time;

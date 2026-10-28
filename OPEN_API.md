@@ -1,5 +1,7 @@
 # 外部订单接口文档
 
+> 2026-10-28 更新：新订单创建不发送管理员邮件；客户扫码付款后须在支付页主动确认，管理员仍需核实到账。请使用包含 `paymentConfirmToken` 的完整 `returnUrl`。接口详情与迁移见 [实施与上线说明](docs/01-管理员邮件触发机制/实施与上线说明.md)。
+
 ## 接口概述
 
 该接口用于外部系统向支付系统添加订单，支持MD5签名验证、时间戳校验、事务处理等功能。
@@ -16,7 +18,7 @@
 |--------|------|------|------------------------------------------|
 | orderNo | String | 是 | 订单号，唯一标识                                 |
 | amount | BigDecimal | 是 | 订单金额，必须大于0且小于等于100000                    |
-| payType | String | 是 | 支付方式（alipay/wechat/alipay_dmf/wechat_zs） |
+| payType | String | 是 | 支付方式（alipay/wechat） |
 | nickName | String | 否 | 用户昵称                                     |
 | description | String | 否 | 订单描述                                     |
 | email | String | 否 | 用户邮箱                                     |
@@ -24,7 +26,7 @@
 | userId | String | 否 | 用户ID                                     |
 | productId | Long | 否 | 产品ID                                     |
 | timestamp | Long | 是 | 请求时间戳（毫秒），有效期5分钟                         |
-| expireSeconds | Integer | 否 | 过期时间（秒），订单将在该时间后过期                   |
+| expireSeconds | Integer | 否 | 过期时间（秒），当前仅参与签名，尚未设置订单expireTime                   |
 | sign | String | 是 | MD5签名                                    |
 
 ## 签名算法
@@ -71,7 +73,8 @@ MD5签名：`XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX`
     "message": "订单创建成功",
     "timestamp": 1733232000000,
     "qrCodeUrl": "支付二维码URL",
-    "returnUrl": "支付完成返回URL"
+    "paymentConfirmToken": "客户确认凭证",
+    "returnUrl": "本系统支付页URL，包含paymentConfirmToken"
   }
 }
 ```
@@ -82,13 +85,14 @@ MD5签名：`XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX`
 |--------|------|------|
 | orderNo | String | 外部订单号 |
 | amount | BigDecimal | 订单金额 |
-| payType | String | 支付方式（alipay/wechat/alipay_dmf/wechat_zs） |
+| payType | String | 支付方式（alipay/wechat） |
 | payNum | String | 支付标识，用于后续查询订单 |
-| state | Integer | 订单状态（0-待支付，1-已支付，2-已失败，3-已支付，4-已扫码） |
+| state | Integer | 订单状态（0-待支付，1-已支付，2-已失败，4-已扫码，5-已过期） |
 | message | String | 处理结果消息 |
 | timestamp | Long | 系统处理完成时间戳（毫秒） |
 | qrCodeUrl | String | 支付二维码URL，用于展示支付二维码 |
-| returnUrl | String | 跳转url，可以跳转至改地址进行后续处理 |
+| returnUrl | String | 本系统支付页，已包含确认凭证，不能丢弃或截断查询参数 |
+| paymentConfirmToken | String | 客户付款声明专用凭证，与管理员Token分离 |
 
 ### 失败响应
 

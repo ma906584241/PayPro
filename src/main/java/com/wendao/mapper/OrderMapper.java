@@ -3,6 +3,8 @@ package com.wendao.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.wendao.entity.Order;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
+import org.apache.ibatis.annotations.Param;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -12,6 +14,21 @@ import java.util.List;
  * @author lld
  */
 public interface OrderMapper extends BaseMapper<Order> {
+
+    @Update("UPDATE t_order SET payment_confirmed_at = COALESCE(payment_confirmed_at, #{now}), " +
+            "admin_notice_status = 'SENDING', update_time = #{now} " +
+            "WHERE id = #{id} AND payment_confirm_token_hash = #{hash} " +
+            "AND state IN (0, 4) " +
+            "AND (payment_confirmed_at IS NOT NULL OR expire_time IS NULL OR expire_time >= #{now}) " +
+            "AND (admin_notice_status IS NULL OR admin_notice_status <> 'SENT')")
+    int claimPaymentNotice(@Param("id") String id, @Param("hash") String hash, @Param("now") Date now);
+
+    @Update("UPDATE t_order SET admin_notice_status = #{status}, update_time = NOW() " +
+            "WHERE id = #{id} AND admin_notice_status = 'SENDING'")
+    int finishPaymentNotice(@Param("id") String id, @Param("status") String status);
+
+    @Update("UPDATE t_order SET state = 1, update_time = NOW() WHERE id = #{id} AND state IN (0, 4)")
+    int approveOrder(@Param("id") String id);
 
     @Select("select * from t_order where state = #{state} "
             + "and ((expire_time is not null and expire_time < now()) "

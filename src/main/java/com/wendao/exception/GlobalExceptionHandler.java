@@ -5,11 +5,26 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
+import org.springframework.web.bind.MissingRequestHeaderException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseVO<?> handleValidation(MethodArgumentNotValidException e) {
+        String message = e.getBindingResult().getFieldError() == null ? "请求参数不完整" :
+                e.getBindingResult().getFieldError().getDefaultMessage();
+        return ResponseVO.errorResponse(400, message);
+    }
+
+    @ExceptionHandler({MissingServletRequestParameterException.class, MissingRequestHeaderException.class})
+    public ResponseVO<?> handleMissingInput(Exception e) {
+        return ResponseVO.errorResponse(400, "请求参数不完整");
+    }
 
     @ExceptionHandler(ApiException.class)
     public ResponseVO<?> handleApiException(ApiException e) {
