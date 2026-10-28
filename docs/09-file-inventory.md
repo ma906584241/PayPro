@@ -27,14 +27,14 @@
 
 | 文件 | 字节 | 行数 | 格式 / 用途 |
 | --- | ---: | ---: | --- |
-| [.dockerignore](../.dockerignore) | 149 | 9 |  排除私密环境、Git、图谱、文档与本地构建产物的 Docker 上下文规则 |
-| [.env.example](../.env.example) | 159 | 3 |  QQ SMTP 授权码环境变量示例，不含真实凭据 |
+| [.dockerignore](../.dockerignore) | 158 | 9 |  排除私密环境、Git、图谱、文档与本地构建产物的 Docker 上下文规则 |
+| [.env.example](../.env.example) | 162 | 3 |  QQ SMTP 授权码环境变量示例，不含真实凭据 |
 | [.gitattributes](../.gitattributes) | 154 | 7 |  文本 LF 规则和 Compose 二进制标记 |
 | [.gitignore](../.gitignore) | 66 | 4 |  IDE、构建产物和本地配置排除规则 |
 | [Dockerfile](../Dockerfile) | 695 | 28 |  Maven 构建 + JDK8 运行的多阶段镜像 |
 | [OPEN_API.md](../OPEN_API.md) | 6686 | 222 |  原 OpenAPI 说明，与当前实现存在差异 |
 | [README.md](../README.md) | 11440 | 328 |  原项目介绍、开源 / 高级版说明和截图 |
-| [config/application-prod.yml](../config/application-prod.yml) | 3313 | 122 |  外置生产配置，含部署账号与业务参数 |
+| [config/application-prod.yml](../config/application-prod.yml) | 3340 | 122 |  外置生产配置，含部署账号与业务参数 |
 | [docker-compose](../docker-compose) | 12212176 | — | ELF 64-bit x86-64 Linux x86-64 ELF Compose 可执行文件（非文本） |
 | [docker-compose.yml](../docker-compose.yml) | 2257 | 88 |  MySQL / Redis / pay 三服务与卷、健康检查 |
 | [images/alipay_confirm.png](../images/alipay_confirm.png) | 200293 | — | PNG 1915×899 原 README 功能截图 |
@@ -46,30 +46,30 @@
 | [images/wechat_confirm.png](../images/wechat_confirm.png) | 389500 | — | JPEG 原 README 功能截图 |
 | [install.sh](../install.sh) | 4247 | 128 |  Linux 一键部署与 Compose 安装 |
 | [pom.xml](../pom.xml) | 5445 | 153 |  Maven 坐标、父 POM、依赖、编译与打包插件 |
-| [qr/alipay/custom.png](../qr/alipay/custom.png) | 140820 | — | PNG 591×576 运行时外置支付二维码：alipay/custom.png |
-| [qr/wechat/0.01/1.png](../qr/wechat/0.01/1.png) | 133294 | — | PNG 717×618 运行时外置支付二维码：wechat/0.01/1.png |
-| [qr/wechat/0.01/2.png](../qr/wechat/0.01/2.png) | 133294 | — | PNG 717×618 运行时外置支付二维码：wechat/0.01/2.png |
-| [qr/wechat/1.00/1.png](../qr/wechat/1.00/1.png) | 133294 | — | PNG 717×618 运行时外置支付二维码：wechat/1.00/1.png |
-| [qr/wechat/1.00/2.png](../qr/wechat/1.00/2.png) | 133294 | — | PNG 717×618 运行时外置支付二维码：wechat/1.00/2.png |
-| [qr/wechat/10.00/1.png](../qr/wechat/10.00/1.png) | 133294 | — | PNG 717×618 运行时外置支付二维码：wechat/10.00/1.png |
-| [qr/wechat/10.00/2.png](../qr/wechat/10.00/2.png) | 133294 | — | PNG 717×618 运行时外置支付二维码：wechat/10.00/2.png |
-| [qr/wechat/29.00/1.png](../qr/wechat/29.00/1.png) | 133294 | — | PNG 717×618 运行时外置支付二维码：wechat/29.00/1.png |
-| [qr/wechat/29.00/2.png](../qr/wechat/29.00/2.png) | 133294 | — | PNG 717×618 运行时外置支付二维码：wechat/29.00/2.png |
-| [qr/wechat/29.00/28.98/1.png](../qr/wechat/29.00/28.98/1.png) | 133294 | — | PNG 717×618 运行时外置支付二维码：wechat/29.00/28.98/1.png |
-| [qr/wechat/29.00/28.98/2.png](../qr/wechat/29.00/28.98/2.png) | 133294 | — | PNG 717×618 运行时外置支付二维码：wechat/29.00/28.98/2.png |
-| [qr/wechat/29.00/28.99/1.png](../qr/wechat/29.00/28.99/1.png) | 133294 | — | PNG 717×618 运行时外置支付二维码：wechat/29.00/28.99/1.png |
-| [qr/wechat/29.00/28.99/2.png](../qr/wechat/29.00/28.99/2.png) | 133294 | — | PNG 717×618 运行时外置支付二维码：wechat/29.00/28.99/2.png |
-| [qr/wechat/49.00/1.png](../qr/wechat/49.00/1.png) | 133294 | — | PNG 717×618 运行时外置支付二维码：wechat/49.00/1.png |
-| [qr/wechat/49.00/2.png](../qr/wechat/49.00/2.png) | 133294 | — | PNG 717×618 运行时外置支付二维码：wechat/49.00/2.png |
-| [qr/wechat/5.00/1.png](../qr/wechat/5.00/1.png) | 133294 | — | PNG 717×618 运行时外置支付二维码：wechat/5.00/1.png |
-| [qr/wechat/5.00/2.png](../qr/wechat/5.00/2.png) | 133294 | — | PNG 717×618 运行时外置支付二维码：wechat/5.00/2.png |
-| [qr/wechat/5.00/4.98/1.png](../qr/wechat/5.00/4.98/1.png) | 133294 | — | PNG 717×618 运行时外置支付二维码：wechat/5.00/4.98/1.png |
-| [qr/wechat/5.00/4.98/2.png](../qr/wechat/5.00/4.98/2.png) | 133294 | — | PNG 717×618 运行时外置支付二维码：wechat/5.00/4.98/2.png |
-| [qr/wechat/5.00/4.99/1.png](../qr/wechat/5.00/4.99/1.png) | 133294 | — | PNG 717×618 运行时外置支付二维码：wechat/5.00/4.99/1.png |
-| [qr/wechat/5.00/4.99/2.png](../qr/wechat/5.00/4.99/2.png) | 133294 | — | PNG 717×618 运行时外置支付二维码：wechat/5.00/4.99/2.png |
-| [qr/wechat/5.00/5.01/1.png](../qr/wechat/5.00/5.01/1.png) | 133294 | — | PNG 717×618 运行时外置支付二维码：wechat/5.00/5.01/1.png |
-| [qr/wechat/5.00/5.01/2.png](../qr/wechat/5.00/5.01/2.png) | 133294 | — | PNG 717×618 运行时外置支付二维码：wechat/5.00/5.01/2.png |
-| [qr/wechat/custom.png](../qr/wechat/custom.png) | 133294 | — | PNG 717×618 运行时外置支付二维码：wechat/custom.png |
+| [qr/alipay/custom.png](../qr/alipay/custom.png) | 166855 | — | PNG 432×428 运行时外置支付二维码：alipay/custom.png |
+| [qr/wechat/0.01/1.png](../qr/wechat/0.01/1.png) | 50953 | — | PNG 444×447 运行时外置支付二维码：wechat/0.01/1.png |
+| [qr/wechat/0.01/2.png](../qr/wechat/0.01/2.png) | 50953 | — | PNG 444×447 运行时外置支付二维码：wechat/0.01/2.png |
+| [qr/wechat/1.00/1.png](../qr/wechat/1.00/1.png) | 50953 | — | PNG 444×447 运行时外置支付二维码：wechat/1.00/1.png |
+| [qr/wechat/1.00/2.png](../qr/wechat/1.00/2.png) | 50953 | — | PNG 444×447 运行时外置支付二维码：wechat/1.00/2.png |
+| [qr/wechat/10.00/1.png](../qr/wechat/10.00/1.png) | 50953 | — | PNG 444×447 运行时外置支付二维码：wechat/10.00/1.png |
+| [qr/wechat/10.00/2.png](../qr/wechat/10.00/2.png) | 50953 | — | PNG 444×447 运行时外置支付二维码：wechat/10.00/2.png |
+| [qr/wechat/29.00/1.png](../qr/wechat/29.00/1.png) | 50953 | — | PNG 444×447 运行时外置支付二维码：wechat/29.00/1.png |
+| [qr/wechat/29.00/2.png](../qr/wechat/29.00/2.png) | 50953 | — | PNG 444×447 运行时外置支付二维码：wechat/29.00/2.png |
+| [qr/wechat/29.00/28.98/1.png](../qr/wechat/29.00/28.98/1.png) | 50953 | — | PNG 444×447 运行时外置支付二维码：wechat/29.00/28.98/1.png |
+| [qr/wechat/29.00/28.98/2.png](../qr/wechat/29.00/28.98/2.png) | 50953 | — | PNG 444×447 运行时外置支付二维码：wechat/29.00/28.98/2.png |
+| [qr/wechat/29.00/28.99/1.png](../qr/wechat/29.00/28.99/1.png) | 50953 | — | PNG 444×447 运行时外置支付二维码：wechat/29.00/28.99/1.png |
+| [qr/wechat/29.00/28.99/2.png](../qr/wechat/29.00/28.99/2.png) | 50953 | — | PNG 444×447 运行时外置支付二维码：wechat/29.00/28.99/2.png |
+| [qr/wechat/49.00/1.png](../qr/wechat/49.00/1.png) | 50953 | — | PNG 444×447 运行时外置支付二维码：wechat/49.00/1.png |
+| [qr/wechat/49.00/2.png](../qr/wechat/49.00/2.png) | 50953 | — | PNG 444×447 运行时外置支付二维码：wechat/49.00/2.png |
+| [qr/wechat/5.00/1.png](../qr/wechat/5.00/1.png) | 50953 | — | PNG 444×447 运行时外置支付二维码：wechat/5.00/1.png |
+| [qr/wechat/5.00/2.png](../qr/wechat/5.00/2.png) | 50953 | — | PNG 444×447 运行时外置支付二维码：wechat/5.00/2.png |
+| [qr/wechat/5.00/4.98/1.png](../qr/wechat/5.00/4.98/1.png) | 50953 | — | PNG 444×447 运行时外置支付二维码：wechat/5.00/4.98/1.png |
+| [qr/wechat/5.00/4.98/2.png](../qr/wechat/5.00/4.98/2.png) | 50953 | — | PNG 444×447 运行时外置支付二维码：wechat/5.00/4.98/2.png |
+| [qr/wechat/5.00/4.99/1.png](../qr/wechat/5.00/4.99/1.png) | 50953 | — | PNG 444×447 运行时外置支付二维码：wechat/5.00/4.99/1.png |
+| [qr/wechat/5.00/4.99/2.png](../qr/wechat/5.00/4.99/2.png) | 50953 | — | PNG 444×447 运行时外置支付二维码：wechat/5.00/4.99/2.png |
+| [qr/wechat/5.00/5.01/1.png](../qr/wechat/5.00/5.01/1.png) | 50953 | — | PNG 444×447 运行时外置支付二维码：wechat/5.00/5.01/1.png |
+| [qr/wechat/5.00/5.01/2.png](../qr/wechat/5.00/5.01/2.png) | 50953 | — | PNG 444×447 运行时外置支付二维码：wechat/5.00/5.01/2.png |
+| [qr/wechat/custom.png](../qr/wechat/custom.png) | 50953 | — | PNG 444×447 运行时外置支付二维码：wechat/custom.png |
 | [qr/wechat_zs/custom.png](../qr/wechat_zs/custom.png) | 63239 | — | JPEG 运行时外置支付二维码：wechat_zs/custom.png |
 | [settings.xml](../settings.xml) | 234 | 10 |  Maven central 镜像配置 |
 | [src/main/java/com/wendao/PayApplication.java](../src/main/java/com/wendao/PayApplication.java) | 719 | 25 |  Spring Boot 入口，开启缓存、异步、调度与 Mapper 扫描 |
@@ -105,7 +105,7 @@
 | [src/main/java/com/wendao/service/impl/ProductServiceImpl.java](../src/main/java/com/wendao/service/impl/ProductServiceImpl.java) | 2350 | 65 |  YAML 商品转实体，公开接口清除下载链接 |
 | [src/main/java/com/wendao/utils/OpenApiSignUtil.java](../src/main/java/com/wendao/utils/OpenApiSignUtil.java) | 4767 | 113 |  OpenAPI MD5 签名、验签及五分钟时间戳验证 |
 | [src/main/resources/Dockerfile](../src/main/resources/Dockerfile) | 421 | 20 |  从预构建 JAR 构建运行镜像的旧入口 |
-| [src/main/resources/application.yml](../src/main/resources/application.yml) | 3146 | 127 |  包内基础 Spring 与 paypro 配置 |
+| [src/main/resources/application.yml](../src/main/resources/application.yml) | 3173 | 127 |  包内基础 Spring 与 paypro 配置 |
 | [src/main/resources/favicon.ico](../src/main/resources/favicon.ico) | 12181 | — | PNG 256×256 站点图标资源 |
 | [src/main/resources/sql/pay.sql](../src/main/resources/sql/pay.sql) | 2690 | 57 |  订单表初始化、减额迁移和索引 |
 | [src/main/resources/start.sh](../src/main/resources/start.sh) | 2075 | 51 |  容器 JVM、profile、日志与 JMX 启动参数 |
@@ -135,32 +135,32 @@
 | [src/main/resources/static/assets/js/api-config.js](../src/main/resources/static/assets/js/api-config.js) | 1882 | 62 |  API 基址、端点和超时配置 |
 | [src/main/resources/static/assets/js/http-util.js](../src/main/resources/static/assets/js/http-util.js) | 5580 | 194 |  fetch 请求类和全局单例封装 |
 | [src/main/resources/static/assets/js/qcode.min.js](../src/main/resources/static/assets/js/qcode.min.js) | 23743 | 7 |  第三方 qrcode@1.5.1 浏览器二维码库 |
-| [src/main/resources/static/assets/qr/alipay/0.01/1.png](../src/main/resources/static/assets/qr/alipay/0.01/1.png) | 140820 | — | PNG 591×576 随 JAR 打包的支付二维码：alipay/0.01/1.png |
-| [src/main/resources/static/assets/qr/alipay/0.01/2.png](../src/main/resources/static/assets/qr/alipay/0.01/2.png) | 140820 | — | PNG 591×576 随 JAR 打包的支付二维码：alipay/0.01/2.png |
-| [src/main/resources/static/assets/qr/alipay/custom.png](../src/main/resources/static/assets/qr/alipay/custom.png) | 140820 | — | PNG 591×576 随 JAR 打包的支付二维码：alipay/custom.png |
-| [src/main/resources/static/assets/qr/wechat/0.01/1.png](../src/main/resources/static/assets/qr/wechat/0.01/1.png) | 133294 | — | PNG 717×618 随 JAR 打包的支付二维码：wechat/0.01/1.png |
-| [src/main/resources/static/assets/qr/wechat/0.01/2.png](../src/main/resources/static/assets/qr/wechat/0.01/2.png) | 133294 | — | PNG 717×618 随 JAR 打包的支付二维码：wechat/0.01/2.png |
-| [src/main/resources/static/assets/qr/wechat/10.00/1.png](../src/main/resources/static/assets/qr/wechat/10.00/1.png) | 133294 | — | PNG 717×618 随 JAR 打包的支付二维码：wechat/10.00/1.png |
-| [src/main/resources/static/assets/qr/wechat/10.00/2.png](../src/main/resources/static/assets/qr/wechat/10.00/2.png) | 133294 | — | PNG 717×618 随 JAR 打包的支付二维码：wechat/10.00/2.png |
-| [src/main/resources/static/assets/qr/wechat/100.00/1.png](../src/main/resources/static/assets/qr/wechat/100.00/1.png) | 133294 | — | PNG 717×618 随 JAR 打包的支付二维码：wechat/100.00/1.png |
-| [src/main/resources/static/assets/qr/wechat/100.00/2.png](../src/main/resources/static/assets/qr/wechat/100.00/2.png) | 133294 | — | PNG 717×618 随 JAR 打包的支付二维码：wechat/100.00/2.png |
-| [src/main/resources/static/assets/qr/wechat/20.00/1.png](../src/main/resources/static/assets/qr/wechat/20.00/1.png) | 133294 | — | PNG 717×618 随 JAR 打包的支付二维码：wechat/20.00/1.png |
-| [src/main/resources/static/assets/qr/wechat/20.00/2.png](../src/main/resources/static/assets/qr/wechat/20.00/2.png) | 133294 | — | PNG 717×618 随 JAR 打包的支付二维码：wechat/20.00/2.png |
-| [src/main/resources/static/assets/qr/wechat/200.00/1.png](../src/main/resources/static/assets/qr/wechat/200.00/1.png) | 133294 | — | PNG 717×618 随 JAR 打包的支付二维码：wechat/200.00/1.png |
-| [src/main/resources/static/assets/qr/wechat/200.00/2.png](../src/main/resources/static/assets/qr/wechat/200.00/2.png) | 133294 | — | PNG 717×618 随 JAR 打包的支付二维码：wechat/200.00/2.png |
-| [src/main/resources/static/assets/qr/wechat/5.00/1.png](../src/main/resources/static/assets/qr/wechat/5.00/1.png) | 133294 | — | PNG 717×618 随 JAR 打包的支付二维码：wechat/5.00/1.png |
-| [src/main/resources/static/assets/qr/wechat/5.00/2.png](../src/main/resources/static/assets/qr/wechat/5.00/2.png) | 133294 | — | PNG 717×618 随 JAR 打包的支付二维码：wechat/5.00/2.png |
-| [src/main/resources/static/assets/qr/wechat/5.00/4.98/1.png](../src/main/resources/static/assets/qr/wechat/5.00/4.98/1.png) | 133294 | — | PNG 717×618 随 JAR 打包的支付二维码：wechat/5.00/4.98/1.png |
-| [src/main/resources/static/assets/qr/wechat/5.00/4.98/2.png](../src/main/resources/static/assets/qr/wechat/5.00/4.98/2.png) | 133294 | — | PNG 717×618 随 JAR 打包的支付二维码：wechat/5.00/4.98/2.png |
-| [src/main/resources/static/assets/qr/wechat/5.00/4.99/1.png](../src/main/resources/static/assets/qr/wechat/5.00/4.99/1.png) | 133294 | — | PNG 717×618 随 JAR 打包的支付二维码：wechat/5.00/4.99/1.png |
-| [src/main/resources/static/assets/qr/wechat/5.00/4.99/2.png](../src/main/resources/static/assets/qr/wechat/5.00/4.99/2.png) | 133294 | — | PNG 717×618 随 JAR 打包的支付二维码：wechat/5.00/4.99/2.png |
-| [src/main/resources/static/assets/qr/wechat/5.00/5.01/1.png](../src/main/resources/static/assets/qr/wechat/5.00/5.01/1.png) | 133294 | — | PNG 717×618 随 JAR 打包的支付二维码：wechat/5.00/5.01/1.png |
-| [src/main/resources/static/assets/qr/wechat/5.00/5.01/2.png](../src/main/resources/static/assets/qr/wechat/5.00/5.01/2.png) | 133294 | — | PNG 717×618 随 JAR 打包的支付二维码：wechat/5.00/5.01/2.png |
-| [src/main/resources/static/assets/qr/wechat/50.00/1.png](../src/main/resources/static/assets/qr/wechat/50.00/1.png) | 133294 | — | PNG 717×618 随 JAR 打包的支付二维码：wechat/50.00/1.png |
-| [src/main/resources/static/assets/qr/wechat/50.00/2.png](../src/main/resources/static/assets/qr/wechat/50.00/2.png) | 133294 | — | PNG 717×618 随 JAR 打包的支付二维码：wechat/50.00/2.png |
-| [src/main/resources/static/assets/qr/wechat/500.00/1.png](../src/main/resources/static/assets/qr/wechat/500.00/1.png) | 133294 | — | PNG 717×618 随 JAR 打包的支付二维码：wechat/500.00/1.png |
-| [src/main/resources/static/assets/qr/wechat/500.00/2.png](../src/main/resources/static/assets/qr/wechat/500.00/2.png) | 133294 | — | PNG 717×618 随 JAR 打包的支付二维码：wechat/500.00/2.png |
-| [src/main/resources/static/assets/qr/wechat/custom.png](../src/main/resources/static/assets/qr/wechat/custom.png) | 133294 | — | PNG 717×618 随 JAR 打包的支付二维码：wechat/custom.png |
+| [src/main/resources/static/assets/qr/alipay/0.01/1.png](../src/main/resources/static/assets/qr/alipay/0.01/1.png) | 166855 | — | PNG 432×428 随 JAR 打包的支付二维码：alipay/0.01/1.png |
+| [src/main/resources/static/assets/qr/alipay/0.01/2.png](../src/main/resources/static/assets/qr/alipay/0.01/2.png) | 166855 | — | PNG 432×428 随 JAR 打包的支付二维码：alipay/0.01/2.png |
+| [src/main/resources/static/assets/qr/alipay/custom.png](../src/main/resources/static/assets/qr/alipay/custom.png) | 166855 | — | PNG 432×428 随 JAR 打包的支付二维码：alipay/custom.png |
+| [src/main/resources/static/assets/qr/wechat/0.01/1.png](../src/main/resources/static/assets/qr/wechat/0.01/1.png) | 50953 | — | PNG 444×447 随 JAR 打包的支付二维码：wechat/0.01/1.png |
+| [src/main/resources/static/assets/qr/wechat/0.01/2.png](../src/main/resources/static/assets/qr/wechat/0.01/2.png) | 50953 | — | PNG 444×447 随 JAR 打包的支付二维码：wechat/0.01/2.png |
+| [src/main/resources/static/assets/qr/wechat/10.00/1.png](../src/main/resources/static/assets/qr/wechat/10.00/1.png) | 50953 | — | PNG 444×447 随 JAR 打包的支付二维码：wechat/10.00/1.png |
+| [src/main/resources/static/assets/qr/wechat/10.00/2.png](../src/main/resources/static/assets/qr/wechat/10.00/2.png) | 50953 | — | PNG 444×447 随 JAR 打包的支付二维码：wechat/10.00/2.png |
+| [src/main/resources/static/assets/qr/wechat/100.00/1.png](../src/main/resources/static/assets/qr/wechat/100.00/1.png) | 50953 | — | PNG 444×447 随 JAR 打包的支付二维码：wechat/100.00/1.png |
+| [src/main/resources/static/assets/qr/wechat/100.00/2.png](../src/main/resources/static/assets/qr/wechat/100.00/2.png) | 50953 | — | PNG 444×447 随 JAR 打包的支付二维码：wechat/100.00/2.png |
+| [src/main/resources/static/assets/qr/wechat/20.00/1.png](../src/main/resources/static/assets/qr/wechat/20.00/1.png) | 50953 | — | PNG 444×447 随 JAR 打包的支付二维码：wechat/20.00/1.png |
+| [src/main/resources/static/assets/qr/wechat/20.00/2.png](../src/main/resources/static/assets/qr/wechat/20.00/2.png) | 50953 | — | PNG 444×447 随 JAR 打包的支付二维码：wechat/20.00/2.png |
+| [src/main/resources/static/assets/qr/wechat/200.00/1.png](../src/main/resources/static/assets/qr/wechat/200.00/1.png) | 50953 | — | PNG 444×447 随 JAR 打包的支付二维码：wechat/200.00/1.png |
+| [src/main/resources/static/assets/qr/wechat/200.00/2.png](../src/main/resources/static/assets/qr/wechat/200.00/2.png) | 50953 | — | PNG 444×447 随 JAR 打包的支付二维码：wechat/200.00/2.png |
+| [src/main/resources/static/assets/qr/wechat/5.00/1.png](../src/main/resources/static/assets/qr/wechat/5.00/1.png) | 50953 | — | PNG 444×447 随 JAR 打包的支付二维码：wechat/5.00/1.png |
+| [src/main/resources/static/assets/qr/wechat/5.00/2.png](../src/main/resources/static/assets/qr/wechat/5.00/2.png) | 50953 | — | PNG 444×447 随 JAR 打包的支付二维码：wechat/5.00/2.png |
+| [src/main/resources/static/assets/qr/wechat/5.00/4.98/1.png](../src/main/resources/static/assets/qr/wechat/5.00/4.98/1.png) | 50953 | — | PNG 444×447 随 JAR 打包的支付二维码：wechat/5.00/4.98/1.png |
+| [src/main/resources/static/assets/qr/wechat/5.00/4.98/2.png](../src/main/resources/static/assets/qr/wechat/5.00/4.98/2.png) | 50953 | — | PNG 444×447 随 JAR 打包的支付二维码：wechat/5.00/4.98/2.png |
+| [src/main/resources/static/assets/qr/wechat/5.00/4.99/1.png](../src/main/resources/static/assets/qr/wechat/5.00/4.99/1.png) | 50953 | — | PNG 444×447 随 JAR 打包的支付二维码：wechat/5.00/4.99/1.png |
+| [src/main/resources/static/assets/qr/wechat/5.00/4.99/2.png](../src/main/resources/static/assets/qr/wechat/5.00/4.99/2.png) | 50953 | — | PNG 444×447 随 JAR 打包的支付二维码：wechat/5.00/4.99/2.png |
+| [src/main/resources/static/assets/qr/wechat/5.00/5.01/1.png](../src/main/resources/static/assets/qr/wechat/5.00/5.01/1.png) | 50953 | — | PNG 444×447 随 JAR 打包的支付二维码：wechat/5.00/5.01/1.png |
+| [src/main/resources/static/assets/qr/wechat/5.00/5.01/2.png](../src/main/resources/static/assets/qr/wechat/5.00/5.01/2.png) | 50953 | — | PNG 444×447 随 JAR 打包的支付二维码：wechat/5.00/5.01/2.png |
+| [src/main/resources/static/assets/qr/wechat/50.00/1.png](../src/main/resources/static/assets/qr/wechat/50.00/1.png) | 50953 | — | PNG 444×447 随 JAR 打包的支付二维码：wechat/50.00/1.png |
+| [src/main/resources/static/assets/qr/wechat/50.00/2.png](../src/main/resources/static/assets/qr/wechat/50.00/2.png) | 50953 | — | PNG 444×447 随 JAR 打包的支付二维码：wechat/50.00/2.png |
+| [src/main/resources/static/assets/qr/wechat/500.00/1.png](../src/main/resources/static/assets/qr/wechat/500.00/1.png) | 50953 | — | PNG 444×447 随 JAR 打包的支付二维码：wechat/500.00/1.png |
+| [src/main/resources/static/assets/qr/wechat/500.00/2.png](../src/main/resources/static/assets/qr/wechat/500.00/2.png) | 50953 | — | PNG 444×447 随 JAR 打包的支付二维码：wechat/500.00/2.png |
+| [src/main/resources/static/assets/qr/wechat/custom.png](../src/main/resources/static/assets/qr/wechat/custom.png) | 50953 | — | PNG 444×447 随 JAR 打包的支付二维码：wechat/custom.png |
 | [src/main/resources/static/assets/qr/wechat_zs/custom.png](../src/main/resources/static/assets/qr/wechat_zs/custom.png) | 63239 | — | JPEG 随 JAR 打包的支付二维码：wechat_zs/custom.png |
 | [src/main/resources/static/css/common.css](../src/main/resources/static/css/common.css) | 3962 | 151 |  全站主题、布局、按钮与动画 |
 | [src/main/resources/templates/error.html](../src/main/resources/templates/error.html) | 932 | 27 |  HTML / Thymeleaf 页面或邮件模板，详见前端说明 |
@@ -174,7 +174,7 @@
 | [src/main/resources/templates/order-fail.html](../src/main/resources/templates/order-fail.html) | 6570 | 215 |  HTML / Thymeleaf 页面或邮件模板，详见前端说明 |
 | [src/main/resources/templates/order-success.html](../src/main/resources/templates/order-success.html) | 2683 | 54 |  HTML / Thymeleaf 页面或邮件模板，详见前端说明 |
 | [src/main/resources/templates/payment-review.html](../src/main/resources/templates/payment-review.html) | 7406 | 203 |  HTML / Thymeleaf 页面或邮件模板，详见前端说明 |
-| [src/main/resources/templates/payment.html](../src/main/resources/templates/payment.html) | 18756 | 848 |  HTML / Thymeleaf 页面或邮件模板，详见前端说明 |
+| [src/main/resources/templates/payment.html](../src/main/resources/templates/payment.html) | 18784 | 848 |  HTML / Thymeleaf 页面或邮件模板，详见前端说明 |
 | [src/main/resources/templates/recharge.html](../src/main/resources/templates/recharge.html) | 21294 | 664 |  HTML / Thymeleaf 页面或邮件模板，详见前端说明 |
 | [src/main/resources/templates/statistic.html](../src/main/resources/templates/statistic.html) | 5382 | 156 |  HTML / Thymeleaf 页面或邮件模板，详见前端说明 |
 | [src/main/resources/templates/success.html](../src/main/resources/templates/success.html) | 669 | 24 |  HTML / Thymeleaf 页面或邮件模板，详见前端说明 |
@@ -185,14 +185,14 @@
 
 | 文件 | SHA-256 |
 | --- | --- |
-| `.dockerignore` | `a16862698e3805dd674d9be88f8743ab6b143bea55a507ae4893036018b358fc` |
-| `.env.example` | `b2666e8628f7f9fb9bc3c3bdfa7515a3807a2cc1f320ead00677f4efb4f3d90b` |
+| `.dockerignore` | `d03e99b7deb238e5ae585912060dd6cdc730f30dbbb228ebbfd7d931dab032b7` |
+| `.env.example` | `9c2a01f4e39b59e6221594c28b8bbe6139b6772dc63b94fb6004277e6f9614c0` |
 | `.gitattributes` | `70690cd5f403076a5a6a09b5172ed427841d80a4297df1ccdac6472b540abc3c` |
 | `.gitignore` | `b54697b7acd41356ffb7e6fefb20d4e99d19d3d50d6350e5d4d1472165b5ee38` |
 | `Dockerfile` | `40f927b0a3ca11e8534bb79d037f8647ce2628bc8f68fc428e60b5ac22f66516` |
 | `OPEN_API.md` | `31acfd5be9d5130d11cdc3ac62a220b8afc322eae7d6b34f375d691467e8332c` |
 | `README.md` | `18373a348ea36d81b8659bd16d6e3524ef92555b1956dadd822a14bb95c9cb61` |
-| `config/application-prod.yml` | `6aa3b86688d7c47fc894570c76afb378ecb9f741626ae24255a8ad104e177c39` |
+| `config/application-prod.yml` | `b23614e67efee97b8ce094714ba5c7a062da82a93cc741d1c339c8485d09108b` |
 | `docker-compose` | `f5f7d605fa17d35a29b217557db4cbe70c1824f3061c522d3cb712bf33db3a67` |
 | `docker-compose.yml` | `41edb3d8cdb9a1fd4d6838dd686e8fb674686c013db9202e3510e60c90ca5784` |
 | `images/alipay_confirm.png` | `2464a3782dd56fc2a193471fff102b604497c0c25c470a1c798be034e852c652` |
@@ -204,30 +204,30 @@
 | `images/wechat_confirm.png` | `3b31f62279db8ce4b4f3b484ede6fb944ef891d6ef3338c4cbfa6ddfd1958e0a` |
 | `install.sh` | `2af21f3b55b535bb4a9f9dc05438e29e5cc0d236833f10ac44db1b9494d70aa6` |
 | `pom.xml` | `a8c7ca771b5874eaf42ef120e449fb916a50cc117572e2c846a7de08b7c832f8` |
-| `qr/alipay/custom.png` | `3332c58e4053d84a1b3e1da720fcda251db0dc29c2adc0c6bbc1bd1298e7ec48` |
-| `qr/wechat/0.01/1.png` | `a3feb84e0c7dba3ba0ea09f08ba10d47d5b0e49768af627d5c61faf15b983ee6` |
-| `qr/wechat/0.01/2.png` | `a3feb84e0c7dba3ba0ea09f08ba10d47d5b0e49768af627d5c61faf15b983ee6` |
-| `qr/wechat/1.00/1.png` | `a3feb84e0c7dba3ba0ea09f08ba10d47d5b0e49768af627d5c61faf15b983ee6` |
-| `qr/wechat/1.00/2.png` | `a3feb84e0c7dba3ba0ea09f08ba10d47d5b0e49768af627d5c61faf15b983ee6` |
-| `qr/wechat/10.00/1.png` | `a3feb84e0c7dba3ba0ea09f08ba10d47d5b0e49768af627d5c61faf15b983ee6` |
-| `qr/wechat/10.00/2.png` | `a3feb84e0c7dba3ba0ea09f08ba10d47d5b0e49768af627d5c61faf15b983ee6` |
-| `qr/wechat/29.00/1.png` | `a3feb84e0c7dba3ba0ea09f08ba10d47d5b0e49768af627d5c61faf15b983ee6` |
-| `qr/wechat/29.00/2.png` | `a3feb84e0c7dba3ba0ea09f08ba10d47d5b0e49768af627d5c61faf15b983ee6` |
-| `qr/wechat/29.00/28.98/1.png` | `a3feb84e0c7dba3ba0ea09f08ba10d47d5b0e49768af627d5c61faf15b983ee6` |
-| `qr/wechat/29.00/28.98/2.png` | `a3feb84e0c7dba3ba0ea09f08ba10d47d5b0e49768af627d5c61faf15b983ee6` |
-| `qr/wechat/29.00/28.99/1.png` | `a3feb84e0c7dba3ba0ea09f08ba10d47d5b0e49768af627d5c61faf15b983ee6` |
-| `qr/wechat/29.00/28.99/2.png` | `a3feb84e0c7dba3ba0ea09f08ba10d47d5b0e49768af627d5c61faf15b983ee6` |
-| `qr/wechat/49.00/1.png` | `a3feb84e0c7dba3ba0ea09f08ba10d47d5b0e49768af627d5c61faf15b983ee6` |
-| `qr/wechat/49.00/2.png` | `a3feb84e0c7dba3ba0ea09f08ba10d47d5b0e49768af627d5c61faf15b983ee6` |
-| `qr/wechat/5.00/1.png` | `a3feb84e0c7dba3ba0ea09f08ba10d47d5b0e49768af627d5c61faf15b983ee6` |
-| `qr/wechat/5.00/2.png` | `a3feb84e0c7dba3ba0ea09f08ba10d47d5b0e49768af627d5c61faf15b983ee6` |
-| `qr/wechat/5.00/4.98/1.png` | `a3feb84e0c7dba3ba0ea09f08ba10d47d5b0e49768af627d5c61faf15b983ee6` |
-| `qr/wechat/5.00/4.98/2.png` | `a3feb84e0c7dba3ba0ea09f08ba10d47d5b0e49768af627d5c61faf15b983ee6` |
-| `qr/wechat/5.00/4.99/1.png` | `a3feb84e0c7dba3ba0ea09f08ba10d47d5b0e49768af627d5c61faf15b983ee6` |
-| `qr/wechat/5.00/4.99/2.png` | `a3feb84e0c7dba3ba0ea09f08ba10d47d5b0e49768af627d5c61faf15b983ee6` |
-| `qr/wechat/5.00/5.01/1.png` | `a3feb84e0c7dba3ba0ea09f08ba10d47d5b0e49768af627d5c61faf15b983ee6` |
-| `qr/wechat/5.00/5.01/2.png` | `a3feb84e0c7dba3ba0ea09f08ba10d47d5b0e49768af627d5c61faf15b983ee6` |
-| `qr/wechat/custom.png` | `a3feb84e0c7dba3ba0ea09f08ba10d47d5b0e49768af627d5c61faf15b983ee6` |
+| `qr/alipay/custom.png` | `cf4e53fa94d3ed1d810bcc377c0a8e03a578763f93014a6f6738ea35fd6c91bf` |
+| `qr/wechat/0.01/1.png` | `ef5b69721ea9bbf8f2372dd6062f6f8c65bfa6023ebeb83ed7ecea6c03cf2d53` |
+| `qr/wechat/0.01/2.png` | `ef5b69721ea9bbf8f2372dd6062f6f8c65bfa6023ebeb83ed7ecea6c03cf2d53` |
+| `qr/wechat/1.00/1.png` | `ef5b69721ea9bbf8f2372dd6062f6f8c65bfa6023ebeb83ed7ecea6c03cf2d53` |
+| `qr/wechat/1.00/2.png` | `ef5b69721ea9bbf8f2372dd6062f6f8c65bfa6023ebeb83ed7ecea6c03cf2d53` |
+| `qr/wechat/10.00/1.png` | `ef5b69721ea9bbf8f2372dd6062f6f8c65bfa6023ebeb83ed7ecea6c03cf2d53` |
+| `qr/wechat/10.00/2.png` | `ef5b69721ea9bbf8f2372dd6062f6f8c65bfa6023ebeb83ed7ecea6c03cf2d53` |
+| `qr/wechat/29.00/1.png` | `ef5b69721ea9bbf8f2372dd6062f6f8c65bfa6023ebeb83ed7ecea6c03cf2d53` |
+| `qr/wechat/29.00/2.png` | `ef5b69721ea9bbf8f2372dd6062f6f8c65bfa6023ebeb83ed7ecea6c03cf2d53` |
+| `qr/wechat/29.00/28.98/1.png` | `ef5b69721ea9bbf8f2372dd6062f6f8c65bfa6023ebeb83ed7ecea6c03cf2d53` |
+| `qr/wechat/29.00/28.98/2.png` | `ef5b69721ea9bbf8f2372dd6062f6f8c65bfa6023ebeb83ed7ecea6c03cf2d53` |
+| `qr/wechat/29.00/28.99/1.png` | `ef5b69721ea9bbf8f2372dd6062f6f8c65bfa6023ebeb83ed7ecea6c03cf2d53` |
+| `qr/wechat/29.00/28.99/2.png` | `ef5b69721ea9bbf8f2372dd6062f6f8c65bfa6023ebeb83ed7ecea6c03cf2d53` |
+| `qr/wechat/49.00/1.png` | `ef5b69721ea9bbf8f2372dd6062f6f8c65bfa6023ebeb83ed7ecea6c03cf2d53` |
+| `qr/wechat/49.00/2.png` | `ef5b69721ea9bbf8f2372dd6062f6f8c65bfa6023ebeb83ed7ecea6c03cf2d53` |
+| `qr/wechat/5.00/1.png` | `ef5b69721ea9bbf8f2372dd6062f6f8c65bfa6023ebeb83ed7ecea6c03cf2d53` |
+| `qr/wechat/5.00/2.png` | `ef5b69721ea9bbf8f2372dd6062f6f8c65bfa6023ebeb83ed7ecea6c03cf2d53` |
+| `qr/wechat/5.00/4.98/1.png` | `ef5b69721ea9bbf8f2372dd6062f6f8c65bfa6023ebeb83ed7ecea6c03cf2d53` |
+| `qr/wechat/5.00/4.98/2.png` | `ef5b69721ea9bbf8f2372dd6062f6f8c65bfa6023ebeb83ed7ecea6c03cf2d53` |
+| `qr/wechat/5.00/4.99/1.png` | `ef5b69721ea9bbf8f2372dd6062f6f8c65bfa6023ebeb83ed7ecea6c03cf2d53` |
+| `qr/wechat/5.00/4.99/2.png` | `ef5b69721ea9bbf8f2372dd6062f6f8c65bfa6023ebeb83ed7ecea6c03cf2d53` |
+| `qr/wechat/5.00/5.01/1.png` | `ef5b69721ea9bbf8f2372dd6062f6f8c65bfa6023ebeb83ed7ecea6c03cf2d53` |
+| `qr/wechat/5.00/5.01/2.png` | `ef5b69721ea9bbf8f2372dd6062f6f8c65bfa6023ebeb83ed7ecea6c03cf2d53` |
+| `qr/wechat/custom.png` | `ef5b69721ea9bbf8f2372dd6062f6f8c65bfa6023ebeb83ed7ecea6c03cf2d53` |
 | `qr/wechat_zs/custom.png` | `5222b62afc32b5a70f89db3f8c48c84bb7a4df22bc539ad1fbf444d6cdd13334` |
 | `settings.xml` | `7609701f327048ca05325a0e23c659053255b8a92c6176983e2b12626385787a` |
 | `src/main/java/com/wendao/PayApplication.java` | `8c457e980e7ef305a3d90fd048f4d971e2ac4a66c2a24d777f2e7fb33bc43824` |
@@ -259,11 +259,11 @@
 | `src/main/java/com/wendao/model/resp/OpenApiOrderResp.java` | `f84529ccd8c64f179215ff3f64c8b86370cf57d23b4455832768e66611ebee8e` |
 | `src/main/java/com/wendao/service/OrderService.java` | `1c96edeed6edc10d4b3f737268c20831602c16df4720f5e8dd1d9c1b06fe1969` |
 | `src/main/java/com/wendao/service/ProductService.java` | `bda889122eb71304b3d0b70b2bbb25366cb372a3375946134d8956dd227a0282` |
-| `src/main/java/com/wendao/service/impl/OrderServiceImpl.java` | `13f4be83eff78fe868e5c27b5d64daadd38e52cfa7b2a8710dc0aa570bd2086f` |
+| `src/main/java/com/wendao/service/impl/OrderServiceImpl.java` | `2bebe8efb99fb61f83405e1984b8ed3eec667264a6839eaef16a312577e401e8` |
 | `src/main/java/com/wendao/service/impl/ProductServiceImpl.java` | `3227257a7d5eb3409f2dc6e76df31202d3ea92729861ce60ce9dc828ab8f07e3` |
 | `src/main/java/com/wendao/utils/OpenApiSignUtil.java` | `3c034f739dac48f08f2ffef7027c4fe011058242ca8ffb8dbe36df6d53d44867` |
 | `src/main/resources/Dockerfile` | `be685213c61f9b1cb6923dbd7d4f31fd69568474af3acd116c623ee72f6c8e7f` |
-| `src/main/resources/application.yml` | `a3e81c2a7913fcc27581c76ecafcdc29a54877ccc0df6c5dcea1cacc568a2700` |
+| `src/main/resources/application.yml` | `58d74eedc5e581f09ee2e0ecbb21e0f8aa75b8c821238c8072301577b2c6026f` |
 | `src/main/resources/favicon.ico` | `0af6688af0cdbb443f6607af6c5a8f23bc61ba34f1fbe0f3ff8553466823cf95` |
 | `src/main/resources/sql/pay.sql` | `ef7cf076fb95d0327856086063110895b14693bf756f96592a12ad1fa7222c9d` |
 | `src/main/resources/start.sh` | `a9e498c0e6b08cd4be7902bbac3bd714e12de0cdee800d58fdf7bf4b6b9734a5` |
@@ -293,32 +293,32 @@
 | `src/main/resources/static/assets/js/api-config.js` | `ce83027ec7d4b5a906b475189064c6a56ba6b8ac118413e4324debd04b8803eb` |
 | `src/main/resources/static/assets/js/http-util.js` | `073311b2b9cd4b0ecada7e0c37d010cfc9d910bc1c82e9a8b2e05dd0cb715222` |
 | `src/main/resources/static/assets/js/qcode.min.js` | `083e3ea2f36e97de4ae8b2b8ac6da0298289bbd7bc111f54589d991c642baff2` |
-| `src/main/resources/static/assets/qr/alipay/0.01/1.png` | `3332c58e4053d84a1b3e1da720fcda251db0dc29c2adc0c6bbc1bd1298e7ec48` |
-| `src/main/resources/static/assets/qr/alipay/0.01/2.png` | `3332c58e4053d84a1b3e1da720fcda251db0dc29c2adc0c6bbc1bd1298e7ec48` |
-| `src/main/resources/static/assets/qr/alipay/custom.png` | `3332c58e4053d84a1b3e1da720fcda251db0dc29c2adc0c6bbc1bd1298e7ec48` |
-| `src/main/resources/static/assets/qr/wechat/0.01/1.png` | `a3feb84e0c7dba3ba0ea09f08ba10d47d5b0e49768af627d5c61faf15b983ee6` |
-| `src/main/resources/static/assets/qr/wechat/0.01/2.png` | `a3feb84e0c7dba3ba0ea09f08ba10d47d5b0e49768af627d5c61faf15b983ee6` |
-| `src/main/resources/static/assets/qr/wechat/10.00/1.png` | `a3feb84e0c7dba3ba0ea09f08ba10d47d5b0e49768af627d5c61faf15b983ee6` |
-| `src/main/resources/static/assets/qr/wechat/10.00/2.png` | `a3feb84e0c7dba3ba0ea09f08ba10d47d5b0e49768af627d5c61faf15b983ee6` |
-| `src/main/resources/static/assets/qr/wechat/100.00/1.png` | `a3feb84e0c7dba3ba0ea09f08ba10d47d5b0e49768af627d5c61faf15b983ee6` |
-| `src/main/resources/static/assets/qr/wechat/100.00/2.png` | `a3feb84e0c7dba3ba0ea09f08ba10d47d5b0e49768af627d5c61faf15b983ee6` |
-| `src/main/resources/static/assets/qr/wechat/20.00/1.png` | `a3feb84e0c7dba3ba0ea09f08ba10d47d5b0e49768af627d5c61faf15b983ee6` |
-| `src/main/resources/static/assets/qr/wechat/20.00/2.png` | `a3feb84e0c7dba3ba0ea09f08ba10d47d5b0e49768af627d5c61faf15b983ee6` |
-| `src/main/resources/static/assets/qr/wechat/200.00/1.png` | `a3feb84e0c7dba3ba0ea09f08ba10d47d5b0e49768af627d5c61faf15b983ee6` |
-| `src/main/resources/static/assets/qr/wechat/200.00/2.png` | `a3feb84e0c7dba3ba0ea09f08ba10d47d5b0e49768af627d5c61faf15b983ee6` |
-| `src/main/resources/static/assets/qr/wechat/5.00/1.png` | `a3feb84e0c7dba3ba0ea09f08ba10d47d5b0e49768af627d5c61faf15b983ee6` |
-| `src/main/resources/static/assets/qr/wechat/5.00/2.png` | `a3feb84e0c7dba3ba0ea09f08ba10d47d5b0e49768af627d5c61faf15b983ee6` |
-| `src/main/resources/static/assets/qr/wechat/5.00/4.98/1.png` | `a3feb84e0c7dba3ba0ea09f08ba10d47d5b0e49768af627d5c61faf15b983ee6` |
-| `src/main/resources/static/assets/qr/wechat/5.00/4.98/2.png` | `a3feb84e0c7dba3ba0ea09f08ba10d47d5b0e49768af627d5c61faf15b983ee6` |
-| `src/main/resources/static/assets/qr/wechat/5.00/4.99/1.png` | `a3feb84e0c7dba3ba0ea09f08ba10d47d5b0e49768af627d5c61faf15b983ee6` |
-| `src/main/resources/static/assets/qr/wechat/5.00/4.99/2.png` | `a3feb84e0c7dba3ba0ea09f08ba10d47d5b0e49768af627d5c61faf15b983ee6` |
-| `src/main/resources/static/assets/qr/wechat/5.00/5.01/1.png` | `a3feb84e0c7dba3ba0ea09f08ba10d47d5b0e49768af627d5c61faf15b983ee6` |
-| `src/main/resources/static/assets/qr/wechat/5.00/5.01/2.png` | `a3feb84e0c7dba3ba0ea09f08ba10d47d5b0e49768af627d5c61faf15b983ee6` |
-| `src/main/resources/static/assets/qr/wechat/50.00/1.png` | `a3feb84e0c7dba3ba0ea09f08ba10d47d5b0e49768af627d5c61faf15b983ee6` |
-| `src/main/resources/static/assets/qr/wechat/50.00/2.png` | `a3feb84e0c7dba3ba0ea09f08ba10d47d5b0e49768af627d5c61faf15b983ee6` |
-| `src/main/resources/static/assets/qr/wechat/500.00/1.png` | `a3feb84e0c7dba3ba0ea09f08ba10d47d5b0e49768af627d5c61faf15b983ee6` |
-| `src/main/resources/static/assets/qr/wechat/500.00/2.png` | `a3feb84e0c7dba3ba0ea09f08ba10d47d5b0e49768af627d5c61faf15b983ee6` |
-| `src/main/resources/static/assets/qr/wechat/custom.png` | `a3feb84e0c7dba3ba0ea09f08ba10d47d5b0e49768af627d5c61faf15b983ee6` |
+| `src/main/resources/static/assets/qr/alipay/0.01/1.png` | `cf4e53fa94d3ed1d810bcc377c0a8e03a578763f93014a6f6738ea35fd6c91bf` |
+| `src/main/resources/static/assets/qr/alipay/0.01/2.png` | `cf4e53fa94d3ed1d810bcc377c0a8e03a578763f93014a6f6738ea35fd6c91bf` |
+| `src/main/resources/static/assets/qr/alipay/custom.png` | `cf4e53fa94d3ed1d810bcc377c0a8e03a578763f93014a6f6738ea35fd6c91bf` |
+| `src/main/resources/static/assets/qr/wechat/0.01/1.png` | `ef5b69721ea9bbf8f2372dd6062f6f8c65bfa6023ebeb83ed7ecea6c03cf2d53` |
+| `src/main/resources/static/assets/qr/wechat/0.01/2.png` | `ef5b69721ea9bbf8f2372dd6062f6f8c65bfa6023ebeb83ed7ecea6c03cf2d53` |
+| `src/main/resources/static/assets/qr/wechat/10.00/1.png` | `ef5b69721ea9bbf8f2372dd6062f6f8c65bfa6023ebeb83ed7ecea6c03cf2d53` |
+| `src/main/resources/static/assets/qr/wechat/10.00/2.png` | `ef5b69721ea9bbf8f2372dd6062f6f8c65bfa6023ebeb83ed7ecea6c03cf2d53` |
+| `src/main/resources/static/assets/qr/wechat/100.00/1.png` | `ef5b69721ea9bbf8f2372dd6062f6f8c65bfa6023ebeb83ed7ecea6c03cf2d53` |
+| `src/main/resources/static/assets/qr/wechat/100.00/2.png` | `ef5b69721ea9bbf8f2372dd6062f6f8c65bfa6023ebeb83ed7ecea6c03cf2d53` |
+| `src/main/resources/static/assets/qr/wechat/20.00/1.png` | `ef5b69721ea9bbf8f2372dd6062f6f8c65bfa6023ebeb83ed7ecea6c03cf2d53` |
+| `src/main/resources/static/assets/qr/wechat/20.00/2.png` | `ef5b69721ea9bbf8f2372dd6062f6f8c65bfa6023ebeb83ed7ecea6c03cf2d53` |
+| `src/main/resources/static/assets/qr/wechat/200.00/1.png` | `ef5b69721ea9bbf8f2372dd6062f6f8c65bfa6023ebeb83ed7ecea6c03cf2d53` |
+| `src/main/resources/static/assets/qr/wechat/200.00/2.png` | `ef5b69721ea9bbf8f2372dd6062f6f8c65bfa6023ebeb83ed7ecea6c03cf2d53` |
+| `src/main/resources/static/assets/qr/wechat/5.00/1.png` | `ef5b69721ea9bbf8f2372dd6062f6f8c65bfa6023ebeb83ed7ecea6c03cf2d53` |
+| `src/main/resources/static/assets/qr/wechat/5.00/2.png` | `ef5b69721ea9bbf8f2372dd6062f6f8c65bfa6023ebeb83ed7ecea6c03cf2d53` |
+| `src/main/resources/static/assets/qr/wechat/5.00/4.98/1.png` | `ef5b69721ea9bbf8f2372dd6062f6f8c65bfa6023ebeb83ed7ecea6c03cf2d53` |
+| `src/main/resources/static/assets/qr/wechat/5.00/4.98/2.png` | `ef5b69721ea9bbf8f2372dd6062f6f8c65bfa6023ebeb83ed7ecea6c03cf2d53` |
+| `src/main/resources/static/assets/qr/wechat/5.00/4.99/1.png` | `ef5b69721ea9bbf8f2372dd6062f6f8c65bfa6023ebeb83ed7ecea6c03cf2d53` |
+| `src/main/resources/static/assets/qr/wechat/5.00/4.99/2.png` | `ef5b69721ea9bbf8f2372dd6062f6f8c65bfa6023ebeb83ed7ecea6c03cf2d53` |
+| `src/main/resources/static/assets/qr/wechat/5.00/5.01/1.png` | `ef5b69721ea9bbf8f2372dd6062f6f8c65bfa6023ebeb83ed7ecea6c03cf2d53` |
+| `src/main/resources/static/assets/qr/wechat/5.00/5.01/2.png` | `ef5b69721ea9bbf8f2372dd6062f6f8c65bfa6023ebeb83ed7ecea6c03cf2d53` |
+| `src/main/resources/static/assets/qr/wechat/50.00/1.png` | `ef5b69721ea9bbf8f2372dd6062f6f8c65bfa6023ebeb83ed7ecea6c03cf2d53` |
+| `src/main/resources/static/assets/qr/wechat/50.00/2.png` | `ef5b69721ea9bbf8f2372dd6062f6f8c65bfa6023ebeb83ed7ecea6c03cf2d53` |
+| `src/main/resources/static/assets/qr/wechat/500.00/1.png` | `ef5b69721ea9bbf8f2372dd6062f6f8c65bfa6023ebeb83ed7ecea6c03cf2d53` |
+| `src/main/resources/static/assets/qr/wechat/500.00/2.png` | `ef5b69721ea9bbf8f2372dd6062f6f8c65bfa6023ebeb83ed7ecea6c03cf2d53` |
+| `src/main/resources/static/assets/qr/wechat/custom.png` | `ef5b69721ea9bbf8f2372dd6062f6f8c65bfa6023ebeb83ed7ecea6c03cf2d53` |
 | `src/main/resources/static/assets/qr/wechat_zs/custom.png` | `5222b62afc32b5a70f89db3f8c48c84bb7a4df22bc539ad1fbf444d6cdd13334` |
 | `src/main/resources/static/css/common.css` | `438bf7fa887467a061ac45ff1c1890ca5d182065052c7f064f2ec503c3416599` |
 | `src/main/resources/templates/error.html` | `c0e0d87e327ba9cec3e997bf6e67ef0b398fa13f796bf3eac7e322dcb9db5150` |
@@ -332,7 +332,7 @@
 | `src/main/resources/templates/order-fail.html` | `307c348da85ea121445e7d845624ee2cb0ba845fb99ebec3b1e8180130baed87` |
 | `src/main/resources/templates/order-success.html` | `24f14ebaae7bfd4a53e2ee632d0bd5f1f0ac6b9429aa9efe1fce36584841996b` |
 | `src/main/resources/templates/payment-review.html` | `2c91d0d7b73de4232538629933536bd4f4e8fb07d5ac312051bffe25ad662d6f` |
-| `src/main/resources/templates/payment.html` | `a075d383d4508ef61431c362b808bf55b41224c927e9e5cd127c5c6c239d9c2f` |
+| `src/main/resources/templates/payment.html` | `8a557c82be22acb3dda3f61455f58d273d56d197889d770d1f0317238b823410` |
 | `src/main/resources/templates/recharge.html` | `1e81d9bc0ce4e4c76c0663e43410441c75d56b65971211748321a553443dfae0` |
 | `src/main/resources/templates/statistic.html` | `11790591acbc5a173ce7acb5e890d58691d72132a0413ccd8ff3e11b98362463` |
 | `src/main/resources/templates/success.html` | `4bc87da7d10fc38844d81cbe08d418d79efd864277a87f60c7f5b949c67165ab` |

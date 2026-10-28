@@ -142,7 +142,7 @@
     </div>
 </div>
 
-<script>
+<script th:inline="javascript">
 const { createApp } = Vue;
 
 createApp({
@@ -218,8 +218,8 @@ createApp({
                 // 支付宝统一显示上传的通用收款码，也兼容旧支付链接。
                 if(this.orderInfo.payType === 'alipay'){
                     this.orderInfo.useLocalQrCode = 'true';
-                    this.qrImageUrl = '/assets/qr/alipay/custom.png?v=3332c58e4053';
-                    this.qrCodeUrl = "[[${alipayCustomQrUrl}]]";
+                    this.qrImageUrl = '/assets/qr/alipay/custom.png?v=cf4e53fa94d3';
+                    this.qrCodeUrl = /*[[${alipayCustomQrUrl}]]*/ '';
                     return;
                 }
                 // 微信使用上传的通用码，旧减额订单保留付款金额并改为人工备注核对。
@@ -228,7 +228,7 @@ createApp({
                     this.orderInfo.matchMode = 'REMARK';
                     this.orderInfo.fallbackToRemark = false;
                     this.orderInfo.payNum = this.orderInfo.payNum || this.orderInfo.orderId || '';
-                    this.qrImageUrl = '/assets/qr/wechat/custom.png?v=a3feb84e0c7d';
+                    this.qrImageUrl = '/assets/qr/wechat/custom.png?v=ef5b69721ea9';
                     return;
                 }
                 /** 如果是使用本地二维码 */

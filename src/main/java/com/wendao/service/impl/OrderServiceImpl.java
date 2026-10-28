@@ -462,10 +462,10 @@ public class OrderServiceImpl implements OrderService {
         /** 如果不存在 */
         // 减额模式或回退模式: 放在基础金额目录下; 普通备注模式: 检查金额QR是否存在
         if ("alipay".equals(req.getPayType())) {
-            qrUrl = payProConfig.getSite() + "/assets/qr/alipay/custom.png?v=3332c58e4053";
+            qrUrl = payProConfig.getSite() + "/assets/qr/alipay/custom.png?v=cf4e53fa94d3";
             req.setCustom(true);
         } else if ("wechat".equals(req.getPayType())) {
-            qrUrl = payProConfig.getSite() + "/assets/qr/wechat/custom.png?v=a3feb84e0c7d";
+            qrUrl = payProConfig.getSite() + "/assets/qr/wechat/custom.png?v=ef5b69721ea9";
             req.setCustom(true);
         } else if ("DECREMENT".equals(matchMode) && !fallbackToRemark) {
             if (actualAmount.compareTo(req.getAmount()) == 0) {
