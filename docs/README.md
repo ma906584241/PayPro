@@ -18,6 +18,9 @@ PayPro 是一个 Java 8 / Spring Boot 个人收款项目，以配置中的商品
 | [源码符号目录](08-source-catalog.md) | 每个 Java 文件的类型、方法、字段及代码位置；自动生成 |
 | [全量文件清单](09-file-inventory.md) | 原始项目全部文件的用途、大小、行数和 SHA-256；自动生成 |
 | [依赖与配置目录](10-dependencies-and-config.md) | POM 全量直接依赖、插件、配置键和外部资源地址；自动生成 |
+| [支付宝收款码更新](11-alipay-qr-update.md) | 本次上传原图、直接扫码模式、备注要求、验证与上线步骤 |
+| [微信收款码更新](12-wechat-qr-update.md) | 微信通用码、原价付款、备注核对及历史链接兼容 |
+| [网站与邮件配置](13-site-and-mail-configuration.md) | 网站品牌、收款人、客服邮箱、QQ SMTP、私密环境配置和部署 |
 | [CodeGraph](codegraph.md) | 图谱统计、架构图、调用图、类依赖图、查询和更新方法 |
 
 ## 图谱产物

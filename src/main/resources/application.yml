@@ -5,19 +5,24 @@ spring:
   profiles:
     active: local
   mail:
-    host: smtp.163.com #邮箱服务器
-    password: ${MAIL_PASSWORD:xxxx} # 请确保此为正确的授权码
-    port: 25
+    host: smtp.qq.com
+    password: ${MAIL_PASSWORD:}
+    port: 465
     properties:
       mail:
         smtp:
           auth: true
           starttls:
-            enable: true
-            required: true
+            enable: false
+            required: false
           ssl:
-            trust: "smtp.163.com"  # 信任指定主机
-    username: codewendao@163.com #发送邮箱的账号
+            enable: true
+            checkserveridentity: true
+            trust: "smtp.qq.com"
+          connectiontimeout: 10000
+          timeout: 10000
+          writetimeout: 10000
+    username: 906584241@qq.com
 
   output:
     ansi:
@@ -71,17 +76,18 @@ mybatis-plus:
       logic-not-delete-value: 0
 
 paypro:
-  alipayCustomQrUrl: https://qr.alipay.com/fkx17492eze99maemka1u81
+  alipayCustomQrUrl: https://qr.alipay.com/tsx11203acndtehgcl85q60
   alipayUserId: 2088122989840531
-  indexTitle: PayPro个人收款系统 # 网站首页标题
-  name: codewendao # 支付宝免备注昵称
-  title: PayPro个人收款系统 # 邮件标题
-  site: ${SITE_URL:http://localhost:8889} # 生成邮件里操作的url地址和支付宝免备注需要
+  indexTitle: AI智为工坊
+  name: 马宵冉
+  title: AI智为工坊
+  site: ${SITE_URL:https://pay.aioperis.com}
   qr-dir: /app/appsystems/qr
   mobile: xxxxxx # 支付宝免备注需要，填写你支付宝的手机号
   email:
-    receiver: xxxx@qq.com
-    sender: xxxx@163.com
+    receiver: 906584241@qq.com
+    sender: 906584241@qq.com
+  supportMail: contact@aioperis.com
   rateLimit:
     # 防炸库缓存验证(分钟)
     ipExpire: 2
@@ -90,7 +96,7 @@ paypro:
     expire: 14
   qrCodeNum: 2
   decrement:
-    enabled: true
+    enabled: false
     maxCount: 2
     step: 0.01
   openapi:
@@ -107,14 +113,14 @@ paypro:
   payMethods:
     - id: 'alipay'
       name: '支付宝支付'
-      description: '免输备注，手动收款'
+      description: '扫码付款，需填写订单标识'
       icon: '🔵'
       status: true
       allow-night: false
-      use-local-qr-code: false
+      use-local-qr-code: true
     - id: 'wechat'
       name: '微信支付'
-      description: '需备注，自动确认收款'
+      description: '扫码付款，需填写订单标识'
       icon: '🟢'
       status: true
       allow-night: true

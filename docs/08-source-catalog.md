@@ -58,12 +58,13 @@
 
 | 类别 | 名称 | 签名 / 类型 | 行号 |
 | --- | --- | --- | --- |
-| class | `EmailUtils` | `com.wendao.common.utils::EmailUtils` | 19–81 |
-| field | `log` | `Logger log` | 22–22 |
-| field | `mailSender` | `JavaMailSender mailSender` | 25–25 |
-| field | `templateEngine` | `TemplateEngine templateEngine` | 28–28 |
-| method | `sendTemplateMail` | `void (String sender, String sendto,String title, String templateName,Object o)` | 37–62 |
-| method | `checkEmail` | `boolean (String email)` | 69–80 |
+| class | `EmailUtils` | `com.wendao.common.utils::EmailUtils` | 20–88 |
+| field | `log` | `Logger log` | 23–23 |
+| field | `mailSender` | `JavaMailSender mailSender` | 26–26 |
+| field | `templateEngine` | `TemplateEngine templateEngine` | 29–29 |
+| field | `payProConfig` | `PayProConfig payProConfig` | 32–32 |
+| method | `sendTemplateMail` | `void (String sender, String sendto,String title, String templateName,Object o)` | 41–69 |
+| method | `checkEmail` | `boolean (String email)` | 76–87 |
 
 ## IpInfoUtils.java
 
@@ -97,12 +98,12 @@
 
 | 类别 | 名称 | 签名 / 类型 | 行号 |
 | --- | --- | --- | --- |
-| class | `Config` | `com.wendao.config::Config` | 15–59 |
+| class | `Config` | `com.wendao.config::Config` | 15–61 |
 | field | `payConfig` | `PayProConfig payConfig` | 19–19 |
-| method | `configureThymeleafStaticVars` | `void (ThymeleafViewResolver viewResolver)` | 25–35 |
-| method | `addCorsMappings` | `void (CorsRegistry registry)` | 37–45 |
-| method | `mybatisPlusInterceptor` | `MybatisPlusInterceptor ()` | 47–52 |
-| method | `snowflake` | `Snowflake ()` | 54–57 |
+| method | `configureThymeleafStaticVars` | `void (ThymeleafViewResolver viewResolver)` | 25–37 |
+| method | `addCorsMappings` | `void (CorsRegistry registry)` | 39–47 |
+| method | `mybatisPlusInterceptor` | `MybatisPlusInterceptor ()` | 49–54 |
+| method | `snowflake` | `Snowflake ()` | 56–59 |
 
 ## PayProConfig.java
 
@@ -552,7 +553,7 @@
 
 | 类别 | 名称 | 签名 / 类型 | 行号 |
 | --- | --- | --- | --- |
-| class | `OrderServiceImpl` | `com.wendao.service.impl::OrderServiceImpl` | 45–745 |
+| class | `OrderServiceImpl` | `com.wendao.service.impl::OrderServiceImpl` | 45–755 |
 | field | `log` | `Logger log` | 48–48 |
 | field | `orderMapper` | `OrderMapper orderMapper` | 51–51 |
 | field | `redisTemplate` | `StringRedisTemplate redisTemplate` | 54–54 |
@@ -569,23 +570,23 @@
 | method | `changeOrderState` | `int (String id, Integer state)` | 107–115 |
 | method | `delOrder` | `int (String id)` | 117–121 |
 | method | `statistic` | `CountResp (Integer type, String start, String end)` | 123–173 |
-| method | `addOrder` | `ResponseVO<AddOrderResp> (OrderReq req, HttpServletRequest request)` | 175–281 |
-| method | `pass` | `int (String id)` | 286–305 |
-| method | `list` | `IPage<Order> (GetOrderListReq req)` | 307–349 |
-| method | `createOpenApiOrder` | `OpenApiOrderResp (OpenApiOrderReq req)` | 351–528 |
-| method | `checkQrFileExists` | `boolean (String payType, BigDecimal amount, int qrNum)` | 538–564 |
-| method | `getAdminUrl` | `Order (Order pay, String id, String token, String myToken)` | 570–590 |
-| method | `callbackFaka` | `void (String notifyUrl, String orderNo, BigDecimal amount, String payNum)` | 592–602 |
-| class | `DecrementSlotResult` | `com.wendao.service.impl::OrderServiceImpl::DecrementSlotResult` | 608–614 |
-| field | `success` | `boolean success` | 610–610 |
-| field | `fallbackToRemark` | `boolean fallbackToRemark` | 611–611 |
-| field | `slotIndex` | `int slotIndex` | 612–612 |
-| field | `actualAmount` | `BigDecimal actualAmount` | 613–613 |
-| method | `tryAllocateDecrementSlot` | `DecrementSlotResult (             String payType, BigDecimal baseAmount, PayProConfig.Decrement config)` | 626–678 |
-| method | `checkAnyQrFileExists` | `boolean (String payType, BigDecimal baseAmount, BigDecimal amount)` | 685–709 |
-| method | `getByActualAmount` | `Order (BigDecimal actualAmount, Date startTime, Date endTime)` | 711–714 |
-| method | `getOccupiedDecrementSlots` | `Set<Integer> (String payType, BigDecimal baseAmount)` | 716–739 |
-| method | `getDecrementLockKey` | `String (String payType, String baseAmount)` | 741–743 |
+| method | `addOrder` | `ResponseVO<AddOrderResp> (OrderReq req, HttpServletRequest request)` | 175–283 |
+| method | `pass` | `int (String id)` | 288–307 |
+| method | `list` | `IPage<Order> (GetOrderListReq req)` | 309–351 |
+| method | `createOpenApiOrder` | `OpenApiOrderResp (OpenApiOrderReq req)` | 353–538 |
+| method | `checkQrFileExists` | `boolean (String payType, BigDecimal amount, int qrNum)` | 548–574 |
+| method | `getAdminUrl` | `Order (Order pay, String id, String token, String myToken)` | 580–600 |
+| method | `callbackFaka` | `void (String notifyUrl, String orderNo, BigDecimal amount, String payNum)` | 602–612 |
+| class | `DecrementSlotResult` | `com.wendao.service.impl::OrderServiceImpl::DecrementSlotResult` | 618–624 |
+| field | `success` | `boolean success` | 620–620 |
+| field | `fallbackToRemark` | `boolean fallbackToRemark` | 621–621 |
+| field | `slotIndex` | `int slotIndex` | 622–622 |
+| field | `actualAmount` | `BigDecimal actualAmount` | 623–623 |
+| method | `tryAllocateDecrementSlot` | `DecrementSlotResult (             String payType, BigDecimal baseAmount, PayProConfig.Decrement config)` | 636–688 |
+| method | `checkAnyQrFileExists` | `boolean (String payType, BigDecimal baseAmount, BigDecimal amount)` | 695–719 |
+| method | `getByActualAmount` | `Order (BigDecimal actualAmount, Date startTime, Date endTime)` | 721–724 |
+| method | `getOccupiedDecrementSlots` | `Set<Integer> (String payType, BigDecimal baseAmount)` | 726–749 |
+| method | `getDecrementLockKey` | `String (String payType, String baseAmount)` | 751–753 |
 
 ## ProductServiceImpl.java
 

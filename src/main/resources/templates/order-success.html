@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
     <head>
         <meta charset="utf-8">
-        <title>操作成功</title>
+        <title th:text="'支付成功 - ' + ${indexTitle}">支付成功 - AI智为工坊</title>
         <meta name="description" content="个人收款支付系统 无需签约 无需第三方SDK 完全免费">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <style>
@@ -39,7 +39,7 @@
                     </tr>
                     <tr>
                         <td style="font-size:13px; color:#7f8c8d; line-height:26px;" align="center">
-                            十分感谢您的捐赠，您还可以到官网查看到您的捐赠数据. 获取源码关注公众号：代码问道。
+                            感谢您支持 <span th:text="${indexTitle}">AI智为工坊</span>。如有疑问，请联系 <a class="support-email" href="mailto:contact@aioperis.com" th:href="'mailto:' + ${supportMail}" th:text="${supportMail}">contact@aioperis.com</a>。
                         </td>
                     </tr>
 

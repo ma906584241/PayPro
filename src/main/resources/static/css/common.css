@@ -143,3 +143,9 @@ body {
     padding: 40px 0;
     border-top: 1px solid rgba(255,255,255,0.05);
 }
+
+.support-email {
+    color: var(--accent-color);
+    text-underline-offset: 3px;
+    overflow-wrap: anywhere;
+}

@@ -192,6 +192,8 @@ public class OrderServiceImpl implements OrderService {
         boolean useDecrement = decrementConfig.isEnabled()
                 && !isCustomAmount
                 && isLocalQr
+                && !"alipay".equals(req.getPayType())
+                && !"wechat".equals(req.getPayType())
                 && !"wechat_zs".equals(req.getPayType());
 
         String matchMode = "REMARK";
@@ -291,7 +293,7 @@ public class OrderServiceImpl implements OrderService {
         if (pay.getOrderSource().equals("PRODUCT") && pay.getProductId() != null) {
             Product product = productService.getProductById(pay.getProductId() != null ? pay.getProductId().intValue() : null);
             if (product != null && "CODE".equals(product.getType())) {
-                emailUtils.sendTemplateMail(payProConfig.getEmail().getSender(), pay.getEmail(), "【Pay个人收款支付系统】支付成功通知（附下载链接）",
+                emailUtils.sendTemplateMail(payProConfig.getEmail().getSender(), pay.getEmail(), "【" + payProConfig.getTitle() + "】支付成功通知（附下载链接）",
                         "order-success", pay);
                 pay.setState(OrderStatesEnum.SUCCESS_PAY.getState());
                 orderMapper.updateById(pay);
@@ -393,6 +395,8 @@ public class OrderServiceImpl implements OrderService {
         boolean useDecrement = decrementConfig.isEnabled()
                 && !isCustomAmount
                 && isLocalQr
+                && !"alipay".equals(req.getPayType())
+                && !"wechat".equals(req.getPayType())
                 && !"wechat_zs".equals(req.getPayType());
 
         String matchMode = "REMARK";
@@ -457,7 +461,13 @@ public class OrderServiceImpl implements OrderService {
 
         /** 如果不存在 */
         // 减额模式或回退模式: 放在基础金额目录下; 普通备注模式: 检查金额QR是否存在
-        if ("DECREMENT".equals(matchMode) && !fallbackToRemark) {
+        if ("alipay".equals(req.getPayType())) {
+            qrUrl = payProConfig.getSite() + "/assets/qr/alipay/custom.png?v=3332c58e4053";
+            req.setCustom(true);
+        } else if ("wechat".equals(req.getPayType())) {
+            qrUrl = payProConfig.getSite() + "/assets/qr/wechat/custom.png?v=a3feb84e0c7d";
+            req.setCustom(true);
+        } else if ("DECREMENT".equals(matchMode) && !fallbackToRemark) {
             if (actualAmount.compareTo(req.getAmount()) == 0) {
                 qrUrl = payProConfig.getSite() + "/assets/qr/" + req.getPayType() + "/" +
                         formattedAmount + "/" + i + ".png";
@@ -508,7 +518,7 @@ public class OrderServiceImpl implements OrderService {
         String tokenAdmin = UUID.randomUUID().toString();
         redisTemplate.opsForValue().set(order.getId(), tokenAdmin, payProConfig.getToken().getExpire(), TimeUnit.DAYS);
         order = getAdminUrl(order, order.getId(), tokenAdmin, payProConfig.getToken().getValue());
-        emailUtils.sendTemplateMail(payProConfig.getEmail().getSender(), payProConfig.getEmail().getReceiver(), "【OPENAPI】待审核处理", "payment-review", order);
+        emailUtils.sendTemplateMail(payProConfig.getEmail().getSender(), payProConfig.getEmail().getReceiver(), "【" + payProConfig.getTitle() + " · OPENAPI】待审核处理", "payment-review", order);
 
         return OpenApiOrderResp.builder()
                 .orderId(order.getId())

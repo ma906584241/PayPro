@@ -1,0 +1,9 @@
+# Private environment and local tooling must not enter the build context.
+/.env
+/.git/
+/.codegraph/
+/docs/
+/target/
+/applogs/
+/dump/
+/docker-compose

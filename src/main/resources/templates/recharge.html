@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> 捐赠中心 - PayPro</title>
+    <title th:text="'捐赠中心 - ' + ${indexTitle}">捐赠中心 - AI智为工坊</title>
     <script src="https://cdn.bootcdn.net/ajax/libs/vue/3.3.4/vue.global.min.js"></script>
     <link href="https://cdn.bootcdn.net/ajax/libs/remixicon/3.5.0/remixicon.css" rel="stylesheet">
     <link rel="stylesheet" href="/css/common.css">
@@ -497,7 +497,7 @@
             </div>
         </div>
 
-        <div class="footer"><p>&copy; 2026 PayPro System. Designed for Creators.</p></div>
+        <div class="footer"><p>&copy; 2026 <span th:text="${indexTitle}">AI智为工坊</span> · <a class="support-email" href="mailto:contact@aioperis.com" th:href="'mailto:' + ${supportMail}" th:text="${supportMail}">contact@aioperis.com</a></p></div>
     </div>
 </div>
 
@@ -510,7 +510,7 @@ createApp({
             selectedProductId: null,
             customAmount: null,
             selectedPayment: 'alipay',
-            useLocalQrCode: false,
+            useLocalQrCode: true,
             description: '',
             email: '',
             loading: false,
@@ -521,15 +521,15 @@ createApp({
                 {
                     id: 'alipay',
                     name: '支付宝转账',
-                    description: '免备注',
+                    description: '扫码付款，需填写订单标识',
                     icon: 'ri-alipay-fill',
                     status: true,
-                    useLocalQrCode: false
+                    useLocalQrCode: true
                 },
                 {
                     id: 'wechat',
                     name: '微信支付',
-                    description: '微信收款码',
+                    description: '扫码付款，需填写订单标识',
                     icon: 'ri-wechat-pay-fill',
                     status: true,
                     useLocalQrCode: true

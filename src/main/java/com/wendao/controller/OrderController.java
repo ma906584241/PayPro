@@ -195,7 +195,7 @@ public class OrderController {
             //通知回调
             Order order = orderService.getOrderById(getOrderId(id));
             if(StringUtils.isNotBlank(order.getEmail())&&EmailUtils.checkEmail(order.getEmail())){
-                emailUtils.sendTemplateMail(payProConfig.getEmail().getSender(),order.getEmail(),"【Pay个人收款支付系统】支付失败通知","order-fail",order);
+                emailUtils.sendTemplateMail(payProConfig.getEmail().getSender(),order.getEmail(),"【" + payProConfig.getTitle() + "】支付失败通知","order-fail",order);
             }
         }catch (Exception e){
             model.addAttribute("errorMsg","处理数据出错");

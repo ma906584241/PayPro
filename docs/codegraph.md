@@ -5,11 +5,11 @@
 ## 原生索引结果
 
 - 已索引 **41 文件**，包含 **32 Java 文件**。
-- **930 节点、1458 关系**；文件解析错误数 **0**。
-- 原始项目 **151 文件**；HTML、CSS、SQL、Shell、Markdown、图片和二进制未全部进入原生符号索引，见全量文件清单。
+- **943 节点、1464 关系**；文件解析错误数 **0**。
+- 原始项目 **153 文件**；HTML、CSS、SQL、Shell、Markdown、图片和二进制未全部进入原生符号索引，见全量文件清单。
 - 本地 SQLite：`.codegraph/codegraph.db`；该目录内自带 .gitignore 排除数据库，应通过命令重新生成。
 - 保留关系 metadata 的 confidence / resolvedBy；静态解析中的同名、重载、fuzzy 匹配不能等同于运行时真实调用。
-- 原生 unresolved_refs 为 238；待解析引用或空表都不能证明第三方调用、框架注入和动态关系已完整解析。
+- 原生 unresolved_refs 为 0；待解析引用或空表都不能证明第三方调用、框架注入和动态关系已完整解析。
 - 增量同步也会索引 docs/tools 中的 Python 文档生成脚本；全量 JSON 和 calls 图保留这些辅助脚本节点，Java 依赖图只包含业务 Java 文件。
 
 ## 经源码核对的架构图
@@ -58,13 +58,13 @@ flowchart TB
 | kind | 数量 |
 | --- | ---: |
 | class | 39 |
-| constant | 129 |
+| constant | 140 |
 | enum | 1 |
 | enum_member | 5 |
-| field | 206 |
+| field | 207 |
 | file | 38 |
 | function | 38 |
-| import | 268 |
+| import | 269 |
 | interface | 3 |
 | method | 143 |
 | namespace | 32 |
@@ -76,11 +76,11 @@ flowchart TB
 | kind | 数量 |
 | --- | ---: |
 | calls | 291 |
-| contains | 752 |
+| contains | 754 |
 | implements | 2 |
-| imports | 260 |
+| imports | 261 |
 | instantiates | 26 |
-| references | 127 |
+| references | 130 |
 
 ## 索引语言
 

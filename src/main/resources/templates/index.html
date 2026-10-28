@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="PayPro个人支付系统 - 正在跳转至首页">
+    <meta name="description" content="AI智为工坊个人支付系统 - 正在跳转至首页">
     <meta name="keywords" content="支付系统,个人支付,在线收款">
     <meta http-equiv="refresh" content="0;url=home.html">
     <link rel="canonical" href="home.html">
-    <title>PayPro - 跳转中</title>
+    <title th:text="'正在跳转 - ' + ${indexTitle}">正在跳转 - AI智为工坊</title>
     <!-- 引入Vue 3 -->
     <script src="https://cdn.bootcdn.net/ajax/libs/vue/3.3.4/vue.global.min.js" defer></script>
     <!-- 引入 Remix Icons -->
@@ -237,7 +237,7 @@
                     
                     <div class="logo">
                         <i class="ri-rocket-line"></i>
-                        PayPro
+                        <span th:text="${indexTitle}">AI智为工坊</span>
                     </div>
                     
                     <div class="loading-container">
@@ -259,7 +259,7 @@
                     </div>
                     
                     <div class="footer">
-                        <p>&copy; 2026 PayPro System. Designed for Creators.</p>
+                        <p>&copy; 2026 <span th:text="${indexTitle}">AI智为工坊</span> · <a class="support-email" href="mailto:contact@aioperis.com" th:href="'mailto:' + ${supportMail}" th:text="${supportMail}">contact@aioperis.com</a></p>
                     </div>
                 </div>
             </div>
@@ -288,7 +288,7 @@
                 }
             },
             mounted() {
-                console.log('PayPro Redirect Page Loaded');
+                console.log('AI智为工坊 Redirect Page Loaded');
                 this.startCountdown();
             },
             methods: {

@@ -12,7 +12,7 @@
 
 在本项目常规启动方式下，命令行参数和 Spring 直接环境属性能够覆盖 YAML；外置 profile 配置覆盖包内基础配置。`start.sh` 把 `/app/appsystems/config/` 放入 classpath，并在非空时传 `--spring.profiles.active=${SPRING_PROFILES}`。直接 Java 启动时，`SPRING_PROFILES` 并非标准激活属性；需用 `--spring.profiles.active` 或 `SPRING_PROFILES_ACTIVE`。
 
-生产 YAML 给 `paypro.site` 设置了字面地址，因此 Compose 的 `SITE_URL` 只替换基础文件占位符，不保证覆盖外置生产值；应编辑生产 YAML，或通过 `PAYPRO_SITE` / 启动参数显式覆盖。
+基础和生产 YAML 的 `paypro.site` 均读取 SITE_URL，默认 https://pay.aioperis.com；Compose 使用相同默认值。邮件配置从项目根目录 Git 忽略的 `.env` 读取 MAIL_PASSWORD 后传入容器，详见 [网站与邮件配置](13-site-and-mail-configuration.md)。
 
 完整配置键清单见 [依赖与配置目录](10-dependencies-and-config.md)。以下解释关键业务配置，不重复实际账号、IP 和口令。
 
@@ -23,15 +23,15 @@
 | title、indexTitle | 邮件 / 页面标题，注入模板全局变量 |
 | site | 支付页和管理邮件链接的服务根地址；应与真实可访问地址一致 |
 | alipayUserId、alipayCustomQrUrl、mobile | 支付宝跳转收款参数；传入模板 |
-| name | 收款人昵称；模板使用，但 Config 未注入该全局变量 |
+| name | 收款人名称，当前为马宵冉；页面和邮件均注入此变量 |
 | email.sender、email.receiver | 管理审核邮件发件人与收件人，需与 SMTP 账户匹配 |
-| supportMail | Java 字段和生产 YAML 存在，当前页面未见消费 |
+| supportMail | 客服邮箱，当前为 contact@aioperis.com；帮助页与页脚显示邮件链接 |
 | token.value | 管理操作的二次口令，不是 Redis 每单随机 Token |
 | token.expire | 每单随机管理员 Token 有效天数，YAML 为 14 |
 | rateLimit.ipExpire | IP 写缓存时长，实际单位分钟；基础 YAML 2，生产 YAML 1；没有限流读取 |
 | qr-dir | 外置二维码目录；容器内默认 `/app/appsystems/qr` |
 | qrCodeNum | 1 起随机二维码编号上限，YAML 为 2；需要完整提供编号 |
-| decrement.enabled | Java 默认 false，当前两个 YAML 都为 true |
+| decrement.enabled | Java 默认 false，当前两个 YAML 均为 false；支付宝、微信使用通用码与备注核对 |
 | decrement.maxCount | Java 默认 5，YAML 为 2；包含槽位 0 后总候选数为 N+1 |
 | decrement.step | Java / YAML 为 0.01，递减和回退金额步长 |
 | order.timeoutMinutes | Java 默认 30；YAML 未提供，当前没有周期任务消费 |
@@ -74,8 +74,8 @@ paypro:
 | REDIS_HOST、REDIS_PORT、REDIS_DB | Redis 占位符；默认 loopback/6379/1 |
 | REDIS_PASSWORD | Compose 设置，但 application.yml 没有引用这个名称 |
 | SPRING_REDIS_PASSWORD | Compose 同时设置，通过 Spring 属性绑定提供实际 Redis 密码 |
-| SITE_URL | 基础 paypro.site 占位符；有外置生产字面配置覆盖问题 |
-| MAIL_PASSWORD | 基础及生产 SMTP 授权码占位符 |
+| SITE_URL | 基础与生产 paypro.site 均读取此变量，默认站点实际 HTTPS 地址 |
+| MAIL_PASSWORD | 从本地私密 .env 传入容器的 QQ SMTP 授权码；Compose 要求非空 |
 | JVM_HEAP_SIZE | start.sh JVM 内存参数替换，默认 Xms/Xmx 1024M、Xmn 256M |
 | SERVICE_NAME | start.sh 写入 SkyWalking agent name 属性，Compose 未设置 |
 | HOSTNAME、JAVA_HOME | 容器或系统环境，由 start.sh 读取 |

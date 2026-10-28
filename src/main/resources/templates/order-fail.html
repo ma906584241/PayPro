@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8">
-    <title>支付失败 - 个人支付系统</title>
+    <title th:text="'支付失败 - ' + ${indexTitle}">支付失败 - AI智为工坊</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
         :root {
@@ -208,7 +208,7 @@
     </div>
 
     <div class="footer">
-        Powered By <a href="javascript:;">lpay</a> · 如有疑问请联系管理员
+        <span th:text="${indexTitle}">AI智为工坊</span> · <a class="support-email" href="mailto:contact@aioperis.com" th:href="'mailto:' + ${supportMail}" th:text="${supportMail}">contact@aioperis.com</a>
     </div>
 </div>
 </body>
