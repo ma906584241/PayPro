@@ -23,6 +23,8 @@ JSON 接口通常返回 `ResponseVO<T>`：
 | GET | `/order/state/{id}` | 路径 `id` | 状态整数，含按需过期判断 | 无 |
 | GET | `/order/{id}` | `token` 查询参数 | 完整订单实体 | Redis Token |
 | POST | `/order/add` | JSON `OrderReq` | `AddOrderResp` | `@Validated`，仅金额非 null 约束 |
+| GET | `/order/payment-confirmation` | `orderId`；请求头 `X-Payment-Confirm-Token` | 只读查询声明与通知状态 | 独立客户凭证 |
+| POST | `/order/confirm-paid` | JSON `orderId / paymentConfirmToken` | 记录声明，提交后异步通知，不标记成功 | 非空及独立客户凭证 |
 | POST | `/order/edit` | 表单实体字段、`id`、`token` | 成功 / 失败 | Redis Token |
 | GET | `/order/pass` | `id`、`token`、`myToken` | 成功重定向 `/success`，失败返回 `error` 模板 | Redis Token + 配置口令 |
 | GET | `/order/back` | `id`、`token`、`myToken` | 设失败并可发邮件，重定向 `/success` | Redis Token + 配置口令 |
@@ -33,7 +35,7 @@ JSON 接口通常返回 `ResponseVO<T>`：
 | GET | `/product/get` | 查询 `productId`，Integer | 商品，下载地址设为 null | 无 |
 | POST | `/product/getListByType` | JSON `{"types":["CODE"]}` | 商品列表，下载地址设为 null | 无 |
 
-`ANY` 表示注解未限定 HTTP method，并不表示所有方法都能在有请求体等约束下成功调用。CodeGraph 记录 16 个 route 节点，`/favicon` 与 `/favicon.ico` 共用一个方法，但索引只建了首个别名节点。
+`ANY` 表示注解未限定 HTTP method，并不表示所有方法都能在有请求体等约束下成功调用。CodeGraph 记录 18 个 route 节点，`/favicon` 与 `/favicon.ico` 共用一个方法，但索引只建了首个别名节点。
 
 来源：[OrderController](../src/main/java/com/wendao/controller/OrderController.java)、[ProductController](../src/main/java/com/wendao/controller/ProductController.java)、[PageController](../src/main/java/com/wendao/controller/PageController.java)。
 
@@ -43,7 +45,7 @@ JSON 接口通常返回 `ResponseVO<T>`：
 
 | 字段 | 类型 | 说明 |
 | --- | --- | --- |
-| money | BigDecimal | 唯一有非空校验的字段；服务没有正数、上限或商品价格复核 |
+| money | BigDecimal | 唯一有非空校验的字段；服务拒绝非正金额；尚无上限、精度或商品价格复核 |
 | productId | Long | 配置商品 ID |
 | payType | String | 支付方式 ID；没有服务端允许列表检查 |
 | nickName、description、email、userId | String | 昵称、留言、通知邮箱、外部用户标识 |
@@ -66,7 +68,13 @@ JSON 接口通常返回 `ResponseVO<T>`：
 }
 ```
 
-成功 data 字段：`id / money / payType / payNum / custom / payQrNum / matchMode / actualAmount / fallbackToRemark`。`payNum` 在 DECREMENT 下为 null；`custom` 在普通自定义或减额回退时为 true。必须用 `actualAmount` 展示真实待付金额，`money` 表示原始金额。
+成功 data 字段：`id / money / payType / payNum / custom / payQrNum / matchMode / actualAmount / fallbackToRemark / paymentConfirmToken`。`payNum` 在 DECREMENT 下为 null；`custom` 在普通自定义或减额回退时为 true。必须用 `actualAmount` 展示真实待付金额，`money` 表示原始金额。
+
+## 客户付款声明与管理员通知
+
+下单不再发送管理员邮件。支付页只有在客户点击“我已完成付款”并二次确认后才 POST `/order/confirm-paid`。GET `/order/payment-confirmation` 通过请求头携带客户凭证，只读返回 `orderState / amount / payType / payNum / expireTime / confirmedAt / noticeStatus / canConfirm / retryable`。
+
+通知状态为 NOT_REQUESTED / SENDING / SENT / FAILED；SENT 表示 SMTP 接受，客户声明不会把订单状态变成成功。旧订单保持原流程，不补发邮件。完整请求示例、错误码与失败边界见 [管理员邮件触发机制：实施与上线说明](01-管理员邮件触发机制/实施与上线说明.md)。
 
 ## 列表、编辑与统计
 
@@ -144,9 +152,9 @@ params["sign"] = hashlib.md5((plain + "&key={配置密钥}").encode("utf-8")).he
 
 ### 成功响应字段
 
-`orderId / orderNo / amount / payType / payNum / state / message / timestamp / qrCodeUrl / returnUrl / matchMode / actualAmount / fallbackToRemark`。
+`orderId / orderNo / amount / payType / payNum / state / message / timestamp / qrCodeUrl / returnUrl / matchMode / actualAmount / fallbackToRemark / paymentConfirmToken`。
 
-`orderId` 与 `orderNo` 当前相同。`amount` 为原价，`actualAmount` 为实际待付金额；`returnUrl` 实际指向本系统支付页，并不是商家支付成功后的跳转地址。`message` 是 OpenAPI data 内字段；外层错误说明仍是 `msg`。
+`orderId` 与 `orderNo` 当前相同。`amount` 为原价，`actualAmount` 为实际待付金额；`returnUrl` 实际指向本系统支付页，并不是商家支付成功后的跳转地址。`message` 是 OpenAPI data 内字段；外层错误说明仍是 `msg`。接入方应使用包含客户凭证的完整 `returnUrl`，或保留 `paymentConfirmToken` 并分别编码参数；只打开二维码不等于提交付款声明。
 
 ### 错误码
 

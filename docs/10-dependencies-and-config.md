@@ -6,6 +6,7 @@
 
 | groupId | artifactId | 声明版本 | optional / scope |
 | --- | --- | --- | --- |
+| org.springframework.boot | spring-boot-starter-test | 父 POM 管理 | test |
 | org.hibernate | hibernate-validator | 6.1.5.Final |  |
 | org.springframework.boot | spring-boot-starter-web | 父 POM 管理 |  |
 | org.springframework.boot | spring-boot-devtools | 父 POM 管理 | true |

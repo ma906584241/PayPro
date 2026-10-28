@@ -23,7 +23,7 @@ DOCS = ROOT / "docs"
 DB = ROOT / ".codegraph" / "codegraph.db"
 SNAPSHOT_DATE = "2026-10-28"
 EXCLUDED = {".git", ".codegraph", "docs", "target", "node_modules", ".idea", "applogs", "dump", "__pycache__"}
-TEXT_SUFFIXES = {".java", ".html", ".js", ".css", ".xml", ".yml", ".yaml", ".md", ".sh", ".sql"}
+TEXT_SUFFIXES = {".java", ".html", ".js", ".cjs", ".css", ".xml", ".yml", ".yaml", ".md", ".sh", ".sql"}
 
 PURPOSES = {
     "PayApplication.java": "Spring Boot 入口，开启缓存、异步、调度与 Mapper 扫描",
@@ -58,6 +58,19 @@ PURPOSES = {
     "AddOrderResp.java": "普通下单支付信息响应",
     "OpenApiOrderResp.java": "外部下单、二维码与支付页响应",
     "CountResp.java": "成功订单原价统计响应",
+    "AdminNoticeStatus.java": "管理员通知状态，与订单付款状态分离",
+    "PaymentConfirmTokens.java": "生成客户随机凭证、保存哈希并恒定时间校验",
+    "ConfirmPaidReq.java": "客户主动声明付款请求，订单号和客户凭证非空",
+    "PaymentConfirmationResp.java": "鉴权付款声明查询响应、通知状态和重试资格",
+    "PaymentConfirmationService.java": "鉴权声明、发送锁、事务提交后调度及状态恢复",
+    "PaymentNoticeLock.java": "Redis SET NX发送租约与Lua归属校验释放",
+    "PaymentNoticeSender.java": "提交后异步邮件、独立审核链接、SMTP结果持久化",
+    "PaymentConfirmationServiceTest.java": "声明鉴权、事务回滚、去重、失败重试及JSON隐私测试",
+    "PaymentNoticeSenderTest.java": "SMTP结果、锁归属、旧任务和旧订单隔离测试",
+    "OrderCreationNotificationTest.java": "下单不发信、来源、自定义金额、编码链接和批准幂等测试",
+    "EmailUtilsOutcomeTest.java": "真实Thymeleaf渲染和Mock JavaMailSender结果测试",
+    "PaymentConfirmationControllerTest.java": "MockMvc请求体、请求头和参数错误测试",
+    "PaymentConfirmationDatabaseIT.java": "可选隔离MySQL/Redis增量迁移、12请求并发和元数据保护测试",
 }
 TOP_PURPOSES = {
     "README.md": "原项目介绍、开源 / 高级版说明和截图",
@@ -79,6 +92,8 @@ TOP_PURPOSES = {
     "src/main/resources/Dockerfile": "从预构建 JAR 构建运行镜像的旧入口",
     "src/main/resources/start.sh": "容器 JVM、profile、日志与 JMX 启动参数",
     "src/main/resources/sql/pay.sql": "订单表初始化、减额迁移和索引",
+    "src/main/resources/sql/migrations/20261028_payment_confirmation.sql": "已有数据库增量升级，仅新增三个付款声明字段",
+    "src/test/frontend/payment-confirmation.test.cjs": "Node原生测试运行真实支付页组件，Mock网络和计时器",
     "src/main/resources/favicon.ico": "站点图标资源",
     "src/main/resources/static/css/common.css": "全站主题、布局、按钮与动画",
     "src/main/resources/static/assets/js/api-config.js": "API 基址、端点和超时配置",
@@ -268,6 +283,7 @@ def graph_doc(stats, files, nodes, edges):
     kinds = Counter(n["kind"] for n in nodes)
     edge_kinds = Counter(e["kind"] for e in edges)
     langs = Counter(f["language"] for f in files)
+    routes = [n for n in nodes if n["kind"] == "route"]
     out = ["# PayPro CodeGraph", "", f"阅读日期 {SNAPSHOT_DATE}（Asia/Shanghai）。工具版本 0.9.9；索引绑定当前项目根目录。",
            "", "## 原生索引结果", "", f"- 已索引 **{len(files)} 文件**，包含 **{java_files} Java 文件**。",
            f"- **{len(nodes)} 节点、{len(edges)} 关系**；文件解析错误数 **{stats['parse_error_files']}**。",
@@ -289,7 +305,7 @@ def graph_doc(stats, files, nodes, edges):
     out += [f"| {key} | {value} |" for key, value in sorted(edge_kinds.items())]
     out += ["", "## 索引语言", "", "| 语言 | 文件数 |", "| --- | ---: |"]
     out += [f"| {key} | {value} |" for key, value in sorted(langs.items())]
-    out += ["", "## 路由节点", "", "原生索引的 16 个节点，favicon 的第二个 URL 别名需以接口文档为准。", "", "| 路由 | 源码 | 行 |", "| --- | --- | ---: |"]
+    out += ["", "## 路由节点", "", f"原生索引的 {len(routes)} 个节点，favicon 的第二个 URL 别名需以接口文档为准。", "", "| 路由 | 源码 | 行 |", "| --- | --- | ---: |"]
     for n in sorted((n for n in nodes if n["kind"] == "route"), key=lambda n: (n["file_path"], n["start_line"])):
         out.append(f"| `{md(n['name'])}` | [{Path(n['file_path']).name}](../{n['file_path']}) | {n['start_line']} |")
     out += ["", "## 查询与刷新", "", "在项目根目录执行：", "", "```powershell",
@@ -389,7 +405,7 @@ def check():
     if mapping_count != len(route_nodes):
         errors.append(f"Controller handler mappings {mapping_count} != route nodes {len(route_nodes)}")
     checked_links = 0
-    md_files = sorted(DOCS.glob("*.md"))
+    md_files = sorted(DOCS.rglob("*.md"))
     for path in md_files:
         text = path.read_text(encoding="utf-8")
         if "\ufffd" in text or "\x00" in text:

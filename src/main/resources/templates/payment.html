@@ -29,6 +29,12 @@
         .countdown { text-align: center; color: #F59E0B; font-weight: 700; margin-top: 16px; }
         .actions { display: flex; gap: 12px; justify-content: center; margin-top: 16px; }
         .tips { color: var(--text-muted); font-size: 0.95rem; margin-top: 16px; text-align: center; }
+        .confirmation-panel { margin-top: 24px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.08); text-align: center; }
+        .confirmation-panel p { margin-bottom: 16px; line-height: 1.7; }
+        .confirmation-panel .btn { min-height: 44px; max-width: 100%; font: inherit; justify-content: center; }
+        .confirmation-panel .btn:disabled { opacity: .6; cursor: not-allowed; transform: none; box-shadow: none; }
+        .confirmation-panel .btn:focus-visible { outline: 2px solid var(--accent-color); outline-offset: 4px; }
+        .confirmation-error { color: #fca5a5; }
         .badge { display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border: 1px solid rgba(255,255,255,0.08); border-radius: 999px; color: var(--text-muted); font-size: 0.85rem; }
         @media (max-width: 900px) { .content { grid-template-columns: 1fr; } }
 
@@ -78,11 +84,11 @@
                         <div class="value">￥{{ orderInfo.actualAmount || orderInfo.money }}</div>
                     </div>
                 </div>
-                <div class="qr-wrap" :class="{'wechat-qr': orderInfo.payType === 'wechat'}">
+                <div v-if="!hasConfirmToken || confirmationInfo" class="qr-wrap" :class="{'wechat-qr': orderInfo.payType === 'wechat'}">
                     <img v-if="orderInfo.useLocalQrCode === 'true' && qrImageUrl" :src="qrImageUrl" class="qr-image" alt="二维码" @error="handleImageError" @load="handleImageLoad">
                     <canvas v-else id="qrcode-canvas" width="220" height="220" style="border-radius:12px"></canvas>
                 </div>
-                <div class="countdown" v-if="paymentStatus==='pending'">剩余时间：{{ formatCountdown }}</div>
+                <div class="countdown" v-if="showCountdown">剩余时间：{{ formatCountdown }}</div>
                 <div class="countdown" v-if="paymentStatus==='success'" style="color:#22c55e">支付成功</div>
                 <div class="countdown" v-if="paymentStatus==='timeout'" style="color:#ef4444">订单已超时</div>
                 <div class="countdown" v-if="paymentStatus==='failed'" style="color:#ef4444">订单失败</div>
@@ -93,6 +99,17 @@
                 <div class="tips" v-if="orderInfo.useLocalQrCode==='true' && orderInfo.matchMode==='REMARK' && !orderInfo.fallbackToRemark">请在付款备注中输入标识号：{{ orderInfo.payNum }}</div>
                 <div class="tips" v-if="orderInfo.useLocalQrCode==='true' && orderInfo.matchMode==='DECREMENT'" style="color:#22c55e">请支付 ￥{{ orderInfo.actualAmount }}</div>
                 <div class="tips" v-if="orderInfo.useLocalQrCode==='true' && orderInfo.fallbackToRemark" style="color:#F59E0B">请支付 ￥{{ orderInfo.actualAmount }}，并在备注中输入标识号：{{ orderInfo.payNum }}</div>
+                <div class="confirmation-panel" v-if="paymentStatus==='pending'">
+                    <template v-if="hasConfirmToken">
+                        <p role="status" aria-live="polite">{{ confirmationText }}</p>
+                        <p v-if="confirmationError" class="confirmation-error" role="alert">{{ confirmationError }}</p>
+                        <button v-if="!reportedPaid || (confirmationInfo && confirmationInfo.retryable)"
+                                type="button" class="btn btn-primary" :disabled="!canReportPaid" @click="confirmPaid">
+                            {{ confirming ? '正在提交…' : (reportedPaid ? '重试通知管理员' : '我已完成付款') }}
+                        </button>
+                    </template>
+                    <p v-else class="tips">此链接缺少付款确认信息，请使用完整支付链接或联系客服。旧订单仍按原审核流程处理。</p>
+                </div>
             </div>
 
             <div class="glass card" v-if="showInfoPanel">
@@ -154,11 +171,29 @@ createApp({
             paymentStatus: 'pending',
             countdown: 300,
             countdownTimer: null,
+            pollingTimer: null,
+            polling: false,
+            disposed: false,
+            confirmationInfo: null,
+            confirmationError: '',
+            confirmationInvalid: false,
+            confirming: false,
             showWechatNotice: false,
             showWechatZsNotice: false,
         }
     },
     computed:{
+        hasConfirmToken(){ return !!this.orderInfo.paymentConfirmToken; },
+        reportedPaid(){ return !!(this.confirmationInfo && this.confirmationInfo.confirmedAt); },
+        canReportPaid(){ return !!(this.confirmationInfo && this.confirmationInfo.canConfirm && !this.confirming && this.paymentStatus==='pending'); },
+        showCountdown(){ return this.paymentStatus==='pending' && !this.reportedPaid && (!this.hasConfirmToken || !!(this.confirmationInfo && this.confirmationInfo.expireTime)); },
+        confirmationText(){
+            if(!this.confirmationInfo){ return this.confirmationInvalid ? '该支付链接无法确认付款，请使用完整链接或联系客服。' : '正在查询订单信息…'; }
+            if(!this.reportedPaid){ return '完成扫码付款后，请点击下方按钮通知管理员。未付款请勿提交。'; }
+            if(this.confirmationInfo.noticeStatus==='FAILED'){ return '付款确认已记录，但邮件通知未完成，请重试通知管理员。请勿重复付款。'; }
+            if(this.confirmationInfo.noticeStatus==='SENDING'){ return '付款确认已提交，正在通知管理员。请勿重复付款。'; }
+            return '付款确认已提交，等待管理员核实到账。请勿重复付款。';
+        },
         formatCountdown(){
             const m = Math.floor(this.countdown/60);
             const s = this.countdown%60;
@@ -176,13 +211,16 @@ createApp({
         this.initPayment();
     },
     beforeUnmount(){
+        this.disposed = true;
         if(this.countdownTimer){ clearInterval(this.countdownTimer); }
+        if(this.pollingTimer){ clearInterval(this.pollingTimer); }
     },
     methods:{
         getUrlParams(){
             const p = new URLSearchParams(window.location.search);
             return {
                 orderId: p.get('orderId'),
+                paymentConfirmToken: p.get('paymentConfirmToken') || '',
                 money: p.get('money') || 0,
                 payType: p.get('payType'),
                 payNum: p.get('payNum') || '',
@@ -198,14 +236,16 @@ createApp({
         },
         async initPayment(){
             this.orderInfo = this.getUrlParams();
+            if(this.hasConfirmToken){ await this.refreshConfirmationStatus(); }
             await this.createPaymentOrder();
             // 减额模式无需显示备注提示
-            if(this.orderInfo.payType==='wechat' && this.orderInfo.matchMode !== 'DECREMENT'){ this.showWechatNotice = true; }
+            if(this.orderInfo.payType==='wechat' && this.orderInfo.matchMode !== 'DECREMENT' && (!this.hasConfirmToken || this.confirmationInfo)){ this.showWechatNotice = true; }
             if(this.orderInfo.payType==='wechat_zs' && this.orderInfo.matchMode !== 'DECREMENT'){ this.showWechatZsNotice = true; }
             await this.waitForQRCode();
             await this.$nextTick();
             await new Promise(r=>setTimeout(r,100));
             await this.generateQRCode();
+            if(this.disposed){ return; }
             this.startCountdown();
             this.startPaymentPolling();
         },
@@ -268,23 +308,88 @@ createApp({
             await QRCode.toCanvas(canvas, this.qrCodeUrl, { width:220, height:220, margin:1, color:{dark:'#000', light:'#fff'} });
         },
         startCountdown(){
+            clearInterval(this.countdownTimer);
+            if(this.reportedPaid || this.paymentStatus!=='pending'){ return; }
+            if(this.hasConfirmToken){
+                if(!this.confirmationInfo || !this.confirmationInfo.expireTime){ return; }
+                this.countdown = Math.max(0, Math.ceil((new Date(this.confirmationInfo.expireTime).getTime()-Date.now())/1000));
+            }
             this.countdownTimer = setInterval(()=>{
                 this.countdown--; if(this.countdown<=0){ this.paymentStatus='timeout'; clearInterval(this.countdownTimer); }
             },1000);
         },
         startPaymentPolling(){
-            const timer = setInterval(async ()=>{
-                if(this.paymentStatus!=='pending'){ clearInterval(timer); return; }
+            if(this.confirmationInvalid || this.disposed || this.paymentStatus!=='pending'){ return; }
+            this.pollingTimer = setInterval(async ()=>{
+                if(this.paymentStatus!=='pending' || this.disposed || this.confirmationInvalid){ clearInterval(this.pollingTimer); return; }
+                if(this.polling){ return; }
+                this.polling = true;
                 try{
+                    if(this.hasConfirmToken){
+                        const missing = !this.confirmationInfo;
+                        if(await this.refreshConfirmationStatus() && missing){ await this.createPaymentOrder(); await this.generateQRCode(); this.startCountdown(); }
+                        return;
+                    }
                     const resp = await getRequest(API_CONFIG.ENDPOINTS.STATUS + "/" + this.orderInfo.orderId);
                     if(resp.code==200){
-                        if(resp.data==1){ this.paymentStatus='success'; clearInterval(this.countdownTimer); clearInterval(timer); }
-                        else if(resp.data==2){ this.paymentStatus='failed'; clearInterval(timer); }
-                        else if(resp.data==5){ this.paymentStatus='timeout'; clearInterval(this.countdownTimer); clearInterval(timer); }
+                        this.applyOrderState(resp.data);
                     }
                 }catch(e){
+                }finally{
+                    this.polling = false;
                 }
             },2000);
+        },
+        applyOrderState(state){
+            if(state==1){ this.paymentStatus='success'; }
+            else if(state==2){ this.paymentStatus='failed'; }
+            else if(state==5){ this.paymentStatus='timeout'; }
+            if(this.paymentStatus!=='pending'){
+                clearInterval(this.countdownTimer);
+                clearInterval(this.pollingTimer);
+            }
+        },
+        applyConfirmationInfo(data){
+            this.confirmationInfo = data;
+            this.orderInfo.actualAmount = Number(data.amount).toFixed(2);
+            this.orderInfo.payType = data.payType;
+            this.orderInfo.payNum = data.payNum || this.orderInfo.payNum;
+            this.applyOrderState(data.orderState);
+            if(data.confirmedAt){ clearInterval(this.countdownTimer); this.confirmationError = ''; }
+        },
+        async refreshConfirmationStatus(){
+            try{
+                const query = new URLSearchParams({orderId:this.orderInfo.orderId});
+                const resp = await getHttpUtil().request(API_CONFIG.ENDPOINTS.PAYMENT_CONFIRMATION+'?'+query, {
+                    method:'GET', headers:{'X-Payment-Confirm-Token':this.orderInfo.paymentConfirmToken}
+                });
+                if(resp.code!==200){
+                    if([400,403,404,409].includes(resp.code)){ this.confirmationInvalid = true; }
+                    throw new Error(resp.msg || '暂时无法查询付款确认状态');
+                }
+                this.applyConfirmationInfo(resp.data);
+                return true;
+            }catch(error){
+                this.confirmationError = error.message || '网络暂时不可用，请稍后刷新；请勿重复付款。';
+                return false;
+            }
+        },
+        async confirmPaid(){
+            if(!this.canReportPaid){ return; }
+            if(!this.reportedPaid && !window.confirm('请确认已按页面所示金额完成付款，并填写订单标识。确认后会通知管理员核实到账。')){ return; }
+            this.confirming = true;
+            this.confirmationError = '';
+            try{
+                const resp = await postRequest(API_CONFIG.ENDPOINTS.CONFIRM_PAID, {
+                    orderId:this.orderInfo.orderId, paymentConfirmToken:this.orderInfo.paymentConfirmToken
+                });
+                if(resp.code!==200){ throw new Error(resp.msg || '付款确认提交失败，请稍后重试'); }
+                this.applyConfirmationInfo(resp.data);
+            }catch(error){
+                this.confirmationError = (error.message || '提交结果暂未确认，请稍后重试或刷新')+'；请勿重复付款。';
+            }finally{
+                this.confirming = false;
+            }
         },
         handleImageError(event){
             console.error('支付二维码图片加载失败:', this.qrImageUrl);

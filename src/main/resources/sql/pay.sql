@@ -25,6 +25,9 @@ CREATE TABLE `t_order`  (
   `order_source` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT 'PRODUCT' COMMENT '订单来源,PRODUCT来自产品表，OTHER其他',
   `notify_url` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '通知地址',
   `expire_time` datetime NULL DEFAULT NULL,
+  `payment_confirm_token_hash` char(64) NULL DEFAULT NULL,
+  `payment_confirmed_at` datetime NULL DEFAULT NULL,
+  `admin_notice_status` varchar(16) NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 

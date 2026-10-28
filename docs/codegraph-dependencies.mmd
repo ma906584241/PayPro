@@ -15,23 +15,36 @@ flowchart LR
     J12["WeChatMsgDTO"]
     J13["Order"]
     J14["Product"]
-    J15["OrderStatesEnum"]
-    J16["ApiException"]
-    J17["GlobalExceptionHandler"]
-    J18["OrderMapper"]
-    J19["ResponseVO"]
-    J20["GetOrderListReq"]
-    J21["GetProductListReq"]
-    J22["OpenApiOrderReq"]
-    J23["OrderReq"]
-    J24["AddOrderResp"]
-    J25["CountResp"]
-    J26["OpenApiOrderResp"]
-    J27["OrderService"]
-    J28["ProductService"]
-    J29["OrderServiceImpl"]
-    J30["ProductServiceImpl"]
-    J31["OpenApiSignUtil"]
+    J15["AdminNoticeStatus"]
+    J16["OrderStatesEnum"]
+    J17["ApiException"]
+    J18["GlobalExceptionHandler"]
+    J19["OrderMapper"]
+    J20["ResponseVO"]
+    J21["ConfirmPaidReq"]
+    J22["GetOrderListReq"]
+    J23["GetProductListReq"]
+    J24["OpenApiOrderReq"]
+    J25["OrderReq"]
+    J26["AddOrderResp"]
+    J27["CountResp"]
+    J28["OpenApiOrderResp"]
+    J29["PaymentConfirmationResp"]
+    J30["OrderService"]
+    J31["PaymentConfirmationService"]
+    J32["PaymentNoticeLock"]
+    J33["PaymentNoticeSender"]
+    J34["ProductService"]
+    J35["OrderServiceImpl"]
+    J36["ProductServiceImpl"]
+    J37["OpenApiSignUtil"]
+    J38["PaymentConfirmTokens"]
+    J39["EmailUtilsOutcomeTest"]
+    J40["OrderCreationNotificationTest"]
+    J41["PaymentConfirmationControllerTest"]
+    J42["PaymentConfirmationDatabaseIT"]
+    J43["PaymentConfirmationServiceTest"]
+    J44["PaymentNoticeSenderTest"]
     J2 --> J6
     J8 --> J1
     J8 --> J2
@@ -39,58 +52,108 @@ flowchart LR
     J8 --> J4
     J8 --> J6
     J8 --> J13
-    J8 --> J15
     J8 --> J16
-    J8 --> J19
+    J8 --> J17
     J8 --> J20
+    J8 --> J21
     J8 --> J22
-    J8 --> J23
     J8 --> J24
+    J8 --> J25
     J8 --> J26
-    J8 --> J27
+    J8 --> J28
+    J8 --> J29
+    J8 --> J30
+    J8 --> J31
     J9 --> J4
-    J9 --> J15
-    J9 --> J27
+    J9 --> J16
+    J9 --> J30
     J10 --> J14
-    J10 --> J19
-    J10 --> J21
-    J10 --> J28
-    J17 --> J19
-    J18 --> J13
-    J27 --> J13
-    J27 --> J19
-    J27 --> J20
-    J27 --> J22
-    J27 --> J23
-    J27 --> J24
-    J27 --> J25
-    J27 --> J26
-    J28 --> J14
-    J28 --> J19
-    J28 --> J21
-    J29 --> J1
-    J29 --> J2
-    J29 --> J3
-    J29 --> J4
-    J29 --> J6
-    J29 --> J13
-    J29 --> J14
-    J29 --> J15
-    J29 --> J16
-    J29 --> J18
-    J29 --> J19
-    J29 --> J20
-    J29 --> J22
-    J29 --> J23
-    J29 --> J24
-    J29 --> J25
-    J29 --> J26
-    J29 --> J27
-    J29 --> J28
-    J29 --> J31
-    J30 --> J6
-    J30 --> J14
-    J30 --> J19
-    J30 --> J21
+    J10 --> J20
+    J10 --> J23
+    J10 --> J34
+    J18 --> J20
+    J19 --> J13
+    J30 --> J13
+    J30 --> J20
+    J30 --> J22
+    J30 --> J24
+    J30 --> J25
+    J30 --> J26
+    J30 --> J27
     J30 --> J28
-    J31 --> J22
+    J31 --> J13
+    J31 --> J15
+    J31 --> J17
+    J31 --> J19
+    J31 --> J21
+    J31 --> J29
+    J31 --> J38
+    J33 --> J2
+    J33 --> J6
+    J33 --> J13
+    J33 --> J15
+    J33 --> J19
+    J34 --> J14
+    J34 --> J20
+    J34 --> J23
+    J35 --> J1
+    J35 --> J2
+    J35 --> J3
+    J35 --> J4
+    J35 --> J6
+    J35 --> J13
+    J35 --> J16
+    J35 --> J17
+    J35 --> J19
+    J35 --> J20
+    J35 --> J22
+    J35 --> J24
+    J35 --> J25
+    J35 --> J26
+    J35 --> J27
+    J35 --> J28
+    J35 --> J30
+    J35 --> J37
+    J35 --> J38
+    J36 --> J6
+    J36 --> J14
+    J36 --> J20
+    J36 --> J23
+    J36 --> J34
+    J37 --> J24
+    J38 --> J13
+    J38 --> J15
+    J39 --> J2
+    J39 --> J6
+    J39 --> J13
+    J40 --> J2
+    J40 --> J6
+    J40 --> J13
+    J40 --> J19
+    J40 --> J20
+    J40 --> J24
+    J40 --> J25
+    J40 --> J26
+    J40 --> J28
+    J40 --> J35
+    J40 --> J37
+    J40 --> J38
+    J41 --> J8
+    J41 --> J17
+    J41 --> J18
+    J41 --> J21
+    J41 --> J29
+    J42 --> J13
+    J42 --> J19
+    J42 --> J38
+    J43 --> J13
+    J43 --> J17
+    J43 --> J19
+    J43 --> J21
+    J43 --> J29
+    J43 --> J38
+    J44 --> J2
+    J44 --> J6
+    J44 --> J13
+    J44 --> J19
+    J44 --> J38

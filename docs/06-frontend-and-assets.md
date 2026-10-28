@@ -11,7 +11,7 @@
 | index.html | 根入口跳转页 | meta refresh 到 home.html，JS 再于 100ms 后跳转 |
 | home.html | 收款系统介绍与入口 | Vue 仅挂载空状态，导航到捐赠、记录、帮助 |
 | recharge.html | 商品 / 自定义金额下单 | CODE 商品列表、支付方式硬编码、邮箱输入、下单后拼接支付页 URL |
-| payment.html | 扫码与支付结果 | 本地图片或支付宝二维码、实际金额、备注提示、300 秒倒计时、2 秒状态轮询 |
+| payment.html | 扫码与支付结果 | 收款码、数据库可信金额、付款声明二次确认、失败重试、2秒审核状态轮询 |
 | openAlipay.html | 支付宝内收款跳转 | 解析 money/payNum/id，调用 AlipayJSBridge，生成扫码、红包和好友 URL |
 | history.html | 公开成功记录 | 请求 states=[1]，分页展示；统计卡仅累计当前页 |
 | help.html | 帮助 FAQ | Vue 展开 / 收起静态问答，无业务请求 |
@@ -32,7 +32,7 @@
 
 BASE_URL 选择顺序：`window.API_CUSTOM_CONFIG.BASE_URL` → URL 的 `apiBase` → localStorage 的 `API_BASE_URL` → 当前 origin → 最后写死的开发隧道地址。浏览器普通环境通常到当前 origin 就返回。TIMEOUT 为 10000ms，默认 JSON 请求头。
 
-端点为 RECHARGE `/order/add`、STATUS `/order/state`、PRODUCT_DETAIL `/product/get`、PRODUCT_LIST `/product/getListByType`、PAY_LIST `/order/list`。`/getPayMethods` 不在这些端点中，recharge 没有动态读取支付方式。
+新增 CONFIRM_PAID `/order/confirm-paid`、PAYMENT_CONFIRMATION `/order/payment-confirmation`；其他端点为 RECHARGE `/order/add`、STATUS `/order/state`、PRODUCT_DETAIL `/product/get`、PRODUCT_LIST `/product/getListByType`、PAY_LIST `/order/list`。`/getPayMethods` 不在这些端点中，recharge 没有动态读取支付方式。
 
 ### http-util.js
 
@@ -48,11 +48,13 @@ BASE_URL 选择顺序：`window.API_CUSTOM_CONFIG.BASE_URL` → URL 的 `apiBase
 
 2026-10-28 充值页展示更新：支付方式仅显示支付宝转账、微信支付，两份 YAML 同步移除微信赞赏码和支付宝当面付。支付卡改为原生 button，支持键盘选择、aria-pressed 与可见焦点，并使用 Remix 品牌图标。修正充值页窄屏网格、输入框和自定义金额按钮的横向溢出；1440、768、390、320px 预览检查通过。后续支付页面中的历史类型兼容逻辑不属于本次移除范围。
 
-URL 参数：`orderId / money / payType / payNum / customerQr / picName / qrCode / payQrNum / useLocalQrCode / matchMode / actualAmount / fallbackToRemark`。页面直接从 URL 构建显示，不从服务端重新取可信订单金额。
+URL 参数：`orderId / money / payType / payNum / customerQr / picName / qrCode / payQrNum / useLocalQrCode / matchMode / actualAmount / fallbackToRemark / paymentConfirmToken`。新链接通过凭证鉴权从服务端恢复金额、渠道及付款标识；旧链接保留URL展示，但不提供付款确认按钮。
 
 本地二维码分支顺序是 customerQr → fallbackToRemark → DECREMENT → 普通固定金额。因此回退时后端同时给 custom=true，会优先落入 custom 分支；该分支又用单引号书写 `'assets/qr/${this.orderInfo.payType}/custom.png'`，变量不会插值。正常固定价路径使用 picName，但减额路径使用 money / actualAmount 字符串，金额小数位格式不同可能导致路径错误。
 
-图片加载失败时回退到 custom.png，却没有设置 `dataset.retried` 标记；兜底图片也失败时可能重复触发。倒计时只改变前端状态，不发送关单请求；服务端当前也未设置 expireTime，因此前端五分钟超时不代表数据库订单结束或金额槽位释放。
+当前支付宝、微信使用上传的通用收款码；带有效确认凭证的新订单在加载确认信息前不显示二维码。客户声明后停止付款倒计时并继续等待审核；未设置expireTime的新订单不创建虚构五分钟倒计时。完整交互见 [管理员邮件触发机制：实施与上线说明](01-管理员邮件触发机制/实施与上线说明.md)。
+
+历史兼容分支的图片加载失败时回退到 custom.png，却没有设置 `dataset.retried` 标记；兜底图片也失败时可能重复触发。倒计时只改变前端状态，不发送关单请求；服务端当前也未设置 expireTime，因此前端五分钟超时不代表数据库订单结束或金额槽位释放。
 
 非本地二维码仅对 alipay 构建跳转 URL。alipay_dmf 的 qrCode 参数虽然读取，却没有实现消费和二维码生成逻辑，不能据此完成当面付。
 

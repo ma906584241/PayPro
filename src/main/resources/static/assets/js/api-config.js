@@ -40,6 +40,8 @@ const API_CONFIG = {
     ENDPOINTS: {
         RECHARGE: '/order/add',
         STATUS: '/order/state',
+        CONFIRM_PAID: '/order/confirm-paid',
+        PAYMENT_CONFIRMATION: '/order/payment-confirmation',
         PRODUCT_DETAIL: '/product/get',
         PRODUCT_LIST: '/product/getListByType',
         PAY_LIST: '/order/list'
