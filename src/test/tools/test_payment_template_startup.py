@@ -72,6 +72,8 @@ class PaymentTemplateStartupTest(unittest.TestCase):
         self.assertIn(b"JAVA_START_REACHED", first.stdout)
         upgraded = self.overlay.read_bytes()
         self.assertIn("我已完成付款".encode("utf-8"), upgraded)
+        self.assertIn('<div class="value" th:text="${name}">AI智为工作室</div>'.encode("utf-8"), upgraded)
+        self.assertNotIn("马宵冉".encode("utf-8"), upgraded)
         self.assertIn(b"fallbackToRemark", upgraded)
         backups = self.app / "config/template-backups"
         self.assertEqual(len(list(backups.glob("*.html"))), 1)

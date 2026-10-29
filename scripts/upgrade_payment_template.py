@@ -17,6 +17,8 @@ from datetime import datetime, timezone
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = re.compile(r"(<script\b[^>]*>)([\s\S]*?)(</script\s*>)", re.I)
 PANEL = re.compile(r'(?m)^ {16}<div class="confirmation-panel"[\s\S]*?^ {16}</div>(?=\n {12}</div>)')
+RECIPIENT = re.compile(r'(<div\b[^>]*\bclass="label"[^>]*>\s*收款人\s*</div>\s*)'
+                       r'(<div\b[^>]*\bclass="value"[^>]*>[\s\S]*?</div>)')
 
 
 def one(pattern, source, description):
@@ -67,6 +69,12 @@ def upgrade(existing, canonical):
     if 'th:inline=' not in opening:
         opening = opening[:-1] + ' th:inline="javascript">'
     result = existing[:old_app.start()] + opening + new_js + old_app[3] + existing[old_app.end():]
+
+    # Restored overlays can contain a hardcoded recipient or an outdated fallback.
+    # Restore the configuration binding as well as the canonical display text.
+    recipient = one(RECIPIENT, result, "recipient summary")
+    canonical_recipient = one(RECIPIENT, canonical, "canonical recipient summary")
+    result = result[:recipient.start(2)] + canonical_recipient[2] + result[recipient.end(2):]
 
     countdown = one(r'''(<div\b[^>]*class="countdown"[^>]*v-if=")(?:paymentStatus==='pending'|showCountdown)(")''',
                     result, "pending countdown")
@@ -119,8 +127,9 @@ def main():
         changed = original.replace(b"\r\n", b"\n") != merged
         print("Overlay: %s\nBefore SHA-256: %s\nAfter SHA-256: %s" % (target, sha(original), sha(merged)))
         print("QR selection and canvas generation: preserved")
+        print("Recipient summary: synchronized with the canonical configuration binding")
         if args.check:
-            print("Upgrade required" if changed else "Confirmation workflow is current")
+            print("Upgrade required" if changed else "Payment template is current")
             return 1 if changed else 0
         if args.output:
             output = args.output.resolve()

@@ -20,6 +20,10 @@ LEGACY = '''<!DOCTYPE html>
 </style></head><body>
         <div class="content">
             <div class="glass card">
+                <div class="summary-item">
+                    <div class="label">收款人</div>
+                    <div class="value">马宵冉</div>
+                </div>
                 <div class="qr-wrap"><img :src="qrImageUrl" alt="二维码"></div>
                 <div class="countdown" v-if="paymentStatus==='pending'">Time</div>
                 <p>Existing customized footer and content</p>
@@ -53,6 +57,20 @@ createApp({
 
 
 class UpgradePaymentTemplateTest(unittest.TestCase):
+    def test_restored_hardcoded_recipient_uses_configuration_binding(self):
+        original = LEGACY.replace("Existing customized footer and content", "Existing footer: 马宵冉")
+        merged = UPGRADE.upgrade(original, CANONICAL)
+        recipient = UPGRADE.one(UPGRADE.RECIPIENT, merged, "recipient summary")
+        self.assertEqual(recipient[2], '<div class="value" th:text="${name}">AI智为工作室</div>')
+        self.assertIn("Existing footer: 马宵冉", merged)
+
+    def test_bound_recipient_with_old_fallback_is_also_updated(self):
+        original = LEGACY.replace('<div class="value">马宵冉</div>',
+                                  '<div class="value" th:text="${name}">马宵冉</div>')
+        merged = UPGRADE.upgrade(original, CANONICAL)
+        self.assertIn('<div class="value" th:text="${name}">AI智为工作室</div>', merged)
+        self.assertNotIn("马宵冉", merged)
+
     def test_qr_branches_precedence_canvas_and_thymeleaf_are_preserved(self):
         merged = UPGRADE.upgrade(LEGACY, CANONICAL)
         for name, following in [("createPaymentOrder", "generateQRCode"), ("generateQRCode", "startCountdown")]:
@@ -78,6 +96,10 @@ class UpgradePaymentTemplateTest(unittest.TestCase):
 
     def test_unrecognized_html_and_custom_visibility_are_rejected(self):
         for html in [LEGACY.replace('v-if="showInfoPanel"', 'v-if="customInfo"'),
+                     LEGACY.replace('收款人', '自定义摘要'),
+                     LEGACY.replace('<div class="label">收款人</div>',
+                                    '<div class="label">收款人</div><div class="value">重复</div>'
+                                    '<div class="label">收款人</div>'),
                      LEGACY.replace('class="qr-wrap"', 'class="qr-wrap" v-if="customVisibility"'),
                      LEGACY.replace("data(){ return {}; }", "data(){ return {customData:'preserve me'}; }"),
                      LEGACY.replace("    methods:{", "    watch:{},\n    methods:{"),
