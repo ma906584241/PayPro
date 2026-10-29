@@ -5,7 +5,7 @@
 | 项目 | 当前值 |
 | --- | --- |
 | 网站名称 | AI智为工坊 |
-| 收款人 / 品牌 | 马宵冉 |
+| 收款人 / 品牌 | AI智为工作室 |
 | 站点地址 | https://pay.aioperis.com |
 | 客服邮箱 | contact@aioperis.com |
 | SMTP 服务 | smtp.qq.com:465，隐式 SSL |

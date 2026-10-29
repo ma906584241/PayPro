@@ -23,7 +23,7 @@
 | title、indexTitle | 邮件 / 页面标题，注入模板全局变量 |
 | site | 支付页和管理邮件链接的服务根地址；应与真实可访问地址一致 |
 | alipayUserId、alipayCustomQrUrl、mobile | 支付宝跳转收款参数；传入模板 |
-| name | 收款人名称，当前为马宵冉；页面和邮件均注入此变量 |
+| name | 收款人名称，当前为AI智为工作室；页面和邮件均注入此变量 |
 | email.sender、email.receiver | 管理审核邮件发件人与收件人，需与 SMTP 账户匹配 |
 | supportMail | 客服邮箱，当前为 contact@aioperis.com；帮助页与页脚显示邮件链接 |
 | token.value | 管理操作的二次口令，不是 Redis 每单随机 Token |
