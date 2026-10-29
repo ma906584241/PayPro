@@ -25,6 +25,7 @@ class PaymentTemplateStartupTest(unittest.TestCase):
         self.base = Path(self.temp.name)
         self.app = self.base / "app"
         self.overlay = self.app / "config/templates/payment.html"
+        self.runtime = self.app / "runtime/templates/payment.html"
         self.overlay.parent.mkdir(parents=True)
         self.qr = self.app / "qr/alipay/custom.png"
         self.qr.parent.mkdir(parents=True)
@@ -38,15 +39,17 @@ class PaymentTemplateStartupTest(unittest.TestCase):
         (self.base / "start.sh").write_bytes((ROOT / "src/main/resources/start.sh").read_bytes().replace(b"\r\n", b"\n"))
         prepare = self.tools / "prepare_payment_template.sh"
         prepare.write_bytes(prepare.read_bytes().replace(b"\r\n", b"\n"))
-        (self.base / "fake-java").write_bytes(b"#!/bin/sh\necho JAVA_START_REACHED\n")
+        (self.base / "fake-java").write_bytes(b'#!/bin/sh\necho JAVA_START_REACHED\necho "JAVA_CLASSPATH=$CLASSPATH"\n')
 
-    def run_startup(self, readonly=False):
+    def run_startup(self, readonly=False, include_tools=True):
         image = os.environ.get("PAYPRO_TEST_PYTHON_IMAGE", "python:3.11-slim")
         command = ["docker", "run", "--rm", "--pull=never", "--network", "none"]
         for source, target, ro in [(self.app, "/app/appsystems", readonly),
                                    (self.tools, "/app/payment-template", True),
                                    (self.base / "start.sh", "/app/start.sh", True),
                                    (self.base / "fake-java", "/fixtures/fake-java", True)]:
+            if source == self.tools and not include_tools:
+                continue
             command += ["--mount", "type=bind,source=%s,target=%s%s" % (source, target, ",readonly" if ro else "")]
         command += [image, "/bin/sh", "-c", "mkdir -p /tmp/test-jdk/bin\n"
                     "cp /fixtures/fake-java /tmp/test-jdk/bin/java\n"
@@ -63,6 +66,20 @@ class PaymentTemplateStartupTest(unittest.TestCase):
         self.assertIn(b"JAVA_START_REACHED", result.stdout)
         self.assertFalse(self.overlay.exists())
         self.assertFalse((self.app / "config/template-backups").exists())
+        self.assertIn(b"JAVA_CLASSPATH=/app/appsystems/runtime/:/app/appsystems/config/:", result.stdout)
+        self.assertIn(FIXTURES.UPGRADE.version_marker(FIXTURES.CANONICAL), self.runtime.read_text(encoding="utf-8"))
+
+    def test_legacy_jar_entrypoint_without_tools_needs_no_overlay(self):
+        result = self.run_startup(include_tools=False)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn(b"JAVA_START_REACHED", result.stdout)
+        self.assertNotIn(b"/app/appsystems/runtime/:", result.stdout)
+        self.overlay.write_text(FIXTURES.LEGACY, encoding="utf-8")
+        result = self.run_startup(include_tools=False)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertNotIn(b"JAVA_START_REACHED", result.stdout)
+        self.assertIn(b"no upgrade tools", result.stderr)
+        self.assertEqual(self.overlay.read_text(encoding="utf-8"), FIXTURES.LEGACY)
 
     def test_old_overlay_restarts_and_later_restores_are_automatically_upgraded(self):
         original = FIXTURES.LEGACY.encode("utf-8")
@@ -75,6 +92,8 @@ class PaymentTemplateStartupTest(unittest.TestCase):
         self.assertIn('<div class="value" th:text="${name}">AI智为工作室</div>'.encode("utf-8"), upgraded)
         self.assertNotIn("马宵冉".encode("utf-8"), upgraded)
         self.assertIn(b"fallbackToRemark", upgraded)
+        prepared = self.runtime.read_bytes()
+        self.assertIn(FIXTURES.UPGRADE.version_marker(FIXTURES.CANONICAL).encode("utf-8"), prepared)
         backups = self.app / "config/template-backups"
         self.assertEqual(len(list(backups.glob("*.html"))), 1)
         self.assertEqual(next(backups.glob("*.html")).read_bytes(), original)
@@ -84,10 +103,27 @@ class PaymentTemplateStartupTest(unittest.TestCase):
         self.assertEqual(len(list(backups.glob("*.html"))), 1)
         # Simulate the production deploy process restoring the old aside file.
         self.overlay.write_bytes(original)
+        self.assertEqual(self.runtime.read_bytes(), prepared)
         third = self.run_startup()
         self.assertEqual(third.returncode, 0, third.stdout + third.stderr)
         self.assertEqual(self.overlay.read_bytes(), upgraded)
+        self.assertEqual(self.runtime.read_bytes(), prepared)
         self.assertEqual(len(list(backups.glob("*.html"))), 2)
+
+    def test_next_image_updates_recipient_and_publishes_its_own_version(self):
+        self.overlay.write_text(FIXTURES.LEGACY, encoding="utf-8")
+        first = self.run_startup()
+        self.assertEqual(first.returncode, 0, first.stdout + first.stderr)
+        previous = self.runtime.read_bytes()
+        canonical = FIXTURES.CANONICAL.replace("AI智为工作室", "部署后的新收款人")
+        (self.tools / "payment.html").write_text(canonical, encoding="utf-8")
+        second = self.run_startup()
+        self.assertEqual(second.returncode, 0, second.stdout + second.stderr)
+        prepared = self.runtime.read_bytes()
+        self.assertNotEqual(previous, prepared)
+        self.assertIn("部署后的新收款人".encode("utf-8"), prepared)
+        self.assertIn(FIXTURES.UPGRADE.version_marker(canonical).encode("utf-8"), prepared)
+        self.assertNotIn(FIXTURES.UPGRADE.version_marker(FIXTURES.CANONICAL).encode("utf-8"), prepared)
 
     def test_unknown_customizations_stop_before_java_and_leave_original_intact(self):
         original = FIXTURES.LEGACY.replace("data(){ return {}; }", "data(){ return {customSecret:'keep'}; }")
@@ -105,6 +141,43 @@ class PaymentTemplateStartupTest(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertNotIn(b"JAVA_START_REACHED", result.stdout)
         self.assertEqual(self.overlay.read_text(encoding="utf-8"), FIXTURES.LEGACY)
+
+    def test_install_reports_success_only_after_payment_page_readiness(self):
+        deployment = self.base / "deployment"
+        (deployment / "config").mkdir(parents=True)
+        (deployment / "config/application-prod.yml").write_text("paypro: {}\n", encoding="utf-8")
+        (deployment / "install.sh").write_bytes((ROOT / "install.sh").read_bytes().replace(b"\r\n", b"\n"))
+        (self.base / "fake-docker").write_bytes(b'''#!/bin/sh
+printf '%s\\n' "$*" >> /fixtures/docker-calls
+case "$*" in
+  "--version") echo 'Docker version test';;
+  "ps"|"compose version"|"compose up -d --build") exit 0;;
+  "compose exec -T pay python3 /app/payment-template/verify_payment_template.py --wait 180") exit "$FIXTURE_READINESS_EXIT";;
+  "compose logs --tail 80 pay") echo 'Fixture startup log';;
+  *) echo "Unexpected command: $*" >&2; exit 90;;
+esac
+''')
+        for readiness in (0, 1):
+            with self.subTest(readiness=readiness):
+                calls = self.base / "docker-calls"
+                if calls.exists():
+                    calls.unlink()
+                result = subprocess.run([
+                    "docker", "run", "--rm", "--pull=never", "--network", "none",
+                    "--mount", "type=bind,source=%s,target=/fixtures" % self.base,
+                    "-e", "FIXTURE_READINESS_EXIT=%d" % readiness,
+                    os.environ.get("PAYPRO_TEST_PYTHON_IMAGE", "python:3.11-slim"),
+                    "/bin/sh", "-c", "mkdir -p /tmp/fake-bin\n"
+                    "cp /fixtures/fake-docker /tmp/fake-bin/docker\n"
+                    "chmod +x /tmp/fake-bin/docker\n"
+                    "export PATH=/tmp/fake-bin:$PATH\n"
+                    "exec /bin/bash /fixtures/deployment/install.sh"
+                ], capture_output=True, timeout=30)
+                self.assertEqual(result.returncode, readiness, result.stdout + result.stderr)
+                commands = calls.read_text(encoding="utf-8")
+                self.assertIn("compose up -d --build\ncompose exec -T pay python3", commands)
+                self.assertEqual("PayPro 部署成功！".encode("utf-8") in result.stdout, readiness == 0)
+                self.assertEqual("compose logs --tail 80 pay" in commands, readiness == 1)
 
 
 if __name__ == "__main__":

@@ -12,13 +12,18 @@ hostname=${HOSTNAME}
 
 profiles=${SPRING_PROFILES}
 
-# A restored host overlay must be upgraded before Thymeleaf can load it.
-# The preparation tools and canonical template are immutable image files.
-if [ -e "$APP_DIR/config/templates/payment.html" ]; then
+# The root image publishes a snapshot even when no external overlay exists.
+# Keep the legacy prebuilt-JAR entrypoint usable when it has no overlay or tools.
+TEMPLATE_CLASSPATH=""
+if [ -f /app/payment-template/prepare_payment_template.sh ]; then
     if ! /bin/sh /app/payment-template/prepare_payment_template.sh "$APP_DIR"; then
         echo "Payment template preparation failed; application startup stopped. See the error above." >&2
         exit 1
     fi
+    TEMPLATE_CLASSPATH="$APP_DIR/runtime/:"
+elif [ -e "$APP_DIR/config/templates/payment.html" ]; then
+    echo "Payment template preparation failed: this image has no upgrade tools. Rebuild with the project root Dockerfile." >&2
+    exit 1
 fi
 
 
@@ -40,7 +45,7 @@ PATH=${PATH}:$JAVA_HOME/bin
 
 JAVA_MEM_OPTS="${JVM_HEAP_SIZE:--Xms1024M -Xmx1024M -Xmn256M} -XX:+DisableExplicitGC -XX:+UseConcMarkSweepGC -XX:+CMSParallelRemarkEnabled -XX:LargePageSizeInBytes=128m -XX:+UseFastAccessorMethods -XX:+UseCMSInitiatingOccupancyOnly -XX:CMSInitiatingOccupancyFraction=70 -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -verbose:gc -Xloggc:$LOG_DIR/gc.log -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=$DUMP_DIR/start-${START_DATE}.hprof -Djava.net.preferIPv4Stack=true -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=30005 -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false   "
 JAVA_OPTIONS="${JAVA_MEM_OPTS} -DSW_AGENT_NAME=${service_name} -DSW_AGENT_COLLECTOR_BACKEND_SERVICES=172.17.49.80:11800  -Dinstance.log.home=${LOG_DIR}  -DLOG_DIR=${LOG_DIR} -DSERVER_NAME=${hostname}  -Dfile.encoding=utf-8 -Dlogging.path=${LOG_DIR}"
-CLASSPATH="$APP_DIR/config/:`ls $APP_DIR/*.jar 2>/dev/null|awk '{printf $1":"}'`"
+CLASSPATH="${TEMPLATE_CLASSPATH}$APP_DIR/config/:`ls $APP_DIR/*.jar 2>/dev/null|awk '{printf $1":"}'`"
 
 
 if [ -z "$profiles" ]
@@ -57,4 +62,4 @@ export EXTRA_JAVA_OPTIONS
 JAVA_OPTIONS=" ${JAVA_OPTIONS} -classpath ${CLASSPATH} $EXTRA_JAVA_OPTIONS"
 export NLS_LANG LANG JAVA_HOME JAVA_OPTIONS CLASSPATH PATH  LOG_DIR
 echo '$JAVA ${JAVA_OPTIONS}'
-$JAVA ${JAVA_OPTIONS}
+exec "$JAVA" ${JAVA_OPTIONS}

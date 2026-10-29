@@ -24,12 +24,16 @@ RUN mkdir /app \
   && mkdir /app/appsystems/tmp
 
 COPY src/main/resources/start.sh /app/start.sh
-COPY scripts/upgrade_payment_template.py scripts/prepare_payment_template.sh /app/payment-template/
+COPY scripts/upgrade_payment_template.py scripts/prepare_payment_template.sh scripts/verify_payment_template.py /app/payment-template/
 COPY src/main/resources/templates/payment.html /app/payment-template/payment.html
 COPY --from=builder /build/target/*.jar /app/appsystems/
 
-RUN chmod +x /app/start.sh
+RUN sed -i 's/\r$//' /app/start.sh /app/payment-template/prepare_payment_template.sh \
+  && chmod +x /app/start.sh
 
 WORKDIR /app/appsystems
 
-ENTRYPOINT ["/bin/sh", "-c","/app/start.sh"]
+HEALTHCHECK --interval=10s --timeout=8s --start-period=45s --retries=6 \
+  CMD ["python3", "/app/payment-template/verify_payment_template.py"]
+
+ENTRYPOINT ["/bin/sh", "/app/start.sh"]

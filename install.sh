@@ -115,6 +115,15 @@ if ! $COMPOSE_CMD up -d --build; then
     exit 1
 fi
 
+# The application prepares its overlay automatically before Java starts.
+# Do not report success until its HTTP response is the current template.
+log_info "等待支付页自动升级并核对收款人..."
+if ! $COMPOSE_CMD exec -T pay python3 /app/payment-template/verify_payment_template.py --wait 180; then
+    log_error "支付页尚未通过部署检查，请查看应用日志；本次不报告部署成功"
+    $COMPOSE_CMD logs --tail 80 pay
+    exit 1
+fi
+
 echo ""
 echo "========================================="
 echo "  PayPro 部署成功！"

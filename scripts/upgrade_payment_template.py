@@ -17,8 +17,10 @@ from datetime import datetime, timezone
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = re.compile(r"(<script\b[^>]*>)([\s\S]*?)(</script\s*>)", re.I)
 PANEL = re.compile(r'(?m)^ {16}<div class="confirmation-panel"[\s\S]*?^ {16}</div>(?=\n {12}</div>)')
+CONFIRMATION_STYLES = re.compile(r"(?m)^ {8}\.confirmation-panel \{[\s\S]*?(?=^ {8}\.badge \{)")
 RECIPIENT = re.compile(r'(<div\b[^>]*\bclass="label"[^>]*>\s*收款人\s*</div>\s*)'
                        r'(<div\b[^>]*\bclass="value"[^>]*>[\s\S]*?</div>)')
+VERSION = re.compile(r'\n?<!-- paypro-payment-template sha256:[0-9a-f]{64} -->\n?')
 
 
 def one(pattern, source, description):
@@ -94,8 +96,11 @@ def upgrade(existing, canonical):
     else:
         boundary = one(r'(?m)^ {12}</div>\n\n(?= {12}<div\b[^>]*v-if="showInfoPanel")', result, "payment card boundary")
         result = result[:boundary.start()] + panel + "\n" + result[boundary.start():]
-    if ".confirmation-panel {" not in result:
-        css = one(r"(?m)^ {8}\.confirmation-panel \{[\s\S]*?(?=^ {8}\.badge \{)", canonical, "confirmation styles")[0]
+    css = one(CONFIRMATION_STYLES, canonical, "canonical confirmation styles")[0]
+    if ".confirmation-panel {" in result:
+        match = one(CONFIRMATION_STYLES, result, "existing confirmation styles")
+        result = result[:match.start()] + css + result[match.end():]
+    else:
         boundary = one(r"(?m)^ {8}\.badge \{", result, "badge style insertion point")
         result = result[:boundary.start()] + css + result[boundary.start():]
 
@@ -111,21 +116,57 @@ def sha(data):
     return hashlib.sha256(data).hexdigest()
 
 
+def version_marker(canonical):
+    return "<!-- paypro-payment-template sha256:%s -->" % sha(canonical.replace("\r\n", "\n").encode("utf-8"))
+
+
+def atomic_write(target, data, mode=0o644):
+    target.parent.mkdir(parents=True, exist_ok=True)
+    temporary = None
+    try:
+        with tempfile.NamedTemporaryFile(prefix=".payment-upgrade-", dir=str(target.parent), delete=False) as handle:
+            temporary = handle.name
+            handle.write(data)
+        os.chmod(temporary, mode)
+        os.replace(temporary, str(target))
+    finally:
+        if temporary and os.path.exists(temporary):
+            os.unlink(temporary)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--template", type=Path, default=ROOT / "config/templates/payment.html")
     parser.add_argument("--canonical", type=Path, default=ROOT / "src/main/resources/templates/payment.html")
+    parser.add_argument("--runtime-template", type=Path,
+                        help="with --apply, publish the prepared template outside the config mount; allows a missing overlay")
     actions = parser.add_mutually_exclusive_group(required=True)
     actions.add_argument("--check", action="store_true", help="read-only: exit 1 if the overlay needs upgrading")
     actions.add_argument("--apply", action="store_true", help="backup then atomically update the overlay")
     actions.add_argument("--output", type=Path, help="write a preview to a separate file without changing the overlay")
     args = parser.parse_args()
+    if args.runtime_template and not args.apply:
+        parser.error("--runtime-template requires --apply")
     try:
-        target = args.template.resolve(strict=True)
-        original = target.read_bytes()
-        merged = upgrade(original.decode("utf-8-sig"), args.canonical.read_text(encoding="utf-8-sig")).encode("utf-8")
-        changed = original.replace(b"\r\n", b"\n") != merged
-        print("Overlay: %s\nBefore SHA-256: %s\nAfter SHA-256: %s" % (target, sha(original), sha(merged)))
+        target = args.template.resolve(strict=not bool(args.runtime_template))
+        runtime = args.runtime_template.resolve() if args.runtime_template else None
+        if runtime and runtime in (target, args.canonical.resolve()):
+            raise ValueError("Runtime template must be separate from the source templates")
+        canonical = args.canonical.read_text(encoding="utf-8-sig")
+        original = target.read_bytes() if target.exists() else None
+        if original is None:
+            merged = upgrade(canonical, canonical).encode("utf-8")
+            changed = False
+            print("No external override; preparing the packaged template")
+        else:
+            merged = upgrade(original.decode("utf-8-sig"), canonical).encode("utf-8")
+            changed = original.replace(b"\r\n", b"\n") != merged
+            print("Overlay: %s\nBefore SHA-256: %s\nAfter SHA-256: %s" % (target, sha(original), sha(merged)))
+        if runtime:
+            # Validate the whole publication before changing the source overlay.
+            prepared = VERSION.sub("\n", merged.decode("utf-8"))
+            head = one(r"</head\s*>", prepared, "runtime template head")
+            prepared = (prepared[:head.start()] + version_marker(canonical) + "\n" + prepared[head.start():]).encode("utf-8")
         print("QR selection and canvas generation: preserved")
         print("Recipient summary: synchronized with the canonical configuration binding")
         if args.check:
@@ -144,19 +185,14 @@ def main():
             stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
             backup = backups / ("payment-" + stamp + "-" + sha(original)[:12] + ".html")
             shutil.copy2(str(target), str(backup))
-            temporary = None
-            try:
-                with tempfile.NamedTemporaryFile(prefix=".payment-upgrade-", dir=str(target.parent), delete=False) as handle:
-                    temporary = handle.name
-                    handle.write(merged)
-                os.chmod(temporary, stat.S_IMODE(target.stat().st_mode))
-                os.replace(temporary, str(target))
-            finally:
-                if temporary and os.path.exists(temporary):
-                    os.unlink(temporary)
+            atomic_write(target, merged, stat.S_IMODE(target.stat().st_mode))
             print("Backup: %s\nOverlay upgraded" % backup)
         else:
             print("Already current; no file or backup was written")
+        if runtime:
+            if not runtime.exists() or runtime.read_bytes() != prepared:
+                atomic_write(runtime, prepared)
+            print("Runtime template ready: %s\n%s" % (runtime, version_marker(canonical)))
         return 0
     except (ValueError, OSError, UnicodeError) as error:
         print("ERROR: " + str(error))

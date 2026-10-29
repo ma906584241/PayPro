@@ -89,6 +89,15 @@ class UpgradePaymentTemplateTest(unittest.TestCase):
         self.assertEqual(merged, UPGRADE.upgrade(merged, CANONICAL))
         self.assertEqual(merged.count('class="confirmation-panel"'), 1)
 
+    def test_next_template_also_updates_existing_confirmation_styles(self):
+        previous = UPGRADE.upgrade(LEGACY, CANONICAL)
+        canonical = CANONICAL.replace(".confirmation-error { color: #fca5a5; }",
+                                      ".confirmation-error { color: #fbbf24; }")
+        merged = UPGRADE.upgrade(previous, canonical)
+        self.assertIn(".confirmation-error { color: #fbbf24; }", merged)
+        self.assertNotIn(".confirmation-error { color: #fca5a5; }", merged)
+        self.assertIn(".qr-image { width: 247px; }", merged)
+
     def test_unknown_custom_methods_are_rejected(self):
         customized = LEGACY.replace("        startCountdown()", "        customAnalytics(){},\n        startCountdown()")
         with self.assertRaisesRegex(ValueError, "customAnalytics"):
@@ -135,6 +144,50 @@ class UpgradePaymentTemplateTest(unittest.TestCase):
             result = subprocess.run([sys.executable, str(SCRIPT), "--template", str(target), "--check"], capture_output=True)
             self.assertEqual(result.returncode, 1)
             self.assertEqual(target.read_bytes(), original)
+            self.assertFalse((target.parent.parent / "template-backups").exists())
+
+    def test_runtime_snapshot_without_overlay_does_not_create_an_override(self):
+        with tempfile.TemporaryDirectory(prefix="paypro-runtime-test-") as tmp:
+            target = Path(tmp) / "config/templates/payment.html"
+            runtime = Path(tmp) / "runtime/templates/payment.html"
+            result = subprocess.run([sys.executable, str(SCRIPT), "--template", str(target),
+                                     "--runtime-template", str(runtime), "--apply"], capture_output=True)
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            self.assertFalse(target.exists())
+            expected = UPGRADE.upgrade(CANONICAL, CANONICAL).replace("</head>", UPGRADE.version_marker(CANONICAL) + "\n</head>")
+            self.assertEqual(runtime.read_text(encoding="utf-8"), expected)
+
+    def test_runtime_snapshot_is_idempotent_and_check_stays_read_only(self):
+        with tempfile.TemporaryDirectory(prefix="paypro-runtime-test-") as tmp:
+            target = Path(tmp) / "config/templates/payment.html"
+            target.parent.mkdir(parents=True)
+            target.write_text(LEGACY, encoding="utf-8")
+            runtime = Path(tmp) / "runtime/templates/payment.html"
+            command = [sys.executable, str(SCRIPT), "--template", str(target),
+                       "--runtime-template", str(runtime), "--apply"]
+            self.assertEqual(subprocess.run(command, capture_output=True).returncode, 0)
+            prepared = runtime.read_bytes()
+            timestamp = runtime.stat().st_mtime_ns
+            self.assertEqual(subprocess.run(command, capture_output=True).returncode, 0)
+            self.assertEqual(runtime.stat().st_mtime_ns, timestamp)
+            self.assertEqual(runtime.read_bytes(), prepared)
+            rejected = subprocess.run(command[:-1] + ["--check"], capture_output=True)
+            self.assertEqual(rejected.returncode, 2)
+            self.assertEqual(runtime.read_bytes(), prepared)
+            self.assertEqual(len(list((target.parent.parent / "template-backups").glob("*.html"))), 1)
+
+    def test_invalid_runtime_layout_leaves_overlay_and_backups_untouched(self):
+        with tempfile.TemporaryDirectory(prefix="paypro-runtime-test-") as tmp:
+            target = Path(tmp) / "config/templates/payment.html"
+            target.parent.mkdir(parents=True)
+            original = LEGACY.replace("</head>", "").encode("utf-8")
+            target.write_bytes(original)
+            runtime = Path(tmp) / "runtime/templates/payment.html"
+            result = subprocess.run([sys.executable, str(SCRIPT), "--template", str(target),
+                                     "--runtime-template", str(runtime), "--apply"], capture_output=True)
+            self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
+            self.assertEqual(target.read_bytes(), original)
+            self.assertFalse(runtime.exists())
             self.assertFalse((target.parent.parent / "template-backups").exists())
 
 

@@ -113,23 +113,23 @@ MySQL 必须已创建库并按实际情况初始化表。`settings.xml` 把 cent
 | redis / pay-redis | redis:7-alpine | 6379:6379 | redis-data:/data | 带密码 redis-cli ping |
 | pay | build: .，pay:latest | 8889:8889 | config、qr、applogs、dump 绑定 | mysql/redis healthy |
 
-网络为 `pay-network` bridge，所有容器 `restart: always`。pay 服务没有 healthcheck，所以不能要求三个服务都显示 healthy；应用就绪还需查看日志及 HTTP 响应。MySQL / Redis 密码出现在 Compose 环境、命令或健康检查中，更换时须同步修改所有引用。
+网络为 `pay-network` bridge，所有容器 `restart: always`。根应用镜像自带支付页 healthcheck：核验实际 HTTP 响应的模板版本、确认功能及 `PAYPRO_NAME` 收款人；检查只访问无订单参数的 `/payment.html`。MySQL / Redis 密码出现在 Compose 环境、命令或健康检查中，更换时须同步修改所有引用。
 
 目录映射：`./config → /app/appsystems/config`；`./qr → /app/appsystems/qr`；`./applogs → /app/applogs`；`./dump → /app/applogs/dump`。Redis 只显式挂载数据目录，没有额外配置 AOF 或快照策略。
 
-线上额外使用 `config/templates/payment.html` 覆盖支付页。新版根镜像会在挂载完成、Java启动前自动备份并升级旧覆盖层，保留二维码代码；没有覆盖层时使用JAR模板，重复启动不重复备份。镜像内标准模板和工具放在 `/app/payment-template`，不会被config挂载遮挡。日常无需手动执行升级脚本；只需将恢复aside文件的步骤放在启动容器之前。异常结构或不可写覆盖层会停止启动并记录错误，原文件保留。详见[覆盖层修复记录](01-管理员邮件触发机制/线上支付页停留问题排查.md)。
+线上额外使用 `config/templates/payment.html` 覆盖支付页。新版根镜像会在挂载完成、Java启动前自动备份并升级旧覆盖层，保留二维码代码，然后发布 `/app/appsystems/runtime/templates/payment.html`。没有覆盖层时从镜像标准模板生成同样的运行快照，不创建宿主机覆盖文件。运行目录位于 classpath 首位，优先于 config 和 JAR；容器运行期间恢复外置文件不会覆盖已发布快照，下次启动会重新处理。镜像内标准模板和工具放在 `/app/payment-template`，不会被 config 挂载遮挡。日常无需手动执行升级脚本，重复启动不重复备份。异常结构、不可写覆盖层或快照发布失败会停止启动并记录错误。详见[覆盖层修复记录](01-管理员邮件触发机制/线上支付页停留问题排查.md)。
 
 Linux 部署命令：
 
 ```bash
 bash install.sh
-# 或已有 Compose 时
-docker compose up -d --build
+# 或已有支持 --wait 的 Compose 时
+docker compose up -d --build --wait --wait-timeout 180
 docker compose ps
 docker compose logs --tail 100 pay
 ```
 
-`install.sh` 检查 Docker 和访问权限，优先使用现有 Compose；否则把仓库的 Linux ELF 二进制安装到 Docker CLI 插件目录，必要时降级为 `/usr/local/bin/docker-compose`。它创建 config/qr/applogs/dump；缺失生产配置时生成最小模板并退出，已有模板不会检查其中账号是否可用。脚本成功只表示 Compose 启动命令成功，不代表真实支付和邮件正常。
+`install.sh` 检查 Docker 和访问权限，优先使用现有 Compose；否则把仓库的 Linux ELF 二进制安装到 Docker CLI 插件目录，必要时降级为 `/usr/local/bin/docker-compose`。它创建 config/qr/applogs/dump；缺失生产配置时生成最小模板并退出，已有模板不会检查其中账号是否可用。Compose 启动后自动等待支付页版本和收款人校验，最多180秒；校验失败会输出日志并以非零状态退出。部署成功表示这些只读检查通过，不代表已验证真实支付或发送邮件。
 
 ## 二维码目录
 
